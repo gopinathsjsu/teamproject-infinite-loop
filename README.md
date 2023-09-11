@@ -3,7 +3,7 @@
 # Project - Box Office  </br>
 # Team Members :  </br>
   1. Sravan Kumar </br>
-  2. Deekshith </br>
+  2. Sai Deekshith </br>
   3. Yeshvanth </br>
   4. Mahendra </br>
 
