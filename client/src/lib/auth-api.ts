@@ -1,4 +1,4 @@
-import { FilteredUser, UserLoginResponse, UserResponse } from "./types";
+import { FilteredUser, UserLoginResponse, UserResponse, UserRegisterResponse } from "./types";
 
 const SERVER_ENDPOINT = "http://localhost:8080";
 
@@ -20,7 +20,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
 
 export async function apiRegisterUser(
   credentials: string
-): Promise<FilteredUser> {
+): Promise<string> {
   const response = await fetch(`${SERVER_ENDPOINT}/user/signup`, {
     method: "POST",
     credentials: "include",
@@ -30,11 +30,11 @@ export async function apiRegisterUser(
     body:credentials,
   });
 
-  return handleResponse<UserResponse>(response).then((data) => data.data.user);
+  return handleResponse<UserRegisterResponse>(response).then((data) => data.message);
 }
 
 export async function apiLoginUser(credentials: string): Promise<string> {
-  const response = await fetch(`${SERVER_ENDPOINT}/api/auth/login`, {
+  const response = await fetch(`${SERVER_ENDPOINT}/user/login`, {
     method: "POST",
     credentials: "include",
     headers: {

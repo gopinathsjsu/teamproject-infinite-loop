@@ -7,6 +7,11 @@ export interface FilteredUser {
     createdAt: string;
     updatedAt: string;
   }
+
+  export interface UserRegisterResponse {
+    status: any;
+    message: string;
+  }
   
   export interface UserResponse {
     status: any;

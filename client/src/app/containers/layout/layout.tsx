@@ -4,8 +4,6 @@ import Navlinks from "./navlinks";
 
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-    const logoutUser = () => {
-    }
     return (
         <>
             <div className="drawer">

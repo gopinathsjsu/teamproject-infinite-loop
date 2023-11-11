@@ -21,9 +21,9 @@ export default function Home() {
   // }, []);
   return (
     <>
-    <MainBanner />
-    <MovieBanner />
-    <BottomBanner />
-</>
+      <MainBanner />
+      <MovieBanner />
+      <BottomBanner />
+    </>
   )
 }

@@ -30,12 +30,12 @@ export default function Navlinks() {
             {!user && (
                 <>
                     <li>
-                        <Link href="/signup" className="text-ct-dark-600">
+                        <Link href="/signup" className="text-base mr-2">
                             Register
                         </Link>
                     </li>
                     <li>
-                        <Link href="/login" className="text-ct-dark-600">
+                        <Link href="/login" className="text-base mr-2">
                             Login
                         </Link>
                     </li>
