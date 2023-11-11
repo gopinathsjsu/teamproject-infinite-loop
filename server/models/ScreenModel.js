@@ -1,23 +1,25 @@
 const mongoose = require('mongoose');
 
-// Defining a screen  schema
+
 const screenSchema = new mongoose.Schema({
     id: String,
-    type_screen: Array,
-    seating_capacity: Number,
-    rows: Number,
-    columns: Number,
+    screen_type: {type:String, required:true},
+    seating_capacity: {type : Number, required: true},
+    rows: {type:Number , required: true},
+    columns: {type:Number , required: true},
     movie_id: String,
-    show_times: Array,
-    cost: Number,
+    show_times: {type: Date, required: true},
+    cost: {type: Number , required: true},
     theatre_id: String,
-    seat_matrix: Array,
-    occupancy_status: Array,
+    seat_matrix: { type: [[Number]], required: true},
+    occupancy_status: [String],
+    created_on : {type: Date , default: Date.now},
+    updated_on : {type: Date , default: Date.now}
 
 });
 
-// Creating a User model based on the schema
-const ScreenModel = mongoose.model('Screen', screenSchema);
+
+const ScreenModel = mongoose.model('Screens', screenSchema);
 
 module.exports = {
     ScreenModel: ScreenModel,

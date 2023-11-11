@@ -1,20 +1,21 @@
 const mongoose = require('mongoose');
 
-// Defining a screen  schema
+
 const actorSchema = new mongoose.Schema({
     id: String,
-    name: String,
-    dob: Date,
-    rows: Number,
-    movies: Array,
+    name: {type: String, required:true},
+    dob: {type: Date, required : true},
+    movies: [String],
     location: String,
     description: String,
-    film_profession: String,
-    image_url: String,
+    film_profession: {type: String, required:true},
+    image_urls: [String],
+    created_on : {type: Date , default: Date.now},
+    updated_on : {type: Date , default: Date.now}
 });
 
-// Creating a User model based on the schema
-const ActorModel = mongoose.model('Actor', actorSchema);
+
+const ActorModel = mongoose.model('Actors', actorSchema);
 
 module.exports = {
     ActorModel: ActorModel,

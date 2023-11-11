@@ -1,20 +1,22 @@
 const mongoose = require('mongoose');
 
-// Defining a screen  schema
+
 const ticketSchema = new mongoose.Schema({
-    id: String,
-    user_id: String,
-    movie_id: String,
-    screen_id: String,
-    transaction_id: String,
+    id: { type: String, required: true },
+    user_id: { type: String, required: true },
+    movie_id: { type: String, required: true },
+    screen_id: { type: String, required: true },
+    transaction_id: { type: String, required: true },
     show_time: { type: Date, default: Date.now },
-    seat_no: String,
-    qr_url: String,
+    seat_nos: { type: [String], required: true },
+    qr_urls: { type: [String], required: true },
+    created_on: { type: Date, default: Date.now },
+    updated_on: { type: Date, default: Date.now }
 
 });
 
-// Creating a User model based on the schema
-const TicketModel = mongoose.model('Ticket', ticketSchema);
+
+const TicketModel = mongoose.model('Tickets', ticketSchema);
 
 module.exports = {
     TicketModel: TicketModel,
