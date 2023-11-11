@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
   dob:{type: Date},
   gender:{},
   mobile:{},
-  gmail:{type: String},
+  email:{type: String},
   password:{type: String},
   genres:{type:Array},
   profile_url:{type: String},
