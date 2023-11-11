@@ -1,6 +1,6 @@
 import { FilteredUser, UserLoginResponse, UserResponse } from "./types";
 
-const SERVER_ENDPOINT = process.env.SERVER_ENDPOINT || "http://localhost:3000";
+const SERVER_ENDPOINT = "http://localhost:8080";
 
 async function handleResponse<T>(response: Response): Promise<T> {
   const contentType = response.headers.get("Content-Type") || "";
@@ -21,13 +21,13 @@ async function handleResponse<T>(response: Response): Promise<T> {
 export async function apiRegisterUser(
   credentials: string
 ): Promise<FilteredUser> {
-  const response = await fetch(`${SERVER_ENDPOINT}/api/auth/register`, {
+  const response = await fetch(`${SERVER_ENDPOINT}/user/signup`, {
     method: "POST",
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
-    body: credentials,
+    body:credentials,
   });
 
   return handleResponse<UserResponse>(response).then((data) => data.data.user);
@@ -42,7 +42,7 @@ export async function apiLoginUser(credentials: string): Promise<string> {
     },
     body: credentials,
   });
-
+  console.log(response);
   return handleResponse<UserLoginResponse>(response).then((data) => data.token);
 }
 

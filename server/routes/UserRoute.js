@@ -9,8 +9,9 @@ router.get('/addUser', (req, res) => {
 
 router.post('/signup', async (req, res) => {
     try {
+      console.log(req.body);
      const newUser = new User({
-      fullname: req.body.fullname,
+      fullname: req.body.name,
       email: req.body.email,
       password: req.body.password,
     });

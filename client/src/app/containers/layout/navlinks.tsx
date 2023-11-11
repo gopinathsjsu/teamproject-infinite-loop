@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 
 export default function Navlinks() {
     const store = useStore();
-    const user = useSession();
+    const user = false;
     const router = useRouter();
 
     const handleLogout = async () => {

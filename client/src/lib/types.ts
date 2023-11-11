@@ -9,13 +9,13 @@ export interface FilteredUser {
   }
   
   export interface UserResponse {
-    status: string;
+    status: any;
     data: {
       user: FilteredUser;
     };
   }
   
   export interface UserLoginResponse {
-    status: string;
+    status: any;
     token: string;
   }  

@@ -4,13 +4,15 @@ import { useForm, SubmitHandler, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { apiRegisterUser } from "@/src/lib/auth-api";
 import useStore from "@/src/store";
+import FormInput from "@/src/app/components/formComponents/formInput";
+import { LoadingButton } from "@/src/app/components/formComponents/loadingButton";
 import React, { useEffect, useState } from 'react';
 import { handleApiError } from "@/src/lib/helpers";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import './../styles/home.module.css'
 
 export default function Home() {
+
     const store = useStore();
     const router = useRouter();
 
@@ -47,7 +49,7 @@ export default function Home() {
 
     const onSubmitHandler: SubmitHandler<RegisterUserInput> = (values) => {
         console.log(values);
-        // RegisterUserFunction(values);
+        RegisterUserFunction(values);
     };
 
     return (
@@ -56,33 +58,19 @@ export default function Home() {
                 <h1 className="text-xl font-semibold text-center">Register</h1>
                 <FormProvider {...methods}>
                     <form className="space-y-4" onSubmit={handleSubmit(onSubmitHandler)}>
-                        <div>
-                            <label className="label">
-                                <span className="text-base label-text">Name</span>
-                            </label>
-                            <input type="text" placeholder="Name" className="w-full input input-bordered" />
-                        </div>
-                        <div>
-                            <label className="label">
-                                <span className="text-base label-text">Email</span>
-                            </label>
-                            <input type="text" placeholder="Email Address" className="w-full input input-bordered" />
-                        </div>
-                        <div>
-                            <label className="label">
-                                <span className="text-base label-text">Password</span>
-                            </label>
-                            <input type="password" placeholder="Enter Password" className="w-full input input-bordered" />
-                        </div>
-                        <div>
-                            <label className="label">
-                                <span className="text-base label-text">Confirm Password</span>
-                            </label>
-                            <input type="password" placeholder="Confirm Password" className="w-full input input-bordered" />
-                        </div>
-                        <div>
-                            <button className="btn btn-block">Sign Up</button>
-                        </div>
+                        <FormInput label="Full Name" name="name" type="text" />
+                        <FormInput label="Email" name="email" type="email" />
+                        <FormInput label="Password" name="password" type="password" />
+                        <FormInput
+                            label="Confirm Password"
+                            name="passwordConfirm"
+                            type="password"
+                        />
+                        <LoadingButton
+                            loading={store.requestLoading}
+                        >
+                            Register
+                        </LoadingButton>
                         <span>Already have an account ?
                             <a href="/login" className="text-blue-600 hover:text-blue-800 hover:underline">Login</a></span>
                     </form>

@@ -22,6 +22,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.48.2",
     "react-hot-toast": "^2.4.1",
+    "tailwind-merge": "^2.0.0",
     "theme-change": "^2.5.0",
     "typescript": "5.2.2",
     "zod": "^3.22.4",
