@@ -1,4 +1,4 @@
-import InnerPageContainer from "./../components/dashboard/common/InnerPageContainer"
+import InnerPageContainer from "../components/dashboard/common/InnerPageContainer"
 
 export default function Home() {
     return (
