@@ -5,7 +5,11 @@ const mongoose = require('./db');
 const UserRoute = require('../server/routes/UserRoute')
 const port = 8080
 
-app.use(cors());
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true,
+};
+app.use(cors(corsOptions));
 app.use('/User',UserRoute)
 app.get('/home', (req, res) => {
   res.json({message:'Hello World!'})
