@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router();
 const User = require('../models/UserModel');
 const { HTTP_STATUS_CODES } = require('../constants')
+const { createToken } = require('../Helpers/JwtAuth')
 
 router.get('/addUser', (req, res) => {
     res.send('Hello, world!');
@@ -39,7 +40,9 @@ router.post("/login", async(req, res) => {
             })
         }
         else{
-            data = { email : req.body.email , fullname : users.fullname}
+            data = { email: req.body.email, fullname: users.fullname }
+            createToken(req,res,email,password);
+            console.log(res.getHeaders()['set-cookie']);
             res.json({
                 message: 'user found',
                 status : HTTP_STATUS_CODES.OK,
