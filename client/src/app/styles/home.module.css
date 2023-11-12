@@ -275,15 +275,6 @@
     }
   }
 
-  @media (max-width: 768px) {
-    .hero-content {
-        flex-direction: column;
-    }
-    .max-w-sm {
-        max-width: 100%;
-    }
-  }
-
   
   @keyframes rotate {
     from {
