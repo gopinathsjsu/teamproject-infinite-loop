@@ -22,5 +22,7 @@ export interface FilteredUser {
   
   export interface UserLoginResponse {
     status: any;
-    token: string;
+    email: string;
+    fullnmae: string;
+    // token: string;
   }  

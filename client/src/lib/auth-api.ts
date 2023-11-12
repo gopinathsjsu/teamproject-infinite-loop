@@ -43,7 +43,7 @@ export async function apiLoginUser(credentials: string): Promise<string> {
     body: credentials,
   });
   console.log(response);
-  return handleResponse<UserLoginResponse>(response).then((data) => data.token);
+  return handleResponse<UserLoginResponse>(response).then((data) => data.fullnmae);
 }
 
 export async function apiLogoutUser(): Promise<void> {

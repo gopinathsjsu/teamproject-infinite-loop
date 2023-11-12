@@ -42,9 +42,8 @@ export default function Home() {
     async function LoginUserFunction(credentials: LoginUserInput) {
         store.setRequestLoading(true);
         try {
-            // await apiLoginUser(JSON.stringify(credentials));
-
-            // toast.success("Logged in successfully");
+            await apiLoginUser(JSON.stringify(credentials));
+            toast.success("Logged in successfully");
             return router.push("/");
         } catch (error: any) {
             console.log(error);
