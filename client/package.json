@@ -22,6 +22,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.48.2",
     "react-hot-toast": "^2.4.1",
+    "react-slick": "^0.29.0",
     "tailwind-merge": "^2.0.0",
     "theme-change": "^2.5.0",
     "typescript": "5.2.2",
@@ -29,6 +30,7 @@
     "zustand": "^4.4.6"
   },
   "devDependencies": {
+    "@types/react-slick": "^0.23.12",
     "autoprefixer": "^10.4.16",
     "daisyui": "^3.9.4",
     "postcss": "^8.4.31",
