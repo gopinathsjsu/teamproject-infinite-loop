@@ -248,6 +248,13 @@
       );
       z-index: 1;
     }
+    /* Add this to either globals.css or home.module.css */
+    .slider-image {
+      width: 100%; /* Make the image take the full width of its container */
+      height: auto; /* Adjust the height automatically to maintain aspect ratio */
+      object-fit: cover; /* This will cover the area of the container without stretching the image */
+    }
+
   }
   
   /* Tablet and Smaller Desktop */
@@ -267,6 +274,16 @@
       filter: invert(1) drop-shadow(0 0 0.3rem #ffffff70);
     }
   }
+
+  @media (max-width: 768px) {
+    .hero-content {
+        flex-direction: column;
+    }
+    .max-w-sm {
+        max-width: 100%;
+    }
+  }
+
   
   @keyframes rotate {
     from {
