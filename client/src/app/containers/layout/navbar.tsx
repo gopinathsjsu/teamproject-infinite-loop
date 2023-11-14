@@ -68,6 +68,16 @@ export default function Navbar() {
                                     Settings
                                 </Link>
                             </li>
+                            <li className="justify-between">
+                                <Link href={'/personal_profile'}>
+                                    Profile
+                                </Link>
+                            </li>
+                            <li className="justify-between">
+                                <Link href={'/purchases'}>
+                                    Purchases
+                                </Link>
+                            </li>
                             <div className="divider mt-0 mb-0"></div>
                             <li><a onClick={logoutUser}>Logout</a></li>
                         </ul>
