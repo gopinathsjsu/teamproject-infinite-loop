@@ -41,3 +41,9 @@ export type Movie = {
 export type Seats = {
   [key: string]: number[]
 }
+
+export interface GetEndpointResponse {
+  status: any;
+  message: any;
+  data: any;
+}
