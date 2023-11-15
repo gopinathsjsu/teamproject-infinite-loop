@@ -3,6 +3,8 @@ const app = express()
 const cors = require('cors')
 const mongoose = require('./db');
 const UserRoute = require('../server/routes/UserRoute')
+const MovieRoute = require('../server/routes/MovieRoute')
+const ScreenRoute = require('../server/routes/ScreenRoute')
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const port = 8080
@@ -20,6 +22,8 @@ app.use(
     secret: process.env.JWT_SECRET_KEY,
     // You can use the default in-memory store or choose another session store here
   }));
+app.use('/screen',ScreenRoute)
+app.use('/movies',MovieRoute)
 app.use('/User',UserRoute)
 app.get('/home', (req, res) => {
   res.json({message:'Hello World!'})
