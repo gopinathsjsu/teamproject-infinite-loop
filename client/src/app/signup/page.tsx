@@ -33,7 +33,6 @@ export default function Home() {
         store.setRequestLoading(true);
         try {
             const user = await apiRegisterUser(JSON.stringify(credentials));
-            store.setAuthUser(user);
             return router.push("/login");
         } catch (error: any) {
             if (error instanceof Error) {
@@ -48,12 +47,11 @@ export default function Home() {
     }
 
     const onSubmitHandler: SubmitHandler<RegisterUserInput> = (values) => {
-        console.log(values);
         RegisterUserFunction(values);
     };
 
     return (
-        <div className="relative flex flex-col justify-center overflow-hidden">
+        <div className="relative flex flex-col justify-center overflow-hidden h-screen">
             <div className="w-full p-6 mx-auto my-2 rounded-md shadow-md ring-2 ring-gray-800/50 lg:max-w-xl">
                 <h1 className="text-xl font-semibold text-center">Register</h1>
                 <FormProvider {...methods}>

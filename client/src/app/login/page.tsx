@@ -10,6 +10,8 @@ import { handleApiError } from "@/src/lib/helpers";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import './../styles/home.module.css'
+import FormInput from "../components/formComponents/formInput";
+import { LoadingButton } from "../components/formComponents/loadingButton";
 
 export default function Home() {
     const store = useStore();
@@ -41,9 +43,8 @@ export default function Home() {
         store.setRequestLoading(true);
         try {
             await apiLoginUser(JSON.stringify(credentials));
-
             toast.success("Logged in successfully");
-            return router.push("/profile");
+            return router.push("/");
         } catch (error: any) {
             console.log(error);
             if (error instanceof Error) {
@@ -62,26 +63,16 @@ export default function Home() {
     };
 
     return (
-        <div className="relative flex flex-col justify-center overflow-hidden">
+        <div className="relative flex flex-col justify-center overflow-hidden h-screen">
             <div className="w-full p-6 mx-auto my-10 rounded-md shadow-md ring-2 ring-gray-800/50 lg:max-w-xl">
                 <h1 className="text-xl font-semibold text-center">Login</h1>
                 <FormProvider {...methods}>
-                    <form className="space-y-4"  onSubmit={handleSubmit(onSubmitHandler)}>
-                        <div>
-                            <label className="label">
-                                <span className="text-base label-text">Email</span>
-                            </label>
-                            <input type="text" placeholder="Email Address" className="w-full input input-bordered" />
-                        </div>
-                        <div>
-                            <label className="label">
-                                <span className="text-base label-text">Password</span>
-                            </label>
-                            <input type="password" placeholder="Enter Password" className="w-full input input-bordered" />
-                        </div>
-                        <div>
-                            <button className="btn btn-block">Log In</button>
-                        </div>
+                    <form className="space-y-4" onSubmit={handleSubmit(onSubmitHandler)}>
+                        <FormInput label="Email" name="email" type="email" />
+                        <FormInput label="Password" name="password" type="password" />
+                        <LoadingButton loading={store.requestLoading} >
+                            Log In
+                        </LoadingButton>
                         <span>New User?
                             <a href="#" className="text-blue-600 hover:text-blue-800 hover:underline"> Sign Up</a></span>
                     </form>
