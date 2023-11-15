@@ -1,19 +1,43 @@
 require('dotenv').config()
 const fs = require('fs')
-const S3 = require('aws-sdk/clients/s3')
-const Aws = require('aws-sdk')
+const express = require('express');
+const app = express();
+const cors = require('cors');
+const AWS = require('aws-sdk')
+const multer = require('multer')
+const multerS3 = require('multer-s3');
+
 const bucketName = process.env.AWS_BUCKET_NAME
 const region = process.env.AWS_REGION
 const accessKeyId = process.env.AWS_ACCESS_KEY_ID
 const secretAccessKey = process.env.AWS_ACCESS_KEY_SECRET
 const signatureVersion='v4'
+app.use(cors());
+
+AWS.config.update({
+  secretAccessKey:secretAccessKey,
+  accessKeyId: accessKeyId,
+  region: region,
+
+});
+const s3 = new AWS.S3();
 
 
-const s3 = new S3({
-    region,
-    accessKeyId,
-    secretAccessKey
-})
+const upload = multer({
+    storage: multerS3({
+        s3: s3,
+        acl: "public-read",
+        bucket: bucketName,
+        key: function (req, file, cb) {
+            console.log(file);
+            cb(null, file.originalname)
+        }
+    })
+});
+
+exports.upload = upload;
+
+
 
 // uploads a file to s3
 function uploadFile(file) {
