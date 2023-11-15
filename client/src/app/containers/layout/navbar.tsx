@@ -30,19 +30,23 @@ export default function Navbar() {
     return (
         <div className="w-full flex justify-center  shadow-md  text-primary-content bg-primary">
             <div className="navbar  max-w-5xl">
-                <div className="flex-none lg:hidden">
+            <div className="flex-none lg:hidden">
                     <label htmlFor="my-drawer-3" className="btn btn-square btn-ghost">
                         <Bars3Icon className="h-5 inline-block w-5" />
                     </label>
                 </div>
-
-
+                
                 <div className="flex-1 px-2 mx-2">
                     <Link href="/">
                         <span className='font-bold text-xl'>
                             <img className="mask inline-block mr-2 mask-circle w-10" src="/android-chrome-192x192.png" /> Box Office
                         </span>
                     </Link>
+                </div>
+
+                {/* Static search box */}
+                <div className="flex-1 px-2 mx-2">
+                    <input type="text" placeholder="Search..." className="input input-bordered w-full max-w-xs lg:max-w-md" />
                 </div>
                 <div className="flex-none hidden lg:block">
                     <ul className="menu menu-horizontal">

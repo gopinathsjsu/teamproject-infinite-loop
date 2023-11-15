@@ -1,9 +1,11 @@
+require('dotenv').config()
 const express = require('express')
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const User = require('../models/UserModel');
 const { HTTP_STATUS_CODES } = require('../constants')
-const { createToken } = require('../Helpers/JwtAuth')
+const { createToken } = require('../Helpers/JwtAuth');
+const { upload } = require('../Helpers/S3');
 const saltRounds = 10;
 router.get('/addUser', (req, res) => {
     res.send('Hello, world!');
@@ -74,4 +76,9 @@ router.post("/login", async (req, res) => {
     }
 })
 
+router.post('/uploadFile', upload.single('banner'), (req, res) => {
+     const uploadedFile = req.file;
+    const imageUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadedFile.key}`;
+    res.json({ imageUrl });
+});
 module.exports = router;
