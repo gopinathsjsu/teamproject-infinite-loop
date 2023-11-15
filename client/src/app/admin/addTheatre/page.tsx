@@ -33,7 +33,7 @@ export default function Contact() {
         Object.entries(formData).forEach(([key, value]) => {
             data.append(key, value);
         })
-        const get_data = getDataFromEndPoint(JSON.stringify(formData), formURL, 'POST'L);
+        const get_data = getDataFromEndPoint(JSON.stringify(formData), formURL, 'POST');
         console.log(get_data);
     }
 
