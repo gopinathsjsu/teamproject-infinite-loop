@@ -11,7 +11,37 @@ const App: React.FC = () => {
     backgroundPoster: 'https://assets-in.bmscdn.com/iedb/movies/images/mobile/listing/xxlarge/jigarthanda-double-x-et00359702-1699446701.jpg', // Add your background poster path here
     trailerLink: 'https://youtu.be/uaqz9v6HdKs?si=V8qc0VSBQpKc75YO', // Add your YouTube video id here
   };
+  const dates = ['Tue 14', 'Wed 15', 'Thu 16', 'Fri 17', 'Sat 18'];
 
+    // Sample data for theater times
+  const cinemas = [
+    {
+      name: "Sandhya Theatre RGB Laser Atmos -Madivala",
+      times: [
+        { showtime: "04:00 PM", format: "2D", availability: "available" },
+        { showtime: "10:00 PM", format: "2D", availability: "fast-filling" },
+      ],
+    },
+    {
+      name: "Sri Srinivasa Chitramandira, SG Palya",
+      times: [
+        { showtime: "07:00 PM", format: "2D", availability: "almost-full" },
+        { showtime: "10:00 PM", format: "2D", availability: "available" },
+      ],
+    },
+    // ... add more cinema data as needed
+  ];
+
+  const getDateButtonClass = (availability: string) => {
+    switch (availability) {
+      case "fast-filling":
+        return "bg-orange-200 text-orange-800";
+      case "almost-full":
+        return "bg-red-200 text-red-800";
+      default:
+        return "bg-green-200 text-green-800";
+    }
+    };
   // Define the background style
   const backgroundStyle = {
     backgroundImage: `linear-gradient(to right, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)), url(${movie.backgroundPoster})`,
@@ -102,10 +132,59 @@ const App: React.FC = () => {
       ))}
     </ul>
   </div>
-</div>
+      {/* Cinema listings */}
+      <div className="container mx-auto px-4 py-8">
+        {/* Date and filter controls */}
+        <div className="flex justify-between items-center mb-8">
+        <div className="space-x-2">
+            {/* Date filters */}
+            {dates.map((date, index) => (
+              <button key={index} className="border rounded px-4 py-2 bg-gray-200 hover:bg-gray-300">
+                {date}
+              </button>
+            ))}
+          </div>
+          <div className="flex space-x-2">
+            {/* Filter dropdowns */}
+            <select className="border rounded px-4 py-2 bg-white shadow appearance-none">
+              {movie.languages.map((language, index) => (
+                <option key={index} value={language}>{language}</option>
+              ))}
+            </select>
+            <select className="border rounded px-4 py-2 bg-white shadow appearance-none">
+              <option>Format</option>
+              {/* ... other format options */}
+            </select>
+            <select className="border rounded px-4 py-2 bg-white shadow appearance-none">
+              <option>Showtime</option>
+              {/* ... other showtime options */}
+            </select>
+          </div>
+        </div>
+
+        {/* Cinema listings */}
+        {cinemas.map((cinema, index) => (
+          <div key={index} className="bg-white shadow rounded p-4 mb-4">
+            <h2 className="text-xl font-bold mb-4">{cinema.name}</h2>
+            <div className="flex flex-wrap gap-4 mb-4">
+              {cinema.times.map((time, timeIndex) => (
+                <button key={timeIndex} className={`px-4 py-1 rounded ${getDateButtonClass(time.availability)} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-gray-600`}>
+                  {time.showtime} <span className="ml-1">{time.format}</span>
+                </button>
+              ))}
+            </div>
+            <div className="flex space-x-4">
+              <button className="text-blue-600 hover:text-blue-700">Get Directions</button>
+              <button className="text-blue-600 hover:text-blue-700">More Info</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ...rest of your code... */}
+    </div>
     </div>
   );
 };
-
 
 export default App;
