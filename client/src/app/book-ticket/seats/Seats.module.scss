@@ -1,0 +1,80 @@
+.seatsContainer {
+    text-align: center;
+}
+
+.seatsHolder {
+    margin: 10px;
+}
+
+.seatsLeafContainer {
+    margin-left: -30px;
+}
+
+.seats {
+    -webkit-user-select: none;
+    /* Chrome/Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE10+ */
+    user-select: none;
+    cursor: pointer;
+    color: #545454;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 7px 11px;
+    border-radius: 3px;
+    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 11%), 0 2px 4px 0 rgb(0 0 0 / 14%);
+}
+
+.colName {
+    color: #545454;
+    font-weight: 700;
+    margin-right: 20px;
+}
+
+.seatSelected0 {
+    color: red !important;
+}
+
+.seatBlocked {
+    cursor: default;
+    // background: #fff;
+    color: #f2f2f2 !important;
+    box-shadow: none;
+}
+
+.seatBooked {
+    background: rgba(138, 138, 138, 0.418);
+    cursor: default;
+}
+
+.seatSelected {
+    color: #fff !important;
+    background: rgb(53 212 6);
+}
+
+.paymentButton {
+    background: #f84464 !important;
+}
+
+.paymentButtonContainer {
+    position: sticky;
+    bottom: 10px;
+}
+
+.cont_screen {
+    display: flex;
+    justify-content: center;
+    perspective: 1000px;
+    margin-bottom: 30px;
+
+    .screen {
+        transform: rotateX(-50deg);
+        box-shadow: 0 3px 10px rgba(3, 198, 252, 0.75);
+        text-align: center;
+        background-color: #03c6fc;
+        height: 8rem;
+        width: 70%;
+    }
+}
