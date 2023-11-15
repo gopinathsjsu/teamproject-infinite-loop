@@ -18,7 +18,9 @@ async function handleResponse<T>(response: Response): Promise<T> {
     return data as T;
 }
 export async function getDataFromEndPoint(credentials: string, endpoint: string, method: string): Promise<any> {
-    const response = await fetch(`${SERVER_ENDPOINT}${endpoint}`, {
+    const pathSegments = endpoint.split('/');
+    const pathVariable = pathSegments.slice(3).join('/');
+    const response = await fetch(`${SERVER_ENDPOINT}/${pathVariable}`, {
         method: method,
         credentials: "include",
         headers: {
