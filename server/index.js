@@ -25,11 +25,11 @@ app.use(
     // You can use the default in-memory store or choose another session store here
   }));
 
-app.use('/artist',ArtistRoute)
-app.use('/Theatre', TheatreRoute)
-app.use('/screen',ScreenRoute)
-app.use('/movies',MovieRoute)
-app.use('/User',UserRoute)
+app.use('/artist', ArtistRoute)
+app.use('/Theater', TheatreRoute)
+app.use('/Screen', ScreenRoute)
+app.use('/movies', MovieRoute)
+app.use('/User', UserRoute)
 app.get('/home', (req, res) => {
   res.json({ message: 'Hello World!' })
 })
