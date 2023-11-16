@@ -200,17 +200,20 @@ const ScreensPage = () => {
     });
 
   const roleOptions = [
+    { value: ""},
     { value: "crew", label: "Crew" },
     { value: "cast", label: "Cast" },
   ];
 
   const castOptions = [
+    { value: ""},
     { value: "actor", label: "Actor" },
     { value: "actress", label: "Actress" },
     { value: "otherActor", label: "Other Actor" },
   ];
 
   const crewOptions = [
+    { value: ""},
     { value: "director", label: "Director" },
     { value: "producer", label: "Producer" },
     { value: "musicDirector", label: "Music Director" },
