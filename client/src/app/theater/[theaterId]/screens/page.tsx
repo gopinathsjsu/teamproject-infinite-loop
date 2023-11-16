@@ -123,21 +123,28 @@ const ScreensPage = () => {
         setTimings(newTimings);
     };
 
+    
+    const [dataFromChild, setDataFromChild] = useState<any>(null);
+    
+    const handleDataFromChild = (childData: React.SetStateAction<null>) => {
+        setDataFromChild(childData);
+    };
+    
     const handleSubmit = (event: any) => {
         event.preventDefault();
-        console.log({
-            screenName,
-            timings,
-            format
-        });
+        if(dataFromChild){
+            const data = {
+                name: screenName,
+                timing: timings,
+                format: format,
+                seats: dataFromChild.seatDetails,
+                rows: dataFromChild.row,
+                col: dataFromChild.column
+            }
+            const formURL = event.target.action
+            const get_data = getDataFromEndPoint(data, formURL, 'POST');
+        }
     };
-
-    const [dataFromChild, setDataFromChild] = useState(null);
-
-    const handleDataFromChild = (childData: React.SetStateAction<null>) => {
-      setDataFromChild(childData);
-    };
-
 
     return (
         <div>
@@ -162,7 +169,7 @@ const ScreensPage = () => {
                                 </svg>
                             </button>
                             <h1 className="text-xl font-semibold text-center">Add Screen</h1>
-                            <form onSubmit={handleSubmit} action='/admin/addtheatre'>
+                            <form onSubmit={handleSubmit} action='/Screen/addScreen'>
                                 <div className="flex flex-row justify-center">
                                     <div className="form-control w-full max-w-xs mb-2">
                                         <label className="label">

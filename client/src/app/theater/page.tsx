@@ -33,11 +33,9 @@ export default function Theater() {
     const router = useRouter();
     const [formData, setFormData] = useState({
         name: "",
-        theatreName: "",
         city: "",
         locationUrl: "",
-        image: "",
-        ZipCode: "",
+        zipcode: "",
         phno: "",
         gmail: "",
         address: "",
@@ -46,34 +44,40 @@ export default function Theater() {
 
     const [formSuccess, setFormSuccess] = useState(false)
     const [formSuccessMessage, setFormSuccessMessage] = useState("")
+    const [selectedFile, setSelectedFile] = useState(null);
 
     const handleInput = (e: any) => {
         const fieldName = e.target.name;
         const fieldValue = e.target.value;
-
         setFormData((prevState) => ({
             ...prevState,
             [fieldName]: fieldValue
         }));
     }
 
+    const handleFileChange = (e: any) => {
+        e.preventDefault();
+        const file = e.target.files[0];
+        setSelectedFile(file);
+    };
+
     const submitForm = (e: any) => {
-        // We don't want the page to refresh
         e.preventDefault()
+        if (selectedFile) {
+            const formURL = e.target.action
+            const data = new FormData()
+            data.append('file', selectedFile);
+            Object.entries(formData).forEach(([key, value]) => {
+                data.append(key, value);
+            });
 
-        const formURL = e.target.action
-        const data = new FormData()
-
-        // Turn our formData state into data we can use with a form submission
-        Object.entries(formData).forEach(([key, value]) => {
-            data.append(key, value);
-        })
-        const get_data = getDataFromEndPoint(JSON.stringify(formData), formURL, 'POST');
-        console.log(get_data);
+            console.log(data);
+            const get_data = getDataFromEndPoint(data, formURL, 'POST');
+            console.log(get_data);
+        }
     }
     const [isModalOpen, setModalOpen] = useState(false);
 
-    // Function to toggle modal visibility
     const toggleModal = () => {
         setModalOpen(!isModalOpen);
     };
@@ -110,11 +114,11 @@ export default function Theater() {
                         {formSuccess ?
                             <div>{formSuccessMessage}</div>
                             :
-                            <form onSubmit={submitForm} action='/admin/addtheatre'>
+                            <form onSubmit={submitForm} encType='multipart/form-data' action='/Theatre/addtheatre'>
                                 <div className="flex flex-row justify-center">
                                     <div className="text-lg basis-1/2 font-semibold mb-2">
                                         <label className="block text-gray-700 text-sm font-bold mb-2">Theatre Name</label>
-                                        <input type="text" name="theatreName" onChange={handleInput} value={formData.theatreName} className="input input-bordered w-full max-w-xs" />
+                                        <input type="text" name="name" onChange={handleInput} value={formData.name} className="input input-bordered w-full max-w-xs" />
                                     </div>
                                     <div className="text-lg basis-1/2 font-semibold mb-2">
                                         <label className="block text-gray-700 text-sm font-bold mb-2">Address</label>
@@ -124,7 +128,7 @@ export default function Theater() {
                                 <div className="flex flex-row">
                                     <div className="text-lg basis-1/2 font-semibold mb-2">
                                         <label className="block text-gray-700 text-sm font-bold mb-2">Theatre Image</label>
-                                        <input type="file" name="image" onChange={handleInput} value={formData.image} className="file-input  w-full max-w-xs" />
+                                        <input type="file" name="file" onChange={handleFileChange} className="file-input  w-full max-w-xs" />
                                     </div>
                                     <div className="text-lg basis-1/2 font-semibold mb-2">
                                         <label className="block text-gray-700 text-sm font-bold mb-2">City</label>
@@ -138,7 +142,7 @@ export default function Theater() {
                                     </div>
                                     <div className="text-lg basis-1/2 font-semibold mb-2">
                                         <label className="block text-gray-700 text-sm font-bold mb-2">Zip Code</label>
-                                        <input type="text" name="Zip Code" onChange={handleInput} value={formData.ZipCode} className="input input-bordered w-full max-w-xs" />
+                                        <input type="text" name="zipcode" onChange={handleInput} value={formData.zipcode} className="input input-bordered w-full max-w-xs" />
                                     </div>
                                 </div>
                                 <div className="flex flex-row">
