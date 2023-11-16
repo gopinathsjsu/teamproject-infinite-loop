@@ -76,9 +76,12 @@ router.post("/login", async (req, res) => {
     }
 })
 
-router.post('/uploadFile', upload.single('banner'), (req, res) => {
-     const uploadedFile = req.file;
-    const imageUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadedFile.key}`;
-    res.json({ imageUrl });
+router.post('/uploadFile', upload.array('file1',2), (req, res) => {
+    const uploadedFile = req.files;
+    console.log(uploadedFile);
+    const imageUrls = uploadedFile.map((file) => {
+    return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}`;
+  });
+  res.json({ imageUrls });
 });
 module.exports = router;

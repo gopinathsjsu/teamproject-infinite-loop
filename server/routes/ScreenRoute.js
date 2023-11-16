@@ -32,3 +32,4 @@ router.get('/list/all', async (req, res) => {
     }
 })
 
+module.exports = router;
