@@ -4,6 +4,8 @@ const cors = require('cors')
 const mongoose = require('./db');
 const UserRoute = require('../server/routes/UserRoute')
 const TheatreRoute = require('../server/routes/TheatreRoute')
+const MovieRoute = require('../server/routes/MovieRoute')
+const ScreenRoute = require('../server/routes/ScreenRoute')
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const port = 8080
@@ -23,6 +25,9 @@ app.use(
   }));
 app.use('/User', UserRoute)
 app.use('/Theatre', TheatreRoute)
+app.use('/screen',ScreenRoute)
+app.use('/movies',MovieRoute)
+app.use('/User',UserRoute)
 app.get('/home', (req, res) => {
   res.json({ message: 'Hello World!' })
 })
