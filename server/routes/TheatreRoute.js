@@ -4,8 +4,9 @@ const router = express.Router();
 const { upload } = require('../Helpers/S3');
 const { HTTP_STATUS_CODES } = require('../constants')
 const Theater = require('../models/TheaterModel');
-router.post('/addTheatre', upload.single('file'), async (req, res) => {
+router.post('/addTheater', upload.single('file'), async (req, res) => {
     try {
+        console.log('at /addTheater');
         const count = await Theater.countDocuments();
         image_url = req.file.location;
         console.log(typeof (image_url));

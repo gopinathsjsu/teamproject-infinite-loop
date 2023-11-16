@@ -85,7 +85,7 @@ export default function Theater() {
         setModalOpen(false);
     };
 
-    const addScreen = () =>{
+    const addScreen = () => {
         router.push("/theater/1/screens")
     }
 

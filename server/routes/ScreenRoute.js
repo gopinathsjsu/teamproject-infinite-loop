@@ -1,34 +1,57 @@
 require('dotenv').config()
 const express = require('express')
 const router = express.Router();
-const Screen = require('../models/ScreenModel');
+const { status, ScreenModel } = require('../models/ScreenModel');
 const { upload } = require('../Helpers/S3');
-
-router.post('/add', async (req, res) => {
-     try {
-        console.log(req.body);
-        const newScreen = new Screen({
-           
+const { HTTP_STATUS_CODES } = require('../constants')
+router.post('/addScreen', async (req, res) => {
+    try {
+        screen = req.body;
+        console.log(screen);
+        const seatArray = []
+        Object.entries(screen.seats).forEach(([row, col]) => {
+            seatArray.push({
+                Row: `${row}`,
+                Status: col
+            })
         });
-
-        // Save the user to the database
+        console.log('at /addScreeen');
+        const count = await ScreenModel.countDocuments();
+        const newScreen = new ScreenModel({
+            screen_id: `${req.body.name}_${count + 1}`,
+            screen_name: req.body.name,
+            show_times: req.body.timing,
+            screen_type: req.body.format,
+            rows: req.body.rows,
+            columns: req.body.col,
+            seating_capacity: req.body.rows * req.body.col,
+            cost: req.body.cost,
+            seat_array: seatArray,
+        });
+        // Save the Screen to the database
         await newScreen.save();
         res.json({ message: "Added movie successfully", status: HTTP_STATUS_CODES.OK });
     } catch (error) {
         console.error('Error creating user:', error);
-        res.status(500).send('Internal Server Error');
+        res.json({
+            message: "Internal Server Error",
+            status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR
+        })
     }
 })
 
-router.get('/list/all', async (req, res) => {
-     try {
-      
+router.get('/getAllScreens', async (req, res) => {
+    try {
+
         // Save the user to the database
-        const screen = await Screen.find();
-        res.json({ message: "Added movie successfully", status: HTTP_STATUS_CODES.OK,screens:screen });
+        const screen = await ScreenModel.find();
+        res.json({ message: "Screens Found", status: HTTP_STATUS_CODES.OK, screens: screen });
     } catch (error) {
         console.error('Error creating user:', error);
-        res.status(500).send('Internal Server Error');
+        res.json({
+            message: "Internal Server Error",
+            status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR
+        })
     }
 })
 
