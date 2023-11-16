@@ -123,23 +123,24 @@ const ScreensPage = () => {
         setTimings(newTimings);
     };
 
-    
+
     const [dataFromChild, setDataFromChild] = useState<any>(null);
-    
+
     const handleDataFromChild = (childData: React.SetStateAction<null>) => {
         setDataFromChild(childData);
     };
-    
+
     const handleSubmit = (event: any) => {
         event.preventDefault();
-        if(dataFromChild){
+        if (dataFromChild) {
             const data = {
                 name: screenName,
                 timing: timings,
                 format: format,
                 seats: dataFromChild.seatDetails,
                 rows: dataFromChild.row,
-                col: dataFromChild.column
+                col: dataFromChild.column,
+                cost: dataFromChild.cost,
             }
             const formURL = event.target.action
             const get_data = getDataFromEndPoint(data, formURL, 'POST');
@@ -221,7 +222,7 @@ const ScreensPage = () => {
                                     </div>
                                 </div>
                                 <div>
-                                    <CustomizeRows onDataFromChild={handleDataFromChild}/>
+                                    <CustomizeRows onDataFromChild={handleDataFromChild} />
                                     {/* <ChildComponent onDataFromChild={handleDataFromChild} />
                                     {dataFromChild && <p>Received from child: {dataFromChild}</p>} */}
                                 </div>
