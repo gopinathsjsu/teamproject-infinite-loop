@@ -1,33 +1,34 @@
 'use client'
 
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import InnerPageContainer from "@/src/app/components/dashboard/common/InnerPageContainer";
-import { string } from "zod";
+import { any, string } from "zod";
+import { getDataFromEndPoint } from "@/src/lib/backend-api";
 
-export interface movie{
-  movieName: string,
-  AboutTheMovie: string,
-  banner: string,
-  movieTrailerLink: string,
-  Runtime: string,
-  genre :string[],
-  format: string,
-  endDate: string,
-  releaseDate: string,
-  cast: string,
-  crew: string,
-  certificate: string,
-  languages: string
-}
+// export interface movie{
+//   movieName: string,
+//   AboutTheMovie: string,
+//   movieposter: string,
+//   movieTrailerLink: string,
+//   Runtime: string,
+//   genre :string[],
+//   format: string,
+//   endDate: string,
+//   releaseDate: string,
+//   cast: string,
+//   crew: string,
+//   certificate: string,
+//   languages: string
+// }
 
 export default function Contact() {
   const [formData, setFormData] = useState({
     movieName: "",
     AboutTheMovie: "",
-    banner: "",
+    movieposter: "",
     movieTrailerLink: "",
     Runtime: "",
-    genre : [],
+    genre :[] as string[],
     format: "",
     endDate: "",
     releaseDate: "",
@@ -71,75 +72,124 @@ export default function Contact() {
   ];
   const [formSuccess, setFormSuccess] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
+  const [formSuccessMessage, setFormSuccessMessage] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
 
-  const handleInput = (e:any) => {
-    const { name, value } = e.target;
-    setFormData(prevState => ({
+  const handleInput = (e: any) => {
+    const fieldName = e.target.name;
+    const fieldValue = e.target.value;
+    setFormData((prevState) => ({
       ...prevState,
-      [name]: value
+      [fieldName]: fieldValue,
     }));
   };
 
 
-  const handleGenre = (event: any) => {
-    const selectedGenre  = event.target.value;
-    let newGenres;
-    if (formData.genre.includes(selectedGenre)) {
-      // Remove the genre from the array if it's already included
-      newGenres = formData.genre.filter(genre => genre !== selectedGenre);
-    } else {
-      // Add the genre to the array if it's not already included
-      newGenres = [...formData.genre, selectedGenre];
-    }
-    setFormData({ ...formData, genre: newGenres });
+
+  const handleGenre = (event: ChangeEvent<HTMLInputElement>) => {
+    const selectedGenre = event.target.value;
+  
+    setFormData(prevFormData => {
+      // Check if the genre is already selected
+      const isGenreSelected = prevFormData.genre.includes(selectedGenre);
+      
+      // If the genre is already selected, filter it out; otherwise, add it to the genres array
+      const newGenres = isGenreSelected
+        ? prevFormData.genre.filter(genre => genre !== selectedGenre)
+        : [...prevFormData.genre, selectedGenre];
+  
+      // Return the updated form data with the new genre array
+      return {
+        ...prevFormData,
+        genre: newGenres,
+      };
+    });
   };
 
   const toggleEdit = () => {
     setIsEditable(!isEditable);
   };
 
-  const handleFileUpload = (e:any) => {
-    const file = e.target.files[0]; // Get the first selected file
-    setSelectedFile(file); // Store the selected file in state
-  };
 
-  const submitForm = (e:any) => {
+  const submitForm = (e: any) => {
     e.preventDefault();
-    console.log(formData); // Here, add logic to handle form submission
-    // POST the data to the URL of the form
-    const formURL = e.target.action
+  
+    // Create a new FormData object
+    const data = new FormData();
+  
+    // Iterate over formData and append to FormData object
+    Object.entries(formData).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        // Handle array values (like 'genre')
+        value.forEach((item, index) => {
+          // Append each item of the array separately
+          data.append(`${key}[${index}]`, item);
+        });
+      } else {
+        // Append non-array values normally
+        data.append(key, value as string | Blob);
+      }
+    });
+  
+    // If there's a file selected, append it to FormData
+    if (selectedFile) {
+      data.append("movieposter", selectedFile);
+    }
+  
+    // POST the FormData to the URL of the form
+    const formURL = e.currentTarget.action; // Use currentTarget for form's action
     fetch(formURL, {
-        method: "POST",
-        body: JSON.stringify(formData),
-        headers: {
-        'accept': 'application/json',
-        },
-    }).then((response) => response.json())
-    .then((data) => {
-        setFormData({ 
-            movieName: "",
-            AboutTheMovie: "",
-            banner: "",
-            movieTrailerLink: "",
-            Runtime: "",
-            genre: [],
-            format: "",
-            endDate: "",
-            releaseDate: "",
-            cast: "",
-            crew: "",
-            certificate: "",
-            languages: ""
-        })
-    // Simulating a successful form submission response
-    setFormSuccess(true);
-    setIsEditable(false); // Make form read-only again after submission
+      method: "POST",
+      body: data,
+      // Do not set the Content-Type header when using FormData
     })
-}
+    .then(response => response.json())
+    .then(data => {
+      // Handle form submission success
+      setFormSuccess(true);
+      setIsEditable(false);
+      setFormSuccessMessage("Movie added successfully!"); // Optional: Set a success message
+      setFormData({ 
+        // Reset formData to initial state
+        movieName: "",
+        AboutTheMovie: "",
+        movieposter: "",
+        movieTrailerLink: "",
+        Runtime: "",
+        genre: [] as string[],
+        format: "",
+        endDate: "",
+        releaseDate: "",
+        cast: "",
+        crew: "",
+        certificate: "",
+        languages: ""
+      });
+    }).catch(error => {
+      // Handle errors if any
+      console.error("Error submitting form:", error);
+    });
+  };
+  
+  
+  
+
+const handleFileUpload = (e: any) => {
+  if (e.target.files && e.target.files.length > 0) {
+    const file = e.target.files[0];
+    setSelectedFile(file); // This should be the state updater function from useState
+  }
+};
+
+const handleFileChange = (e: any) => {
+  e.preventDefault();
+  const file = e.target.files[0];
+  setSelectedFile(file);
+};
 
   return (
     <div>
-        <form method="POST" action="movie/addMovie" onSubmit={submitForm}>
+        <form method="POST" action="movie/add" onSubmit={submitForm}>
           <InnerPageContainer title={`Movie -> ${formData.movieName}`}>
             <div className="bg-white p-8 rounded-lg shadow">
               {!isEditable && (
@@ -157,22 +207,17 @@ export default function Contact() {
                     <label className="block text-gray-700 text-sm font-bold mb-2">About the Movie</label>
                     <input type="text" name="AboutTheMovie" placeholder="About the Movie" readOnly={!isEditable} onChange={handleInput} value={formData.AboutTheMovie} className="border p-2 rounded w-full"/>
                   </div>
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Movie Poster</label>
-                    <input
-                        type="file" // Change input type to "file"
-                        name="banner"
-                        accept="image/*" // Specify accepted file types (e.g., images)
-                        onChange={handleFileUpload} // Add a new onChange handler for file uploads
-                        className="hidden" // Hide the file input (you can style the button to look like an input)
-                        id="moviePosterInput" // Add an ID to the input for associating with the label/button
-                    />
-                    <label
-                        htmlFor="moviePosterInput" // Associate the label with the file input using htmlFor
-                        className="cursor-pointer border p-2 rounded w-full">
-                        Upload Movie Poster
+                  <div className="text-lg font-semibold mb-2">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Movie Poster
                     </label>
-                    </div>
+                    <input
+                      type="file"
+                      name="movieposter"
+                      onChange={handleInput}
+                      className="input input-bordered w-full max-w-xs"
+                    />
+                  </div>
                     <div>
                         <label className="block text-gray-700 text-sm font-bold mb-2">Movie Trailer Link</label>
                         <input
@@ -220,6 +265,7 @@ export default function Contact() {
                             value={formData.format}
                             className="border p-2 rounded w-full"
                         >
+                            <option value=""></option>
                             <option value="IMAX">IMAX</option>
                             <option value="IMAX 70mm">IMAX 70mm</option>
                             <option value="XD">XD</option>
@@ -266,6 +312,7 @@ export default function Contact() {
                             value={formData.certificate}
                             className="border p-2 rounded w-full"
                         >
+                            <option value=""></option>                            
                             <option value="U">U</option>
                             <option value="U/A">U/A</option>
                             <option value="A">A</option>

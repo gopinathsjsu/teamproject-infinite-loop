@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import InnerPageContainer from "../components/dashboard/common/InnerPageContainer";
 
 export default function Contact() {
@@ -12,7 +12,6 @@ export default function Contact() {
     zip: "",
     phone: "",
     email: "",
-    imageUrl: "",
     addressLine1: "",
     addressLine2: "",
     landmark: "",
@@ -21,12 +20,16 @@ export default function Contact() {
   });
   const [formSuccess, setFormSuccess] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
 
-  const handleInput = (e:any) => {
-    const { name, value } = e.target;
-    setFormData(prevState => ({
+
+  
+  const handleInput = (e: any) => {
+    const fieldName = e.target.name;
+    const fieldValue = e.target.value;
+    setFormData((prevState) => ({
       ...prevState,
-      [name]: value
+      [fieldName]: fieldValue,
     }));
   };
 
@@ -36,38 +39,50 @@ export default function Contact() {
 
   const submitForm = (e:any) => {
     e.preventDefault();
-    console.log(formData); // Here, add logic to handle form submission
-    // POST the data to the URL of the form
-    const formURL = e.target.action
+
+    // Create a new FormData object
+    const data = new FormData();
+
+    // Append each key-value pair from formData state to the FormData object
+    Object.entries(formData).forEach(([key, value]) => {
+        data.append(key, value);
+    });
+
+    // POST the FormData to the URL of the form
+    const formURL = e.target.action;
     fetch(formURL, {
         method: "POST",
-        body: JSON.stringify(formData),
-        headers: {
-        'accept': 'application/json',
-        },
+        body: data,
+        // Do not set the Content-Type header when using FormData
     }).then((response) => response.json())
     .then((data) => {
+        // Reset the form and handle other states as needed
         setFormData({ 
-        firstName: "",
-        lastName: "",
-        birthDate: "", // Placeholder for birthdate
-        identity: "", // Placeholder for identity
-        maritalStatus: "", // Placeholder for marital status
-        zip: "",
-        phone: "",
-        email: "",
-        imageUrl: "", // Replace with the actual image path
-        addressLine1: "", // Dummy address data
-        addressLine2: "", // Dummy address data
-        landmark: "", // Dummy data
-        city: "", // Dummy data
-        state: ""
-        })
-    // Simulating a successful form submission response
-    setFormSuccess(true);
-    setIsEditable(false); // Make form read-only again after submission
-    })
+            firstName: "",
+            lastName: "",
+            birthDate: "",
+            identity: "",
+            maritalStatus: "",
+            zip: "",
+            phone: "",
+            email: "",
+            addressLine1: "",
+            addressLine2: "",
+            landmark: "",
+            city: "",
+            state: ""
+        });
+        setFormSuccess(true);
+        setIsEditable(false);
+    });
 }
+
+
+const handleFileChange = (e: any) => {
+  e.preventDefault();
+  const file = e.target.files[0];
+  setSelectedFile(file);
+};
 
   return (
     <div>
@@ -76,18 +91,27 @@ export default function Contact() {
             <div className="bg-white p-8 rounded-lg shadow">
               <div className="flex flex-col items-center mb-6">
                 <div className="flex items-center mb-4">
-                  <img 
-                    src={formData.imageUrl} 
-                    alt="Profile" 
-                    className="w-20 h-20 object-cover rounded-full border-2 border-gray-300"
-                  />
+                <div className="text-lg font-semibold mb-2">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      User Image
+                    </label>
+                    <input
+                      type="file"
+                      name="image"
+                      onChange={handleInput}
+                      className="input input-bordered w-full max-w-xs"
+                    />
+                  </div> 
                   <div className="ml-4">
-                    <h2 className="text-xl font-semibold">{`${formData.firstName} ${formData.lastName}`}</h2>
                     <p className="text-sm">{formData.email}</p>
                   </div>
                 </div>
               </div>
-              {!isEditable && (
+              {isEditable ? (
+                <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                  Submit
+                </button>
+              ) : (
                 <button type="button" onClick={toggleEdit} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                   Edit details
                 </button>
@@ -104,12 +128,19 @@ export default function Contact() {
                     <input type="text" name="lastName" placeholder="Last Name" readOnly={!isEditable} onChange={handleInput} value={formData.lastName} className="border p-2 rounded w-full"/>
                   </div>
                   <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Birthday</label>
-                    <input type="text" name="birthDate" placeholder="mm/dd/yyyy" readOnly={!isEditable} onChange={handleInput} value={formData.birthDate} className="border p-2 rounded w-full"/>
-                  </div>
+                        <label className="block text-gray-700 text-sm font-bold mb-2">End Date</label>
+                        <input
+                        type="date" // Use type="date" for date picker
+                        name="birthDate"
+                        onChange={handleInput}
+                        value={formData.birthDate}
+                        className="border p-2 rounded w-full"
+                        />
+                </div>
                   <div>
                     <label className="block text-gray-700 text-sm font-bold mb-2">Identity</label>
                     <select name="identity" onChange={handleInput} value={formData.identity}  className="border rounded w-full p-2">
+                      <option value=""></option>
                       <option value="Male">Male</option>
                       <option value="Female">Female</option>
                       <option value="Other">Other</option>
@@ -118,6 +149,7 @@ export default function Contact() {
                   <div>
                     <label className="block text-gray-700 text-sm font-bold mb-2">Marital Status</label>
                     <select name="maritalStatus" onChange={handleInput} value={formData.maritalStatus}  className="border rounded w-full p-2">
+                      <option value=""></option>
                       <option value="Single">Single</option>
                       <option value="Married">Married</option>
                       <option value="Other">Other</option>
@@ -170,15 +202,7 @@ export default function Contact() {
                 </div>
               </div>
 
-              {isEditable ? (
-                <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                  Submit
-                </button>
-              ) : (
-                <button type="button" onClick={toggleEdit} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                  Edit details
-                </button>
-              )}
+              
             </div>
           </InnerPageContainer>
         </form>
