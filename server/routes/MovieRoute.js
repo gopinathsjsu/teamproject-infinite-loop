@@ -4,7 +4,7 @@ const router = express.Router();
 const Movie = require('../models/MovieModel');
 const { upload } = require('../Helpers/S3');
 
-router.post('/add', upload.single('banner'),async (req, res) => {
+router.post('/add', upload.single('file'),async (req, res) => {
      try {
         console.log(req.body);
         const newMovie = new Movie({
