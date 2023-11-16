@@ -152,8 +152,7 @@ const screenData = [
     name: "Mahesh babu",
     roletype: "Cast",
     role: "Actor",
-    imageUrl:
-      "https://m.media-amazon.com/images/I/51TGhuM+jAL._AC_UF894,1000_QL80_.jpg", // Dummy image URL for a larger movie poster
+    imageUrl:"https://m.media-amazon.com/images/I/51TGhuM+jAL._AC_UF894,1000_QL80_.jpg", // Dummy image URL for a larger movie poster
   },
 ];
 
@@ -200,20 +199,20 @@ const ScreensPage = () => {
     });
 
   const roleOptions = [
-    { value: ""},
+    { value: "", label: "" },
     { value: "crew", label: "Crew" },
     { value: "cast", label: "Cast" },
   ];
 
   const castOptions = [
-    { value: ""},
+    { value: "", label: "" },
     { value: "actor", label: "Actor" },
     { value: "actress", label: "Actress" },
     { value: "otherActor", label: "Other Actor" },
   ];
 
   const crewOptions = [
-    { value: ""},
+    { value: "", label: "" },
     { value: "director", label: "Director" },
     { value: "producer", label: "Producer" },
     { value: "musicDirector", label: "Music Director" },

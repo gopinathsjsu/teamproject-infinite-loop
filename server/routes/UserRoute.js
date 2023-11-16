@@ -6,6 +6,7 @@ const User = require('../models/UserModel');
 const { HTTP_STATUS_CODES } = require('../constants')
 const { createToken } = require('../Helpers/JwtAuth');
 const { upload } = require('../Helpers/S3');
+const uniqid = require('uniqid');
 const saltRounds = 10;
 router.get('/addUser', (req, res) => {
     res.send('Hello, world!');
@@ -16,9 +17,20 @@ router.post('/signup', async (req, res) => {
         console.log(req.body);
         const password = await bcrypt.hash(req.body.password, saltRounds);
         const newUser = new User({
+            user_id:uniqid(),
             fullname: req.body.name,
             email: req.body.email,
             password: password,
+            firstname:'',
+            lastname: '',
+            dob:'',
+            gender:'',
+            mobile:'',
+            genres:[],
+            profile_url:'',
+            favourite_artists:[],
+            is_admin:false,
+            is_prime:false,
         });
 
         // Save the user to the database
@@ -75,6 +87,28 @@ router.post("/login", async (req, res) => {
         })
     }
 })
+
+router.post('/updateProfile', upload.single('file'), async (req, res) => {
+    console.log(req.body);
+    const user = await User.findOne({ email: req.body.email });
+    console.log(user);
+    if (user) {
+        user.firstname = req.body.firstName
+        user.lastname = req.body.lastName
+        user.dob = req.body.birthDate
+        user.gender = req.body.identity
+        user.mobile = req.body.phone
+        user.genres = [];
+        if(req.file)
+        user.profile_url = req.file.location 
+        user.favourite_artists = [];
+        await user.save();
+        res.json({ message: "User details updated successfully", status: HTTP_STATUS_CODES.OK });
+    } else {
+        res.json({ message: "Cannot update user details", status: HTTP_STATUS_CODES.NOT_FOUND });
+    }
+});
+
 
 router.post('/uploadFile', upload.array('file1',2), (req, res) => {
     const uploadedFile = req.files;
