@@ -6,6 +6,7 @@ const UserRoute = require('../server/routes/UserRoute')
 const TheatreRoute = require('../server/routes/TheatreRoute')
 const MovieRoute = require('../server/routes/MovieRoute')
 const ScreenRoute = require('../server/routes/ScreenRoute')
+const ArtistRoute = require('../server/routes/ArtistRoute')
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const port = 8080
@@ -23,7 +24,8 @@ app.use(
     secret: process.env.JWT_SECRET_KEY,
     // You can use the default in-memory store or choose another session store here
   }));
-app.use('/User', UserRoute)
+
+app.use('/artist',ArtistRoute)
 app.use('/Theatre', TheatreRoute)
 app.use('/screen',ScreenRoute)
 app.use('/movies',MovieRoute)
