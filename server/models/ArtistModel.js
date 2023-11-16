@@ -2,14 +2,15 @@ const mongoose = require('mongoose');
 
 
 const artistSchema = new mongoose.Schema({
-    id: String,
+    id: {type: String},
     name: {type: String, required:true},
     dob: {type: Date, required : true},
     movies: [String],
-    location: String,
-    description: String,
-    film_profession: {type: String, required:true},
-    image_urls: [String],
+    location: {type: String},
+    description: { type: String },
+    type: {type:String},
+    profession: {type: String, required:true},
+    profile_url: {type: String},
     created_on : {type: Date , default: Date.now},
     updated_on : {type: Date , default: Date.now}
 });

@@ -6,11 +6,14 @@ const { upload } = require('../Helpers/S3');
 
 
 
-router.post('/add', async (req, res) => {
+router.post('/add', upload.single('image'),async (req, res) => {
     try {
         console.log(req.body);
         const newArtist = new Artist({
-           
+            name: req.body.name,
+            profile_url: req.file.location,
+            type: req.body.roletype,
+            profession: req.body.role
         });
 
         // Save the user to the database
