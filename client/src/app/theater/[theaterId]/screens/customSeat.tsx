@@ -73,8 +73,12 @@ const CustomizeRows = ({ onDataFromChild }: { onDataFromChild: any }) => {
     }
 
     const handleSaveSetup = async () => {
-        console.log(seatDetails);
-        onDataFromChild(seatDetails);
+        const data = {
+            seatDetails,
+            row,
+            column
+        }
+        onDataFromChild(data);
         setEditable(!editable);
         // let movieIndex = movies.findIndex(mov => mov.id === parseInt(id));
         // if (movieIndex !== -1 && setMovies) {
@@ -190,7 +194,6 @@ const CustomizeRows = ({ onDataFromChild }: { onDataFromChild: any }) => {
             ))
             seatArray.push(colValue);
         }
-        console.log(seatArray);
         return (
             <div className={styles.seatsLeafContainer}>{seatArray}</div>
         )
