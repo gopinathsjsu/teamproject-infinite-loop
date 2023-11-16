@@ -8,8 +8,7 @@ export default function Contact() {
         theatreName: "",
         city: "",
         locationUrl: "",
-        image: "",
-        ZipCode: "",
+        zipcode: "",
         phno: "",
         gmail: "",
         address: "",
@@ -18,30 +17,37 @@ export default function Contact() {
 
     const [formSuccess, setFormSuccess] = useState(false)
     const [formSuccessMessage, setFormSuccessMessage] = useState("")
+    const [selectedFile, setSelectedFile] = useState(null);
 
     const handleInput = (e: any) => {
         const fieldName = e.target.name;
         const fieldValue = e.target.value;
-
         setFormData((prevState) => ({
             ...prevState,
             [fieldName]: fieldValue
         }));
     }
 
+    const handleFileChange = (e: any) => {
+        e.preventDefault();
+        const file = e.target.files[0];
+        setSelectedFile(file);
+    };
+
     const submitForm = (e: any) => {
-        // We don't want the page to refresh
         e.preventDefault()
+        if (selectedFile) {
+            const formURL = e.target.action
+            const data = new FormData()
+            data.append('file', selectedFile);
+            Object.entries(formData).forEach(([key, value]) => {
+                data.append(key, value);
+            });
 
-        const formURL = e.target.action
-        const data = new FormData()
-
-        // Turn our formData state into data we can use with a form submission
-        Object.entries(formData).forEach(([key, value]) => {
-            data.append(key, value);
-        })
-        const get_data = getDataFromEndPoint(JSON.stringify(formData), formURL, 'POST');
-        console.log(get_data);
+            console.log(data);
+            const get_data = getDataFromEndPoint(data, formURL, 'POST');
+            console.log(get_data);
+        }
     }
     const [isModalOpen, setModalOpen] = useState(false);
 
@@ -75,42 +81,43 @@ export default function Contact() {
                             {formSuccess ?
                                 <div>{formSuccessMessage}</div>
                                 :
-                                <form onSubmit={submitForm} action='/admin/addtheatre'>
+                                <form onSubmit={submitForm} encType='multipart/form-data' action='/Theatre/addTheatre' >
                                     <div className="text-lg font-semibold mb-2">
                                         <label className="block text-gray-700 text-sm font-bold mb-2">Theatre Name</label>
-                                        <input type="text" name="theatreName" onChange={handleInput} value={formData.theatreName} className="input input-bordered w-full max-w-xs" />
+                                        <input type="text" name="theatreName" onChange={handleInput} value={formData.theatreName} placeholder="Theatre Name" className="input input-bordered w-full max-w-xs" />
                                     </div>
                                     <div className="text-lg font-semibold mb-2">
-                                        <label className="block text-gray-700 text-sm font-bold mb-2">Theatre Image</label>
-                                        <input type="file" name="image" onChange={handleInput} value={formData.image} className="file-input  w-full max-w-xs" />
+                                        <label htmlFor="file-upload" className="block text-gray-700 text-sm font-bold mb-2">Theatre Image
+                                            <input type="file" name="file" onChange={handleFileChange} className="file-input  w-full max-w-xs" />
+                                        </label>
                                     </div>
                                     <div className="text-lg font-semibold mb-2">
                                         <label className="block text-gray-700 text-sm font-bold mb-2">Address</label>
-                                        <input type="text" name="address" onChange={handleInput} value={formData.address} className="input input-bordered w-full max-w-xs" />
+                                        <input type="text" name="address" onChange={handleInput} value={formData.address} placeholder="address" className="input input-bordered w-full max-w-xs" />
                                     </div>
                                     <div className="text-lg font-semibold mb-2">
                                         <label className="block text-gray-700 text-sm font-bold mb-2">City</label>
-                                        <input type="text" name="city" onChange={handleInput} value={formData.city} className="input input-bordered w-full max-w-xs" />
+                                        <input type="text" name="city" onChange={handleInput} value={formData.city} placeholder="city" className="input input-bordered w-full max-w-xs" />
                                     </div>
                                     <div className="text-lg font-semibold mb-2">
                                         <label className="block text-gray-700 text-sm font-bold mb-2">LocationUrl</label>
-                                        <input type="text" name="locationUrl" onChange={handleInput} value={formData.locationUrl} className="input input-bordered w-full max-w-xs" />
+                                        <input type="text" name="locationUrl" onChange={handleInput} value={formData.locationUrl} placeholder="locationUrl" className="input input-bordered w-full max-w-xs" />
                                     </div>
                                     <div className="text-lg font-semibold mb-2">
                                         <label className="block text-gray-700 text-sm font-bold mb-2">Zip Code</label>
-                                        <input type="text" name="Zip Code" onChange={handleInput} value={formData.ZipCode} className="input input-bordered w-full max-w-xs" />
+                                        <input type="text" name="zipcode" onChange={handleInput} value={formData.zipcode} placeholder="zip code" className="input input-bordered w-full max-w-xs" />
                                     </div>
                                     <div className="text-lg font-semibold mb-2">
                                         <label className="block text-gray-700 text-sm font-bold mb-2">State</label>
-                                        <input type="text" name="state" onChange={handleInput} value={formData.state} className="input input-bordered w-full max-w-xs" />
+                                        <input type="text" name="state" onChange={handleInput} placeholder="state" value={formData.state} className="input input-bordered w-full max-w-xs" />
                                     </div>
                                     <div className="text-lg font-semibold mb-2">
                                         <label className="block text-gray-700 text-sm font-bold mb-2">Phone Number</label>
-                                        <input type="text" name="phno" onChange={handleInput} value={formData.phno} className="input input-bordered w-full max-w-xs" />
+                                        <input type="text" name="phno" onChange={handleInput} value={formData.phno} placeholder="Phone Number" className="input input-bordered w-full max-w-xs" />
                                     </div>
                                     <div className="text-lg font-semibold mb-2">
                                         <label className="block text-gray-700 text-sm font-bold mb-2">gmail</label>
-                                        <input type="text" name="gmail" onChange={handleInput} value={formData.gmail} className="input input-bordered w-full max-w-xs" />
+                                        <input type="text" name="gmail" onChange={handleInput} value={formData.gmail} placeholder="gmail" className="input input-bordered w-full max-w-xs" />
                                     </div>
                                     <div>
                                         <button style={{ position: 'absolute', top: '0', right: '0' }} className="bg-ghost-500 hover:bg-blue-200 text-black font-bold py-2 px-4 rounded" type="submit">

@@ -11,13 +11,13 @@ const bucketName = process.env.AWS_BUCKET_NAME
 const region = process.env.AWS_REGION
 const accessKeyId = process.env.AWS_ACCESS_KEY_ID
 const secretAccessKey = process.env.AWS_ACCESS_KEY_SECRET
-const signatureVersion='v4'
+const signatureVersion = 'v4'
 app.use(cors());
 
 AWS.config.update({
-  secretAccessKey:secretAccessKey,
-  accessKeyId: accessKeyId,
-  region: region,
+    secretAccessKey: secretAccessKey,
+    accessKeyId: accessKeyId,
+    region: region,
 
 });
 const s3 = new AWS.S3();
@@ -29,7 +29,6 @@ const upload = multer({
         acl: "public-read",
         bucket: bucketName,
         key: function (req, file, cb) {
-            console.log(file);
             cb(null, file.originalname)
         }
     })
@@ -53,24 +52,24 @@ function uploadFile(file) {
 }
 exports.uploadFile = uploadFile
 
-function getUrl(key){
+function getUrl(key) {
 
-  Aws.config = new Aws.Config({ 
-      accessKeyId,
-      secretAccessKey,
-      region,
-      signatureVersion
-  })
-  const s3 = new Aws.S3();
-  
-  const url = s3.getSignedUrl('getObject', {
-    Bucket: bucketName,
-    Key: key,
-    Expires:30*60
-  })
-  return '';
+    Aws.config = new Aws.Config({
+        accessKeyId,
+        secretAccessKey,
+        region,
+        signatureVersion
+    })
+    const s3 = new Aws.S3();
+
+    const url = s3.getSignedUrl('getObject', {
+        Bucket: bucketName,
+        Key: key,
+        Expires: 30 * 60
+    })
+    return '';
 }
-exports.getUrl=getUrl;
+exports.getUrl = getUrl;
 // downloads a file from s3
 function getFileStream(fileKey) {
     const downloadParams = {

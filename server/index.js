@@ -3,6 +3,7 @@ const app = express()
 const cors = require('cors')
 const mongoose = require('./db');
 const UserRoute = require('../server/routes/UserRoute')
+const TheatreRoute = require('../server/routes/TheatreRoute')
 const MovieRoute = require('../server/routes/MovieRoute')
 const ScreenRoute = require('../server/routes/ScreenRoute')
 const ArtistRoute = require('../server/routes/ArtistRoute')
@@ -23,12 +24,14 @@ app.use(
     secret: process.env.JWT_SECRET_KEY,
     // You can use the default in-memory store or choose another session store here
   }));
+
 app.use('/artist',ArtistRoute)
+app.use('/Theatre', TheatreRoute)
 app.use('/screen',ScreenRoute)
 app.use('/movies',MovieRoute)
 app.use('/User',UserRoute)
 app.get('/home', (req, res) => {
-  res.json({message:'Hello World!'})
+  res.json({ message: 'Hello World!' })
 })
 
 app.listen(port, () => {
