@@ -12,7 +12,7 @@ const theaterSchema = new mongoose.Schema({
   mobile: { type: Number },
   mail: { type: String },
   city: { type: String },
-  theater_url: String,
+  theater_url: { type: String },
   screen_details: { type: Array },
   created_on: { type: Date, default: Date.now },
   updated_on: { type: Date, default: Date.now }

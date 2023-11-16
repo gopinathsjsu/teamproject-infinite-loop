@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const artistSchema = new mongoose.Schema({
     id: {type: String},
     name: {type: String, required:true},
-    dob: {type: Date, required : true},
+    dob: {type: Date},
     movies: [String],
     location: {type: String},
     description: { type: String },
@@ -18,6 +18,4 @@ const artistSchema = new mongoose.Schema({
 
 const ArtistModel = mongoose.model('Artist', artistSchema);
 
-module.exports = {
-    ArtistModel: ArtistModel,
-};
+module.exports = ArtistModel;

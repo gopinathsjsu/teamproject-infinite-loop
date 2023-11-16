@@ -1,5 +1,3 @@
-import type { AppProps } from 'next/app'
-
 import '../styles/globals.scss'
 import MoviesContext from './context/MoviesContext'
 import { useState } from 'react';
