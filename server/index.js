@@ -3,6 +3,7 @@ const app = express()
 const cors = require('cors')
 const mongoose = require('./db');
 const UserRoute = require('../server/routes/UserRoute')
+const TheatreRoute = require('../server/routes/TheatreRoute')
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const port = 8080
@@ -20,9 +21,10 @@ app.use(
     secret: process.env.JWT_SECRET_KEY,
     // You can use the default in-memory store or choose another session store here
   }));
-app.use('/User',UserRoute)
+app.use('/User', UserRoute)
+app.use('/Theatre', TheatreRoute)
 app.get('/home', (req, res) => {
-  res.json({message:'Hello World!'})
+  res.json({ message: 'Hello World!' })
 })
 
 app.listen(port, () => {
