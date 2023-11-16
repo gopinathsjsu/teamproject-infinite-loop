@@ -26,13 +26,6 @@ export default function Contact() {
     e.preventDefault()
 
     const formURL = e.target.action
-    const data = new FormData()
-
-
-    // Turn our formData state into data we can use with a form submission
-    Object.entries(formData).forEach(([key, value]) => {
-      data.append(key, value);
-    })
     console.log(formData);
 
     // POST the data to the URL of the form
