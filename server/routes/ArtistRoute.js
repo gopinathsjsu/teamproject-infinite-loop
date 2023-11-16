@@ -6,7 +6,7 @@ const { upload } = require('../Helpers/S3');
 
 
 
-router.post('/add', upload.single('image'),async (req, res) => {
+router.post('/add', upload.single('file'),async (req, res) => {
     try {
         console.log(req.body);
         const newArtist = new Artist({
