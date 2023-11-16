@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 
-const actorSchema = new mongoose.Schema({
+const artistSchema = new mongoose.Schema({
     id: String,
     name: {type: String, required:true},
     dob: {type: Date, required : true},
@@ -15,8 +15,8 @@ const actorSchema = new mongoose.Schema({
 });
 
 
-const ActorModel = mongoose.model('Actors', actorSchema);
+const ArtistModel = mongoose.model('Artist', artistSchema);
 
 module.exports = {
-    ActorModel: ActorModel,
+    ArtistModel: ArtistModel,
 };
