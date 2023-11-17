@@ -5,22 +5,6 @@ import InnerPageContainer from "@/src/app/components/dashboard/common/InnerPageC
 import { any, string } from "zod";
 import { getDataFromEndPoint } from "@/src/lib/backend-api";
 
-// export interface movie{
-//   movieName: string,
-//   AboutTheMovie: string,
-//   movieposter: string,
-//   movieTrailerLink: string,
-//   Runtime: string,
-//   genre :string[],
-//   format: string,
-//   endDate: string,
-//   releaseDate: string,
-//   cast: string,
-//   crew: string,
-//   certificate: string,
-//   languages: string
-// }
-
 export default function Contact() {
   const [formData, setFormData] = useState({
     movieName: "",
@@ -348,7 +332,6 @@ const handleFileChange = (e: any) => {
             </div>
           </InnerPageContainer>
         </form>
-      )
     </div>
   );
 }

@@ -1,6 +1,18 @@
 'use client'
 import React, { ChangeEvent, useState } from "react";
 import InnerPageContainer from "../components/dashboard/common/InnerPageContainer";
+import {
+  Button,
+  Grid,
+  Typography,
+  TextField,
+  Box,
+  Paper,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -84,129 +96,249 @@ const handleFileChange = (e: any) => {
   setSelectedFile(file);
 };
 
-  return (
-    <div>
-        <form method="POST" action="https://www.formbackend.com/f/664decaabbf1c319" onSubmit={submitForm}>
-          <InnerPageContainer title={`Hi, ${formData.firstName} ${formData.lastName}`}>
-            <div className="bg-white p-8 rounded-lg shadow">
-              <div className="flex flex-col items-center mb-6">
-                <div className="flex items-center mb-4">
-                <div className="text-lg font-semibold mb-2">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      User Image
-                    </label>
-                    <input
-                      type="file"
-                      name="image"
-                      onChange={handleInput}
-                      className="input input-bordered w-full max-w-xs"
-                    />
-                  </div> 
-                  <div className="ml-4">
-                    <p className="text-sm">{formData.email}</p>
-                  </div>
-                </div>
-              </div>
-              {isEditable ? (
-                <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                  Submit
-                </button>
-              ) : (
-                <button type="button" onClick={toggleEdit} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                  Edit details
-                </button>
-              )}
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-2">Personal Information</h3>
-                <div className="grid grid-cols-1 gap-4">
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">First Name</label>
-                    <input type="text" name="firstName" placeholder="First Name" readOnly={!isEditable} onChange={handleInput} value={formData.firstName} className="border p-2 rounded w-full"/>
-                  </div>
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Last Name</label>
-                    <input type="text" name="lastName" placeholder="Last Name" readOnly={!isEditable} onChange={handleInput} value={formData.lastName} className="border p-2 rounded w-full"/>
-                  </div>
-                  <div>
-                        <label className="block text-gray-700 text-sm font-bold mb-2">End Date</label>
-                        <input
-                        type="date" // Use type="date" for date picker
-                        name="birthDate"
-                        onChange={handleInput}
-                        value={formData.birthDate}
-                        className="border p-2 rounded w-full"
-                        />
-                </div>
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Identity</label>
-                    <select name="identity" onChange={handleInput} value={formData.identity}  className="border rounded w-full p-2">
-                      <option value=""></option>
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Marital Status</label>
-                    <select name="maritalStatus" onChange={handleInput} value={formData.maritalStatus}  className="border rounded w-full p-2">
-                      <option value=""></option>
-                      <option value="Single">Single</option>
-                      <option value="Married">Married</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
+return (
+  <div style={{ display: 'block', width: '50%', margin: 'auto', paddingTop: '20px' }}>
+  <form
+      method="POST"
+      action="https://www.formbackend.com/f/664decaabbf1c319"
+      onSubmit={submitForm}
+    >
+      <InnerPageContainer
+        title={`Hi, ${formData.firstName} ${formData.lastName}`}
+      >
+        <Paper elevation={3} sx={{ padding: 3, marginBottom: 3 }}>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="h5" gutterBottom>
+                User Image
+              </Typography>
+              <input
+                type="file"
+                name="image"
+                onChange={handleFileChange}
+                accept="image/*"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="body1" gutterBottom>
+                {formData.email}
+              </Typography>
+            </Grid>
+          </Grid>
 
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-2">Contact Information</h3>
-                <div className="grid grid-cols-1 gap-4">
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
-                    <input type="email" name="email" placeholder="Email Address" onChange={handleInput} readOnly={!isEditable} value={formData.email} className="border p-2 rounded w-full"/>
-                  </div>
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Mobile Number</label>
-                    <input type="tel" name="phone" placeholder="Mobile Number" onChange={handleInput} readOnly={!isEditable} value={formData.phone} className="border p-2 rounded w-full"/>
-                  </div>
-                </div>
-              </div>
+          {isEditable ? (
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              sx={{ mt: 2 }}
+            >
+              Submit
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              onClick={toggleEdit}
+              variant="contained"
+              color="primary"
+              sx={{ mt: 2 }}
+            >
+              Edit details
+            </Button>
+          )}
 
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-2">Address</h3>
-                <div className="grid grid-cols-1 gap-4">
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Area Pincode</label>
-                    <input type="text" name="zip" placeholder="Area Pincode" onChange={handleInput} readOnly={!isEditable} value={formData.zip} className="border p-2 rounded w-full"/>
-                  </div>
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Address Line 1</label>
-                    <input type="text" name="addressLine1" placeholder="Address Line 1" onChange={handleInput} readOnly={!isEditable} value={formData.addressLine1} className="border p-2 rounded w-full"/>
-                  </div>
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Address Line 2</label>
-                    <input type="text" name="addressLine2" placeholder="Address Line 2" onChange={handleInput} readOnly={!isEditable} value={formData.addressLine2} className="border p-2 rounded w-full"/>
-                  </div>
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Landmark</label>
-                    <input type="text" name="landmark" placeholder="Landmark" onChange={handleInput} readOnly={!isEditable} value={formData.landmark} className="border p-2 rounded w-full"/>
-                  </div>
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Town / City</label>
-                    <input type="text" name="city" placeholder="Town / City" onChange={handleInput} readOnly={!isEditable} value={formData.city} className="border p-2 rounded w-full"/>
-                  </div>
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">State</label>
-                    <input type="text" name="state" placeholder="State" onChange={handleInput} readOnly={!isEditable} value={formData.state} className="border p-2 rounded w-full"/>
-                  </div>
-                </div>
-              </div>
+          <Box mt={3}>
+            <Typography variant="h5" gutterBottom>
+              Personal Information
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="First Name"
+                  name="firstName"
+                  placeholder="First Name"
+                  value={formData.firstName}
+                  onChange={handleInput}
+                  fullWidth
+                  variant="outlined"
+                  disabled={!isEditable}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Last Name"
+                  name="lastName"
+                  placeholder="Last Name"
+                  value={formData.lastName}
+                  onChange={handleInput}
+                  fullWidth
+                  variant="outlined"
+                  disabled={!isEditable}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  label="Birth Date"
+                  name="birthDate"
+                  type="date"
+                  value={formData.birthDate}
+                  onChange={handleInput}
+                  fullWidth
+                  variant="outlined"
+                  disabled={!isEditable}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel>Identity</InputLabel>
+                  <Select
+                    label="Identity"
+                    name="identity"
+                    value={formData.identity}
+                    onChange={handleInput}
+                    disabled={!isEditable}
+                  >
+                    <MenuItem value=""></MenuItem>
+                    <MenuItem value="Male">Male</MenuItem>
+                    <MenuItem value="Female">Female</MenuItem>
+                    <MenuItem value="Other">Other</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel>Marital Status</InputLabel>
+                  <Select
+                    label="Marital Status"
+                    name="maritalStatus"
+                    value={formData.maritalStatus}
+                    onChange={handleInput}
+                    disabled={!isEditable}
+                  >
+                    <MenuItem value=""></MenuItem>
+                    <MenuItem value="Single">Single</MenuItem>
+                    <MenuItem value="Married">Married</MenuItem>
+                    <MenuItem value="Other">Other</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
+          </Box>
 
-              
-            </div>
-          </InnerPageContainer>
-        </form>
-      )
-    </div>
-  );
+          <Box mt={3}>
+            <Typography variant="h5" gutterBottom>
+              Contact Information
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Email Address"
+                  name="email"
+                  placeholder="Email Address"
+                  value={formData.email}
+                  onChange={handleInput}
+                  fullWidth
+                  variant="outlined"
+                  disabled={!isEditable}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Mobile Number"
+                  name="phone"
+                  placeholder="Mobile Number"
+                  value={formData.phone}
+                  onChange={handleInput}
+                  fullWidth
+                  variant="outlined"
+                  disabled={!isEditable}
+                />
+              </Grid>
+            </Grid>
+          </Box>
+
+          <Box mt={3}>
+            <Typography variant="h5" gutterBottom>
+              Address
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Area Pincode"
+                  name="zip"
+                  placeholder="Area Pincode"
+                  value={formData.zip}
+                  onChange={handleInput}
+                  fullWidth
+                  variant="outlined"
+                  disabled={!isEditable}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Address Line 1"
+                  name="addressLine1"
+                  placeholder="Address Line 1"
+                  value={formData.addressLine1}
+                  onChange={handleInput}
+                  fullWidth
+                  variant="outlined"
+                  disabled={!isEditable}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  label="Address Line 2"
+                  name="addressLine2"
+                  placeholder="Address Line 2"
+                  value={formData.addressLine2}
+                  onChange={handleInput}
+                  fullWidth
+                  variant="outlined"
+                  disabled={!isEditable}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Landmark"
+                  name="landmark"
+                  placeholder="Landmark"
+                  value={formData.landmark}
+                  onChange={handleInput}
+                  fullWidth
+                  variant="outlined"
+                  disabled={!isEditable}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Town / City"
+                  name="city"
+                  placeholder="Town / City"
+                  value={formData.city}
+                  onChange={handleInput}
+                  fullWidth
+                  variant="outlined"
+                  disabled={!isEditable}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="State"
+                  name="state"
+                  placeholder="State"
+                  value={formData.state}
+                  onChange={handleInput}
+                  fullWidth
+                  variant="outlined"
+                  disabled={!isEditable}
+                />
+              </Grid>
+            </Grid>
+          </Box>
+        </Paper>
+      </InnerPageContainer>
+    </form>
+  </div>
+);
 }

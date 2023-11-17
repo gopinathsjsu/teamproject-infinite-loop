@@ -1,4 +1,24 @@
-import React from 'react';
+'use client'
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import Checkbox from '@mui/material/Checkbox';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import InputLabel from '@mui/material/InputLabel';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import FormControl from '@mui/material/FormControl';
+import { Container, Grid, Input, Paper, Typography } from '@mui/material';
+
+import React, { ChangeEvent, useState } from "react";
+import InnerPageContainer from "@/src/app/components/dashboard/common/InnerPageContainer";
+import { any, string } from "zod";
+import { getDataFromEndPoint } from "@/src/lib/backend-api";
+import { Theme, useTheme } from '@mui/material';
+import theme from '../../styles/theme';
+import { format } from 'path';
+
 
 const App: React.FC = () => {
   const movie = {
@@ -42,13 +62,6 @@ const App: React.FC = () => {
         return "bg-green-200 text-green-800";
     }
     };
-  // Define the background style
-  const backgroundStyle = {
-    backgroundImage: `linear-gradient(to right, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)), url(${movie.backgroundPoster})`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-  };
 
   const cast = [
     { name: 'Actor Name 1', character: 'Character Name 1' },
@@ -62,128 +75,165 @@ const App: React.FC = () => {
     // ... other crew members
   ];
 
-  return (
-    <div>
-    <div className='h-screen' style={{ ...backgroundStyle, fontFamily: 'Arial, sans-serif', color: '#fff', position: 'relative', padding: '0', display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-start' }}>
-      <div style={{ maxWidth: '300px', marginBottom: '20px', marginLeft: '20px' }}>
-        <div style={{ backgroundColor: '#000', borderRadius: '10px', overflow: 'hidden' }}>
-          <iframe
-            title="Movie Trailer"
-            width="100%"
-            height="169" // 16:9 aspect ratio
-            src="https://www.youtube.com/embed/uaqz9v6HdKs" // Ensure this is the correct embed URL
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          ></iframe>
+  const backgroundStyle = {
+    backgroundImage: `linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0)), url(${movie.backgroundPoster})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center center',
+    color: '#fff',
+    fontFamily: 'Arial, sans-serif',
+    padding: '2rem',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+    minHeight: '100vh',
+  };
 
+  const contentStyle = {
+    backgroundColor: 'rgba(0, 0, 0, 0)', // Semi-transparent black background
+    padding: '2rem', // Padding around the text
+    maxWidth: '50%', // Takes up half of the container width
+    color: 'white', // Text color
+    lineHeight: '1.4', // Line height for better readability
+    marginBottom: '2rem', // Pushes the content up from the bottom
+  };
+
+
+  return (
+    <>
+    <div>
+    <div style={backgroundStyle}>
+    <div style={contentStyle}>
+          <Typography variant="h3" component="h1" gutterBottom style={{ fontSize: '80px' }}>
+            {movie.title}
+          </Typography>
+          <Typography variant="subtitle1" gutterBottom style={{ fontSize: '30px' }}>
+            {movie.releaseDate}
+          </Typography>
+          <Typography variant="subtitle1" gutterBottom style={{ fontSize: '30px' }}>
+            {movie.languages.join(', ')} | {movie.duration} | UA
+          </Typography>
+          <Typography variant="subtitle1" gutterBottom style={{ fontSize: '30px' }}>
+            {movie.genres.join(', ')}
+          </Typography>
         </div>
       </div>
-    </div>
-    <div>
-    <div style={{ backgroundColor: 'rgba(0, 0, 0, 0)', borderRadius: '10px', padding: '20px', flexGrow: 1 }}>
-        {/* Content goes here */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1 style={{ fontSize: '36px', fontWeight: 'bold' }}>{movie.title}</h1>   <button style={{ padding: '10px', fontSize: '16px' }}>Share</button>
-        </div>
-        <div style={{ display: 'flex', marginTop: '20px' }}>
-          {/* Movie Details */}
-          <div style={{ flex: 1 }}>
-            <div style={{ marginBottom: '20px' }}>
-              <span style={{ fontSize: '24px', fontWeight: 'bold' }}>{movie.releaseDate}</span>
-            </div>
-            <div>
-              <span style={{ marginLeft: '2px', fontSize: '24px' }}>{movie.languages.join(', ')} | {movie.duration} | UA </span>
-            </div>
-            <div>
-              <span style={{ marginLeft: '2px', fontSize: '16px' }}>{movie.genres.join(', ')}</span>
-            </div>
-            <div>
-            <button style={{ padding: '10px 20px', fontSize: '16px', backgroundColor: '#f00', color: '#fff' }}>Book tickets</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div style={{ maxWidth: '1200px', marginRight: '20px',padding: '20px'}}>
-        <div style={{borderRadius: '10px', overflow: 'hidden' }}>
-          <h1 className="text-2xl font-bold mb-3">About the movie</h1>
-          <p>{movie.description}</p>
-        </div>
-    </div>
-    <div>
-  <div style={{ margin: '20px 0', padding: '20px' }}>
-    <h1 className="text-2xl font-bold mb-3">Cast</h1>
-    <ul>
-      {cast.map((actor, index) => (
-        <li key={`cast-${index}`}>
-          <strong>{actor.name}</strong> as {actor.character}
-        </li>
-      ))}
-    </ul>
-  </div>
-  <div style={{ margin: '20px 0', padding: '20px' }}>
-  <h1 className="text-2xl font-bold mb-3">Crew</h1>
-    <ul>
-      {crew.map((member, index) => (
-        <li key={`crew-${index}`}>
-          <strong>{member.role}:</strong> {member.name}
-        </li>
-      ))}
-    </ul>
-  </div>
-      {/* Cinema listings */}
-      <div className="container mx-auto px-4 py-8">
-        {/* Date and filter controls */}
-        <div className="flex justify-between items-center mb-8">
-        <div className="space-x-2">
-            {/* Date filters */}
+
+      <Container
+        maxWidth='lg'
+        sx={{ borderRadius: 10, overflow: 'hidden', padding: 4, marginTop: 4 }}
+      >
+        <Typography variant='h5' gutterBottom style={{ fontSize: '40px' }}>
+          About the movie
+        </Typography>
+        <Typography variant='body1' style={{ fontSize: '20px' }} >{movie.description}</Typography>
+      </Container>
+      <Container
+        maxWidth='lg'
+        sx={{ borderRadius: 10, overflow: 'hidden', padding: 4, marginTop: 4 }}
+      >
+        <Typography variant='h5' gutterBottom>
+          Cast
+        </Typography>
+        <ul>
+          {cast.map((actor, index) => (
+            <li key={`cast-${index}`}>
+              <strong>{actor.name}</strong> as {actor.character}
+            </li>
+          ))}
+        </ul>
+      </Container>
+      <Container
+        maxWidth='lg'
+        sx={{ borderRadius: 10, overflow: 'hidden', padding: 4, marginTop: 4 }}
+      >
+        <Typography variant='h5' gutterBottom>
+          Crew
+        </Typography>
+        <ul>
+          {crew.map((member, index) => (
+            <li key={`crew-${index}`}>
+              <strong>{member.role}:</strong> {member.name}
+            </li>
+          ))}
+        </ul>
+      </Container>
+      <Container maxWidth='lg' sx={{ padding: 4, marginTop: 4 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 2,
+          }}
+        >
+          <Typography variant='h5' gutterBottom>
+            Cinema Listings
+          </Typography>
+          <div
+            style={{
+              display: 'flex',
+              gap: '0.5rem',
+            }}
+          >
             {dates.map((date, index) => (
-              <button key={index} className="border rounded px-4 py-2 bg-gray-200 hover:bg-gray-300">
+              <Button
+                key={index}
+                variant='outlined'
+                sx={{ textTransform: 'none', color: 'black' }}
+              >
                 {date}
-              </button>
+              </Button>
             ))}
           </div>
-          <div className="flex space-x-2">
-            {/* Filter dropdowns */}
-            <select className="border rounded px-4 py-2 bg-white shadow appearance-none">
-              {movie.languages.map((language, index) => (
-                <option key={index} value={language}>{language}</option>
-              ))}
-            </select>
-            <select className="border rounded px-4 py-2 bg-white shadow appearance-none">
-              <option>Format</option>
-              {/* ... other format options */}
-            </select>
-            <select className="border rounded px-4 py-2 bg-white shadow appearance-none">
-              <option>Showtime</option>
-              {/* ... other showtime options */}
-            </select>
-          </div>
-        </div>
-
-        {/* Cinema listings */}
+        </Box>
         {cinemas.map((cinema, index) => (
-          <div key={index} className="bg-white shadow rounded p-4 mb-4">
-            <h2 className="text-xl font-bold mb-4">{cinema.name}</h2>
-            <div className="flex flex-wrap gap-4 mb-4">
+          <Paper
+            key={index}
+            elevation={3}
+            sx={{ borderRadius: 10, padding: 4, marginBottom: 4 }}
+          >
+            <Typography variant='h6' gutterBottom>
+              {cinema.name}
+            </Typography>
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '0.5rem',
+              }}
+            >
               {cinema.times.map((time, timeIndex) => (
-                <button key={timeIndex} className={`px-4 py-1 rounded ${getDateButtonClass(time.availability)} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-gray-600`}>
-                  {time.showtime} <span className="ml-1">{time.format}</span>
-                </button>
+                <Button
+                  key={timeIndex}
+                  variant='outlined'
+                  sx={{
+                    textTransform: 'none',
+                    ...getDateButtonClass(time.availability),
+                  }}
+                >
+                  {time.showtime} <span style={{ marginLeft: '4px' }}>{time.format}</span>
+                </Button>
               ))}
             </div>
-            <div className="flex space-x-4">
-              <button className="text-blue-600 hover:text-blue-700">Get Directions</button>
-              <button className="text-blue-600 hover:text-blue-700">More Info</button>
+            <div
+              style={{
+                marginTop: '1rem',
+                display: 'flex',
+                gap: '1rem',
+              }}
+            >
+              <Button variant='text' color='primary'>
+                Get Directions
+              </Button>
+              <Button variant='text' color='primary'>
+                More Info
+              </Button>
             </div>
-          </div>
+          </Paper>
         ))}
-      </div>
-
-      {/* ...rest of your code... */}
+      </Container>
     </div>
-    </div>
+    </>
   );
 };
 

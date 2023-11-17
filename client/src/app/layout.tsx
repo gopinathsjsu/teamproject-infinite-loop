@@ -29,9 +29,15 @@ export default function RootLayout({
       </head>
       <body>
         <ThemeProvider theme={theme}>
+<<<<<<< HEAD
+          
+            {children}
+          
+=======
           <Layout>
             {children}
           </Layout>
+>>>>>>> 60c7d63e113c6e3503d59fb8200dd4d3f15b858f
         </ThemeProvider>
       </body>
     </html>
