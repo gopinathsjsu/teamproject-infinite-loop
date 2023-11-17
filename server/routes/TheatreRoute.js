@@ -9,15 +9,15 @@ router.post('/addTheater', upload.single('file'), async (req, res) => {
         console.log('at /addTheater');
         const count = await Theater.countDocuments();
         image_url = req.file.location;
-        console.log(typeof (image_url));
+        console.log(req.body);
         const newTheater = new Theater({
-            name: req.body.theatreName,
+            name: req.body.theater_name,
             description: req.body.description,
             location: req.body.state,
             zipcode: req.body.zipcode,
             theater_url: req.file.location,
             theater_constructed_date: req.body.theatre_constructed_date,
-            theater_id: `${req.body.theatreName}_${count + 1}`,
+            theater_id: `${req.body.theater_name}_${count + 1}`,
             address: req.body.address,
             mobile: req.body.phno,
             city: req.body.city,
