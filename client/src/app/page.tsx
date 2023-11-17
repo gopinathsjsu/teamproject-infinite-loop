@@ -2,9 +2,8 @@
 import React, { useEffect, useState } from 'react'
 import './styles/home.module.css'
 import { Inter } from 'next/font/google'
-import MainBanner from './components/dashboard/home/mainBanner'
-import MovieBanner from './components/dashboard/home/movieBanner'
-import BottomBanner from './components/dashboard/home/bottomBanner'
+import ImageSlider from './components/dashboard/home/movieCarousel'
+import MoviesList  from './components/dashboard/home/recommendedMovies'
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -21,9 +20,8 @@ export default function Home() {
   // }, []);
   return (
     <>
-      <MainBanner />
-      <MovieBanner />
-      <BottomBanner />
+      <ImageSlider />
+      <MoviesList />
     </>
   )
 }

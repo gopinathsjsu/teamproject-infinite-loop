@@ -1,12 +1,13 @@
 import type { Metadata } from 'next'
 import { ThemeProvider } from "@mui/material";
 import theme from "@/src/app/styles/theme";
+
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import Layout from './containers/layout/layout';
-import Button from '@mui/material/Button';
+
+import Layout from '@/src/app/containers/dashboard/layout'
 
 
 
@@ -28,9 +29,15 @@ export default function RootLayout({
       </head>
       <body>
         <ThemeProvider theme={theme}>
+<<<<<<< HEAD
           
             {children}
           
+=======
+          <Layout>
+            {children}
+          </Layout>
+>>>>>>> 60c7d63e113c6e3503d59fb8200dd4d3f15b858f
         </ThemeProvider>
       </body>
     </html>
