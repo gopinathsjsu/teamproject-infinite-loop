@@ -28,10 +28,9 @@ export default function RootLayout({
       </head>
       <body>
         <ThemeProvider theme={theme}>
-          {/* <Layout>
+          
             {children}
-          </Layout> */}
-           <Button color="primary">Submit</Button>
+          
         </ThemeProvider>
       </body>
     </html>
