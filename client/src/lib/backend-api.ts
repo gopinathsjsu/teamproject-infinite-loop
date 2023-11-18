@@ -19,19 +19,18 @@ async function handleResponse<T>(response: Response): Promise<T> {
 }
 export async function getDataFromEndPoint(credentials: any, endpoint: string, method: string): Promise<any> {
     const pathSegments = endpoint.split('/');
-    const pathVariable = pathSegments.slice(3).join('/');
+    console.log(pathSegments);
+    const pathVariable = pathSegments.join('/');
+    console.log(pathVariable);
 
     const isFormData = credentials instanceof FormData;
 
-    // Define the type for fetchOptions explicitly
     const fetchOptions: RequestInit = {
         method: method,
         credentials: "include",
         body: credentials,
     };
 
-    console.log(isFormData);
-    // If credentials is not an instance of FormData, assume JSON and set content type
     if (!isFormData) {
         fetchOptions.headers = {
             'Content-Type': 'application/json'
