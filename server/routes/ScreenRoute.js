@@ -54,5 +54,27 @@ router.get('/getAllScreens', async (req, res) => {
         })
     }
 })
+router.get('/getScreen/:id', async (req, res) => {
 
+    try {
+        id = req.params['id'];
+        fields = ['screen_id', 'screen_name', 'show_times', 'screen_type', 'seat_array', 'rows', 'col']
+        const screen = await ScreenModel.find({ screen_id: id }).select(fields);
+        console.log(screen);
+        res.json({
+            message: 'Screen found',
+            status: HTTP_STATUS_CODES.OK,
+            data: JSON.stringify(screen)
+        })
+
+    }
+    catch (err) {
+        console.log(err);
+        res.json({
+            message: 'screen Not found',
+            status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+            data: JSON.stringify("")
+        })
+    }
+})
 module.exports = router;
