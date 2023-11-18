@@ -1,6 +1,8 @@
 "use client";
+
 import * as React from "react";
 import dayjs from "dayjs";
+import { Dayjs } from "dayjs";
 import Backdrop from "@mui/material/Backdrop";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
@@ -24,9 +26,13 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Chip from "@mui/material/Chip";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
+import { Container, Grid, Link } from "@mui/material";
+import { useState } from "react";
+import { getDataFromEndPoint } from "@/src/lib/backend-api";
+import theme from "../styles/theme";
 
 const style = {
-  position: "absolute" as "absolute",
+  position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
@@ -37,6 +43,20 @@ const style = {
   p: 4,
 };
 
+// Crew data array
+const crew_names = [
+  "Director",
+  "Producer",
+  "Music Director",
+  "Screenwriter",
+  "Cinematographer",
+  "Editor",
+  "Art Director",
+];
+
+const cast_names = ["Actor", "Actress", "Other Actors"];
+
+// Constants for menu properties
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -48,28 +68,47 @@ const MenuProps = {
   },
 };
 
+// Styled component for visually hidden input
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
   clipPath: "inset(50%)",
   height: 1,
   overflow: "hidden",
   position: "absolute",
-  bottom: 0,
-  left: 0,
   whiteSpace: "nowrap",
   width: 1,
 });
-const crew_names = [
-  "Director",
-  "Producer",
-  "Music Director",
-  "Screenwriter",
-  "Cinematographer",
-  "Editor",
-  "Art Director",
+
+const castandcrew = [
+  // Adding some crew members
+  {
+    name: "John Doe",
+    role: "Director",
+    imageurl: "path_to_director_image.jpg",
+  },
+  {
+    name: "Jane Smith",
+    role: "Producer",
+    imageurl: "path_to_producer_image.jpg",
+  },
+  // ...
+
+  // Adding some cast members
+  { name: "Actor One", role: "Actor", imageurl: "path_to_actor_image.jpg" },
+  {
+    name: "Actress Two",
+    role: "Actress",
+    imageurl: "path_to_actress_image.jpg",
+  },
+  // ...
 ];
 
-function getStyles(name: string, personName: readonly string[], theme: Theme) {
+// Function to get styles for select items
+function getStyles(
+  name: any,
+  personName: string | any[],
+  theme: { typography: { fontWeightRegular: any; fontWeightMedium: any } }
+) {
   return {
     fontWeight:
       personName.indexOf(name) === -1
@@ -78,130 +117,248 @@ function getStyles(name: string, personName: readonly string[], theme: Theme) {
   };
 }
 
-export default function TransitionsModal() {
-  const theme = useTheme();
-  const [personName, setPersonName] = React.useState<string[]>([]);
+export default function Contact() {
+  const [formData, setFormData] = useState({
+    fullname: "",
+    dateOfBirth: "",
+    gender: "",
+    category: "",
+    profession: [],
+  });
 
-  const handleChange2 = (event: SelectChangeEvent<typeof personName>) => {
-    const {
-      target: { value },
-    } = event;
-    setPersonName(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
-    );
-  };
-  const [age, setAge] = React.useState("");
-
-  const handleChange1 = (event: SelectChangeEvent) => {
-    setAge(event.target.value as string);
-  };
-
-  const [open, setOpen] = React.useState(false);
+  // Modal control
+  const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  // File upload handling
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  const handleFileChange = (e: any) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      setSelectedFile(file);
+    }
+  };
+
+  // Form submission
+  const [formSuccess, setFormSuccess] = useState(false);
+  const [formSuccessMessage, setFormSuccessMessage] = useState("");
+
+  const submitForm = (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    const data = new FormData();
+
+    if (selectedFile) {
+      data.append("image", selectedFile);
+    }
+
+    Object.entries(formData).forEach(([key, value]) => {
+      if (key === "profession") {
+        // Join the array values into a single string with comma separation
+        data.append(key, (value as string[]).join(", "));
+      } else {
+        // Append non-array and other array values normally
+        data.append(key, value as string | Blob);
+      }
+    });
+
+    const formURL = "/artist/add"; // Replace with your form's URL
+    const get_data = getDataFromEndPoint(data, "artist/add", "POST");
+    //  fetch(formURL, {
+    //    method: "POST",
+    //    body: data,
+    //  })
+    //  .then(response => response.json())
+    //  .then(data => {
+    //    setFormSuccess(true);
+    //    setFormSuccessMessage("Artist added successfully!");
+    //    // Reset form data
+    //    setFormData({
+    //      fullname: "",
+    //      dateOfBirth: "",
+    //      gender: "",
+    //      category: "",
+    //      profession: [],
+    //    });
+    //  })
+    //  .catch(error => {
+    //    console.error("Error submitting form:", error);
+    //  });
+    console.log(get_data);
+  };
+
+  // Form input change handling
+  const handleInput = (e: { target: { name: any; value: any } }) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
   return (
     <div>
-      <Button onClick={handleOpen}>Open modal</Button>
+      <Button
+        sx={{ paddingTop: 10, paddingRight: 0, fontWeight: "bold" }}
+        onClick={handleOpen}
+      >
+        Add Artist
+      </Button>
       <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
         open={open}
         onClose={handleClose}
         closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{
-          backdrop: {
-            timeout: 500,
-          },
-        }}
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
       >
         <Fade in={open}>
-          <Box
-            sx={{
-              ...style, // Your existing styles
-              display: "flex", // Ensures flexbox layout
-              justifyContent: "center", // Centers horizontally
-              alignItems: "center", // Centers vertically
-              // Full width of the parent
-            }}
-          >
-            <Stack direction="column" spacing={2}>
-              <Box sx={{ display: "flex", justifyContent: "center" }}>
-                <Avatar
-                  sx={{ width: 100, height: 100 }}
-                  src="/broken-image.jpg"
-                />
-              </Box>
-              <Box sx={{ display: "flex", justifyContent: "center" }}>
-                <Button
-                  sx={{ width: 200 }}
-                  component="label"
-                  variant="contained"
-                  startIcon={<CloudUploadIcon />}
-                >
-                  Upload file
-                  <VisuallyHiddenInput type="file" />
-                </Button>
-              </Box>
-              <TextField
-                sx={{ width: 330 }}
-                id="outlined-basic"
-                label="Full Name"
-                required
-                variant="outlined"
-              />
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={["DatePicker"]}>
-                  <DatePicker sx={{ width: 330 }} label="Date of Birth" />
-                </DemoContainer>
-              </LocalizationProvider>
-              <div>
-                <FormControl sx={{ m: 1, width: 100 }}>
-                  <InputLabel id="demo-simple-select-label">Gender</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={age}
-                    label="Gender"
-                    onChange={handleChange1}
+          <Box sx={style}>
+            <form
+              onSubmit={submitForm}
+              encType="multipart/form-data"
+              // action="/artist/add"
+            >
+              <Stack direction="column" spacing={2}>
+                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                  <Avatar
+                    sx={{ width: 100, height: 100 }}
+                    src={
+                      selectedFile
+                        ? URL.createObjectURL(selectedFile)
+                        : "/broken-image.jpg"
+                    }
+                  />
+                </Box>
+                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                  <Button
+                    sx={{ width: 200 }}
+                    component="label"
+                    variant="contained"
+                    startIcon={<CloudUploadIcon />}
                   >
-                    <MenuItem value={10}>Male</MenuItem>
-                    <MenuItem value={20}>Female</MenuItem>
-                    <MenuItem value={30}>Other</MenuItem>
+                    Upload file
+                    <VisuallyHiddenInput
+                      type="file"
+                      name="file"
+                      onChange={handleFileChange}
+                    />
+                  </Button>
+                </Box>
+                <TextField
+                  sx={{ width: 330 }}
+                  label="Full Name"
+                  required
+                  name="fullname"
+                  variant="outlined"
+                  onChange={handleInput}
+                  value={formData.fullname}
+                />
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    sx={{ width: 330 }}
+                    label="Date of Birth"
+                    value={formData.dateOfBirth}
+                    onChange={(newValue: string | null) =>
+                      setFormData({ ...formData, dateOfBirth: newValue ?? "" })
+                    }
+                    renderInput={(params: any) => <TextField {...params} />}
+                  />
+                </LocalizationProvider>
+                <FormControl sx={{ m: 1, width: 330 }}>
+                  <InputLabel id="gender-select-label">Gender</InputLabel>
+                  <Select
+                    labelId="gender-select-label"
+                    id="gender-select"
+                    value={formData.gender}
+                    name="gender"
+                    label="Gender"
+                    onChange={handleInput}
+                  >
+                    <MenuItem value="Male">Male</MenuItem>
+                    <MenuItem value="Female">Female</MenuItem>
+                    <MenuItem value="Other">Other</MenuItem>
                   </Select>
                 </FormControl>
-                <FormControl sx={{ m: 1, width: 200 }}>
-                  <InputLabel id="demo-simple-select-label">
+                {/* <FormControl sx={{ m: 1, width: 330 }}>
+                  <InputLabel id="category-select-label">Artist Category</InputLabel>
+                  <Select
+                    labelId="category-select-label"
+                    id="category-select"
+                    value={formData.category}
+                    name="category"
+                    label="Artist Category"
+                    onChange={handleInput}
+                  >
+                    <MenuItem value="Cast">Cast</MenuItem>
+                    <MenuItem value="Crew">Crew</MenuItem>
+                    <MenuItem value="Other">Other</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl sx={{ m: 1, width: 330 }}>
+                  <InputLabel id="profession-select-label">Profession</InputLabel>
+                  <Select
+                    labelId="profession-select-label"
+                    id="profession-select"
+                    multiple
+                    name="profession"
+                    value={formData.profession}
+                    onChange={handleInput}
+                    input={<OutlinedInput id="select-multiple-chip" label="Profession" />}
+                    renderValue={(selected) => (
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                        {selected.map((value) => (
+                          <Chip key={value} label={value} />
+                        ))}
+                      </Box>
+                    )}
+                    MenuProps={MenuProps}
+                  >
+                  {crew_names.map((member) => (
+                  <MenuItem
+                    key={member.name}
+                    value={member.name}
+                    style={getStyles(member.name, formData.profession, theme)}
+                  >
+                    {member.name}
+                  </MenuItem>
+                ))}
+                  </Select>
+                </FormControl> */}
+                <FormControl sx={{ m: 1, width: 330 }}>
+                  <InputLabel id="category-select-label">
                     Artist Category
                   </InputLabel>
                   <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={age}
+                    labelId="category-select-label"
+                    id="category-select"
+                    value={formData.category}
+                    name="category"
                     label="Artist Category"
-                    onChange={handleChange1}
+                    onChange={handleInput}
                   >
-                    <MenuItem value={10}>Cast</MenuItem>
-                    <MenuItem value={20}>Crew</MenuItem>
-                    <MenuItem value={30}>Other</MenuItem>
+                    <MenuItem value="Crew">Crew</MenuItem>
+                    <MenuItem value="Cast">Cast</MenuItem>
+                    <MenuItem value="Other">Other</MenuItem>
                   </Select>
                 </FormControl>
-              </div>
-              <div>
                 <FormControl sx={{ m: 1, width: 330 }}>
-                  <InputLabel id="demo-multiple-chip-label">
-                    Profession{" "}
+                  <InputLabel id="profession-select-label">
+                    Profession
                   </InputLabel>
                   <Select
-                    labelId="demo-multiple-chip-label"
-                    id="demo-multiple-chip"
+                    labelId="profession-select-label"
+                    id="profession-select"
                     multiple
-                    value={personName}
-                    onChange={handleChange2}
+                    name="profession"
+                    value={formData.profession}
+                    onChange={handleInput}
                     input={
-                      <OutlinedInput id="select-multiple-chip" label="Chip" />
+                      <OutlinedInput
+                        id="select-multiple-chip"
+                        label="Profession"
+                      />
                     }
                     renderValue={(selected) => (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
@@ -212,25 +369,77 @@ export default function TransitionsModal() {
                     )}
                     MenuProps={MenuProps}
                   >
-                    {crew_names.map((name) => (
-                      <MenuItem
-                        key={name}
-                        value={name}
-                        style={getStyles(name, personName, theme)}
-                      >
-                        {name}
-                      </MenuItem>
-                    ))}
+                    {formData.category === "Crew" &&
+                      crew_names.map((name) => (
+                        <MenuItem
+                          key={name}
+                          value={name}
+                          style={getStyles(name, formData.profession, theme)}
+                        >
+                          {name}
+                        </MenuItem>
+                      ))}
+                    {formData.category === "Cast" &&
+                      cast_names.map((name) => (
+                        <MenuItem
+                          key={name}
+                          value={name}
+                          style={getStyles(name, formData.profession, theme)}
+                        >
+                          {name}
+                        </MenuItem>
+                      ))}
                   </Select>
                 </FormControl>
-              </div>
-              <Button variant="contained" endIcon={<SendIcon />}>
-                Submit
-              </Button>
-            </Stack>
+                <Button
+                  variant="contained"
+                  endIcon={<SendIcon />}
+                  type="submit"
+                  sx={{ mt: 2 }}
+                >
+                  Submit
+                </Button>
+
+                {formSuccess && (
+                  <Box sx={{ mt: 2 }}>
+                    <Typography color="green">{formSuccessMessage}</Typography>
+                  </Box>
+                )}
+              </Stack>
+            </form>
           </Box>
         </Fade>
       </Modal>
+
+      <Container
+        maxWidth="lg"
+        sx={{ borderRadius: 2, overflow: "hidden", mt: 2, mb: 4 }}
+      >
+        <Typography
+          variant="h5"
+          component="div"
+          sx={{ fontWeight: "bold", mb: 2 }}
+        >
+          Cast
+        </Typography>
+        <Grid container spacing={1}>
+          {castandcrew.map((member, index) => (
+            <Grid item key={`member-${index}`} xs={6} sm={4} md={3} lg={2}>
+              <Box sx={{ textAlign: "center", p: 1 }}>
+                <Avatar
+                  alt={member.name}
+                  src={member.imageurl}
+                  sx={{ width: 120, height: 120, margin: "auto", mb: 1 }}
+                />
+                <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+                  {member.name}
+                </Typography>
+                <Typography variant="body2">{member.role}</Typography>
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
     </div>
   );
 }
