@@ -7,19 +7,22 @@ const { HTTP_STATUS_CODES } = require('../constants')
 
 
 
-router.post('/add', upload.single('file'),async (req, res) => {
+router.post('/add', upload.single('image'),async (req, res) => {
     try {
         console.log(req.body);
+        console.log(req.file);
         const newArtist = new Artist({
-            name: req.body.name,
+            name: req.body.fullname,
+            gender: req.body.gender,
             profile_url: req.file.location,
-            type: req.body.roletype,
-            profession: req.body.role
+            type: req.body.category,
+            profession: req.body.profession,
+            dob:req.body.dateOfBirth
         });
 
         // Save the user to the database
         await newArtist.save();
-        res.json({ message: "Added movie successfully", status: HTTP_STATUS_CODES.OK });
+        res.json({ message: "Added artist successfully", status: HTTP_STATUS_CODES.OK });
     } catch (error) {
         console.error('Error creating user:', error);
         res.status(500).send('Internal Server Error');
