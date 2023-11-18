@@ -1,6 +1,5 @@
 "use client"
 import { getDataFromEndPoint } from "@/src/lib/backend-api";
-import Alert from '@mui/joy/Alert';
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Container from '@mui/material/Container';
@@ -11,20 +10,9 @@ import Modal from '@mui/material/Modal';
 import Backdrop from '@mui/material/Backdrop';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Fade from '@mui/material/Fade';
-import Avatar from '@mui/material/Avatar';
-import Add from '@mui/icons-material/Add';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/material/styles';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import SendIcon from '@mui/icons-material/Send';
-import Chip from '@mui/material/Chip';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
 const ITEM_HEIGHT = 48;
@@ -155,7 +143,6 @@ export default function Theater() {
         p: 4,
     };
     const [formSuccess, setFormSuccess] = useState(false)
-    const [formSuccessMessage, setFormSuccessMessage] = useState("")
     const [selectedFile, setSelectedFile] = useState(null);
 
     const handleInput = (e: any) => {
@@ -200,14 +187,6 @@ export default function Theater() {
             console.log(get_data);
         }
     }
-    const [isModalOpen, setModalOpen] = useState(false);
-
-    const toggleModal = () => {
-        setModalOpen(!isModalOpen);
-    };
-    const closeModal = () => {
-        setModalOpen(false);
-    };
 
     const addScreen = () => {
         router.push("/theater/1/screens")
@@ -217,19 +196,19 @@ export default function Theater() {
     return (
         <React.Fragment>
             <CssBaseline />
-            <Container style={{ backgroundColor: "#F9FBE7", marginLeft: "0px", marginRight: "0px", maxWidth: "2000px", marginTop: "3%" }}>
+            <Container maxWidth="xl" style={{ marginLeft: "0px", marginRight: "0px", marginTop: "3%" }}>
                 {/* <Box sx={{ bgcolor: '#cfe8fc', display: 'flex', minHeight: '100vh' }}> */}
                 <Grid container spacing={2}>
-                    <Grid item xs={12} container justifyContent="flex-end" sx={{ mb: 2, marginTop: 5 }}>
-                        <Typography variant="h4" style={{ marginRight: "40%" }}>Theaters</Typography>
-                        <Button variant="contained" startIcon={<AddCircleOutlineIcon />} onClick={() => setOpen(true)} style={{ backgroundColor: "#AFB42B", color: "black", fontSize: "bold" }}>
+                    <Grid container sx={{ mb: 2, marginTop: 10, justifyContent: 'space-between' }}>
+                        <Typography variant="h4">Theaters</Typography>
+                        <Button variant="contained" startIcon={<AddCircleOutlineIcon />} onClick={() => setOpen(true)}>
                             Add Theater
                         </Button>
                     </Grid>
                     <Grid item xs={12} container>
                         <Grid container spacing={2} alignItems="center" justifyContent="left">
                             {theaters.map((theater, index) => (
-                                <Grid item xs={12} md={6} lg={4} key={index}>
+                                <Grid item xs={12} md={6} lg={6} key={index}>
                                     <Box sx={{ bgcolor: 'white', p: 3, borderRadius: 2, boxShadow: 3, display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: 'center' }}>
                                         <img src={theater.imageUrl} alt="Theater" style={{ marginBottom: 16, marginRight: 24, width: 192, borderRadius: 8 }} />
                                         <Box sx={{ flex: 1 }}>
@@ -263,7 +242,6 @@ export default function Theater() {
                         </Grid>
                     </Grid>
                 </Grid>
-                {/* </Box> */}
                 <Modal
                     aria-labelledby="transition-modal-title"
                     aria-describedby="transition-modal-description"
