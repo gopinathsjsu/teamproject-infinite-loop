@@ -173,7 +173,7 @@ const handleFileChange = (e: any) => {
 
   return (
     <div>
-        <form method="POST" action="movie/add" onSubmit={submitForm}>
+        <form method="POST" action="http://localhost:8080/movie/add" onSubmit={submitForm}>
           <InnerPageContainer title={`Movie -> ${formData.movieName}`}>
             <div className="bg-white p-8 rounded-lg shadow">
               {!isEditable && (
