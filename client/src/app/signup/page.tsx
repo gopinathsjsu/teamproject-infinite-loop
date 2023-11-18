@@ -1,39 +1,52 @@
-"use client";
-import { RegisterUserInput, RegisterUserSchema } from "@/src/lib/validations/user.schema";
-import { useForm, SubmitHandler, FormProvider } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { apiRegisterUser } from "@/src/lib/auth-api";
-import useStore from "@/src/store";
-import FormInput from "@/src/app/components/formComponents/formInput";
-import { LoadingButton } from "@/src/app/components/formComponents/loadingButton";
-import React, { useEffect, useState } from 'react';
-import { handleApiError } from "@/src/lib/helpers";
-import { toast } from "react-hot-toast";
-import { useRouter } from "next/navigation";
+'use client'
+import * as React from 'react';
+import { useForm } from 'react-hook-form';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import CssBaseline from '@mui/material/CssBaseline';
+import TextField from '@mui/material/TextField';
+import Link from '@mui/material/Link';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import { apiRegisterUser } from '@/src/lib/auth-api';
+import { handleApiError } from '@/src/lib/helpers';
+import toast from 'react-hot-toast';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { RegisterUserSchema } from '@/src/lib/validations/user.schema';
 
-export default function Home() {
+function Copyright(props: any) {
+    return (
+        <Typography variant="body2" color="text.secondary" align="center" {...props}>
+            {'Copyright © '}
+            <Link color="inherit" href="https://mui.com/">
+                Box Office
+            </Link>{' '}
+            {new Date().getFullYear()}
+            {'.'}
+        </Typography>
+    );
+}
 
-    const store = useStore();
-    const router = useRouter();
+export default function SignUp() {
 
-    const methods = useForm<RegisterUserInput>({
-        resolver: zodResolver(RegisterUserSchema),
-    });
+    const [loading, setLoading] = React.useState(false);
+    const { register, handleSubmit, formState: { errors } } = useForm({resolver: zodResolver(RegisterUserSchema),});
+    const onSubmit = (data: any) => {
+        registerUser(data);
+    }
 
-    const { reset, handleSubmit, formState: { isSubmitSuccessful }, } = methods;
+    const getErrorMessage = (error: any) => {
+        return error && typeof error.message === 'string' ? error.message : '';
+    };
 
-    useEffect(() => {
-        if (isSubmitSuccessful) {
-            reset();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isSubmitSuccessful]);
-
-    async function RegisterUserFunction(credentials: RegisterUserInput) {
-        store.setRequestLoading(true);
+    async function registerUser(data: any){        
+        setLoading(true);
         try {
-            const user = await apiRegisterUser(JSON.stringify(credentials));
-            return router.push("/login");
+            const user = await apiRegisterUser(JSON.stringify(data));
+            // return router.push("/login");
         } catch (error: any) {
             if (error instanceof Error) {
                 handleApiError(error);
@@ -42,54 +55,93 @@ export default function Home() {
                 console.log("Error message:", error.message);
             }
         } finally {
-            store.setRequestLoading(false);
+            setLoading(false);
         }
-    }
-
-    const onSubmitHandler: SubmitHandler<RegisterUserInput> = (values) => {
-        RegisterUserFunction(values);
     };
 
     return (
-        <div className="relative flex flex-col justify-center overflow-hidden h-screen">
-            <div className="w-full p-6 mx-auto my-2 rounded-md shadow-md ring-2 ring-gray-800/50 lg:max-w-xl">
-                <h1 className="text-xl font-semibold text-center">Register</h1>
-                <FormProvider {...methods}>
-                    <form className="space-y-4" onSubmit={handleSubmit(onSubmitHandler)}>
-                        <FormInput label="Full Name" name="name" type="text" />
-                        <FormInput label="Email" name="email" type="email" />
-                        <FormInput label="Password" name="password" type="password" />
-                        <FormInput
-                            label="Confirm Password"
-                            name="passwordConfirm"
-                            type="password"
-                        />
-                        <LoadingButton
-                            loading={store.requestLoading}
-                        >
-                            Register
-                        </LoadingButton>
-                        <span>Already have an account ?
-                            <a href="/login" className="text-blue-600 hover:text-blue-800 hover:underline">Login</a></span>
-                    </form>
-                </FormProvider>
-                <div className="flex items-center w-full my-4">
-                    <hr className="w-full" />
-                    <p className="px-3 ">OR</p>
-                    <hr className="w-full" />
-                </div>
-                <div className="my-6 space-y-2">
-                    <button aria-label="Login with Google" type="button"
-                        className="flex items-center justify-center w-full p-2 space-x-4 border rounded-md focus:ring-2 focus:ring-offset-1 focus:ring-gray-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="w-5 h-5 fill-current">
-                            <path
-                                d="M16.318 13.714v5.484h9.078c-0.37 2.354-2.745 6.901-9.078 6.901-5.458 0-9.917-4.521-9.917-10.099s4.458-10.099 9.917-10.099c3.109 0 5.193 1.318 6.38 2.464l4.339-4.182c-2.786-2.599-6.396-4.182-10.719-4.182-8.844 0-16 7.151-16 16s7.156 16 16 16c9.234 0 15.365-6.49 15.365-15.635 0-1.052-0.115-1.854-0.255-2.651z">
-                            </path>
-                        </svg>
-                        <p>Login with Google</p>
-                    </button>
-                </div>
-            </div>
-        </div>
-    )
+        <Container component="main" maxWidth="xs">
+            <CssBaseline />
+            <Box
+                sx={{
+                    marginTop: 8,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                }}
+            >
+                <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                    <LockOutlinedIcon />
+                </Avatar>
+                <Typography component="h1" variant="h5">
+                    Sign up
+                </Typography>
+                <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <TextField
+                                {...register('name')}
+                                fullWidth
+                                id="name"
+                                label="Full Name"
+                                autoFocus
+                                error={!!errors.name}
+                                helperText={getErrorMessage(errors.name)}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                {...register('email')}
+                                fullWidth
+                                id="email"
+                                label="Email Address"
+                                autoComplete="email"
+                                error={!!errors.email}
+                                helperText={getErrorMessage(errors.email)}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                {...register('password')}
+                                fullWidth
+                                type="password"
+                                id="password"
+                                label="Password"
+                                autoComplete="new-password"
+                                error={!!errors.password}
+                                helperText={getErrorMessage(errors.password)}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                {...register('confirmPassword')}
+                                fullWidth
+                                type="password"
+                                id="confirmPassword"
+                                label="Confirm Password"
+                                error={!!errors.confirmPassword}
+                                helperText={getErrorMessage(errors.confirmPassword)}
+                            />
+                        </Grid>
+                    </Grid>
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2 }}
+                    >
+                        {!loading ? <span> Sign Up</span> : <span>Loading...</span>}
+                    </Button>
+                    <Grid container justifyContent="flex-end">
+                        <Grid item>
+                            <Link href="#" variant="body2">
+                                Already have an account? Sign in
+                            </Link>
+                        </Grid>
+                    </Grid>
+                </Box>
+            </Box>
+            <Copyright sx={{ mt: 5 }} />
+        </Container>
+    );
 }
