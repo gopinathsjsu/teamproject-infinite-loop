@@ -1,7 +1,42 @@
 "use client"
 import { getDataFromEndPoint } from "@/src/lib/backend-api";
+import Alert from '@mui/joy/Alert';
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import Container from '@mui/material/Container';
+import CssBaseline from '@mui/material/CssBaseline';
+import { Box, Grid, Typography, Button, Link, Stack, TextField } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import Modal from '@mui/material/Modal';
+import Backdrop from '@mui/material/Backdrop';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import Fade from '@mui/material/Fade';
+import Avatar from '@mui/material/Avatar';
+import Add from '@mui/icons-material/Add';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { styled } from '@mui/material/styles';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import SendIcon from '@mui/icons-material/Send';
+import Chip from '@mui/material/Chip';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 250,
+        },
+    },
+};
 
 export interface theater {
     name: string,
@@ -27,21 +62,98 @@ const theaters: theater[] = [
         email: "cinemark@gmail.com",
         phoneNumber: "1234567890",
     },
+    {
+        name: "cinemark",
+        description: "new Theater",
+        locationUrl: "someurl",
+        address: "some address",
+        screenDetails: ["screen1", "screen2"],
+        imageUrl: "https://lumiere-a.akamaihd.net/v1/images/p_avengersendgame_19751_e14a0104.jpeg?region=0%2C0%2C540%2C810", // Dummy image URL for a larger movie poster
+        nScreens: 2,
+        email: "cinemark@gmail.com",
+        phoneNumber: "1234567890",
+    },
+    {
+        name: "cinemark",
+        description: "new Theater",
+        locationUrl: "someurl",
+        address: "some address",
+        screenDetails: ["screen1", "screen2"],
+        imageUrl: "https://lumiere-a.akamaihd.net/v1/images/p_avengersendgame_19751_e14a0104.jpeg?region=0%2C0%2C540%2C810", // Dummy image URL for a larger movie poster
+        nScreens: 2,
+        email: "cinemark@gmail.com",
+        phoneNumber: "1234567890",
+    },
+    {
+        name: "cinemark",
+        description: "new Theater",
+        locationUrl: "someurl",
+        address: "some address",
+        screenDetails: ["screen1", "screen2"],
+        imageUrl: "https://lumiere-a.akamaihd.net/v1/images/p_avengersendgame_19751_e14a0104.jpeg?region=0%2C0%2C540%2C810", // Dummy image URL for a larger movie poster
+        nScreens: 2,
+        email: "cinemark@gmail.com",
+        phoneNumber: "1234567890",
+    },
+    {
+        name: "cinemark",
+        description: "new Theater",
+        locationUrl: "someurl",
+        address: "some address",
+        screenDetails: ["screen1", "screen2"],
+        imageUrl: "https://lumiere-a.akamaihd.net/v1/images/p_avengersendgame_19751_e14a0104.jpeg?region=0%2C0%2C540%2C810", // Dummy image URL for a larger movie poster
+        nScreens: 2,
+        email: "cinemark@gmail.com",
+        phoneNumber: "1234567890",
+    },
+    {
+        name: "cinemark",
+        description: "new Theater",
+        locationUrl: "someurl",
+        address: "some address",
+        screenDetails: ["screen1", "screen2"],
+        imageUrl: "https://lumiere-a.akamaihd.net/v1/images/p_avengersendgame_19751_e14a0104.jpeg?region=0%2C0%2C540%2C810", // Dummy image URL for a larger movie poster
+        nScreens: 2,
+        email: "cinemark@gmail.com",
+        phoneNumber: "1234567890",
+    },
+    {
+        name: "cinemark",
+        description: "new Theater",
+        locationUrl: "someurl",
+        address: "some address",
+        screenDetails: ["screen1", "screen2"],
+        imageUrl: "https://lumiere-a.akamaihd.net/v1/images/p_avengersendgame_19751_e14a0104.jpeg?region=0%2C0%2C540%2C810", // Dummy image URL for a larger movie poster
+        nScreens: 2,
+        email: "cinemark@gmail.com",
+        phoneNumber: "1234567890",
+    },
 ];
 
 export default function Theater() {
     const router = useRouter();
     const [formData, setFormData] = useState({
-        name: "",
+        theater_name: "",
+        description: "",
         city: "",
-        locationUrl: "",
+        location_url: "",
         zipcode: "",
         phno: "",
-        gmail: "",
+        email: "",
         address: "",
         state: "",
     });
-
+    const style = {
+        position: 'absolute' as 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 400,
+        bgcolor: 'background.paper',
+        border: '2px solid #000',
+        boxShadow: 24,
+        p: 4,
+    };
     const [formSuccess, setFormSuccess] = useState(false)
     const [formSuccessMessage, setFormSuccessMessage] = useState("")
     const [selectedFile, setSelectedFile] = useState(null);
@@ -54,12 +166,23 @@ export default function Theater() {
             [fieldName]: fieldValue
         }));
     }
-
     const handleFileChange = (e: any) => {
         e.preventDefault();
         const file = e.target.files[0];
         setSelectedFile(file);
     };
+    const VisuallyHiddenInput = styled('input')({
+        clip: 'rect(0 0 0 0)',
+        clipPath: 'inset(50%)',
+        height: 1,
+        overflow: 'hidden',
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        whiteSpace: 'nowrap',
+        width: 1,
+        accept: "image/*",
+    });
 
     const submitForm = (e: any) => {
         e.preventDefault()
@@ -73,6 +196,7 @@ export default function Theater() {
 
             console.log(data);
             const get_data = getDataFromEndPoint(data, formURL, 'POST');
+            setFormSuccess(true);
             console.log(get_data);
         }
     }
@@ -88,132 +212,218 @@ export default function Theater() {
     const addScreen = () => {
         router.push("/theater/1/screens")
     }
-
+    const [open, setOpen] = React.useState<boolean>(false);
+    const handleClose = () => setOpen(false);
     return (
-        <div className="container mx-auto px-4 py-6 max-w-7xl">
-            <div className="flex justify-between items-center mb-6">
-                <p className="text-3xl font-bold text-gray-900">Theaters</p>
-                {!isModalOpen && (
-                    <button className="btn" onClick={toggleModal}>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="25" height="25">
-                            <path d="M 25 2 C 12.309295 2 2 12.309295 2 25 C 2 37.690705 12.309295 48 25 48 C 37.690705 48 48 37.690705 48 25 C 48 12.309295 37.690705 2 25 2 z M 25 4 C 36.609824 4 46 13.390176 46 25 C 46 36.609824 36.609824 46 25 46 C 13.390176 46 4 36.609824 4 25 C 4 13.390176 13.390176 4 25 4 z M 24 13 L 24 24 L 13 24 L 13 26 L 24 26 L 24 37 L 26 37 L 26 26 L 37 26 L 37 24 L 26 24 L 26 13 L 24 13 z"></path>
-                        </svg>
-                        Add Theatre
-                    </button>
-                )}
-            </div>
-            {isModalOpen && (
-                <dialog id="theatreModal" className="m-auto modal" open>
-                    <div className="modal-box w-11/12 max-w-5xl">
-                        <button style={{ position: 'absolute', top: '0', left: '0' }} className="bg-ghost-500 hover:bg-blue-200 text-black font-bold py-2 px-4 rounded" onClick={closeModal}>
-                            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 50 50">
-                                <path d="M 7.71875 6.28125 L 6.28125 7.71875 L 23.5625 25 L 6.28125 42.28125 L 7.71875 43.71875 L 25 26.4375 L 42.28125 43.71875 L 43.71875 42.28125 L 26.4375 25 L 43.71875 7.71875 L 42.28125 6.28125 L 25 23.5625 Z"></path>
-                            </svg>
-                        </button>
-                        <h1 className="text-xl font-semibold text-center">Add Theatre</h1>
-                        {formSuccess ?
-                            <div>{formSuccessMessage}</div>
-                            :
-                            <form onSubmit={submitForm} encType='multipart/form-data' action='/Theatre/addtheatre'>
-                                <div className="flex flex-row justify-center">
-                                    <div className="text-lg basis-1/2 font-semibold mb-2">
-                                        <label className="block text-gray-700 text-sm font-bold mb-2">Theatre Name</label>
-                                        <input type="text" name="name" onChange={handleInput} value={formData.name} className="input input-bordered w-full max-w-xs" />
-                                    </div>
-                                    <div className="text-lg basis-1/2 font-semibold mb-2">
-                                        <label className="block text-gray-700 text-sm font-bold mb-2">Address</label>
-                                        <input type="text" name="address" onChange={handleInput} value={formData.address} className="input input-bordered w-full max-w-xs" />
-                                    </div>
-                                </div>
-                                <div className="flex flex-row">
-                                    <div className="text-lg basis-1/2 font-semibold mb-2">
-                                        <label className="block text-gray-700 text-sm font-bold mb-2">Theatre Image</label>
-                                        <input type="file" name="file" onChange={handleFileChange} className="file-input  w-full max-w-xs" />
-                                    </div>
-                                    <div className="text-lg basis-1/2 font-semibold mb-2">
-                                        <label className="block text-gray-700 text-sm font-bold mb-2">City</label>
-                                        <input type="text" name="city" onChange={handleInput} value={formData.city} className="input input-bordered w-full max-w-xs" />
-                                    </div>
-                                </div>
-                                <div className="flex flex-row">
-                                    <div className="text-lg basis-1/2 font-semibold mb-2">
-                                        <label className="block text-gray-700 text-sm font-bold mb-2">LocationUrl</label>
-                                        <input type="text" name="locationUrl" onChange={handleInput} value={formData.locationUrl} className="input input-bordered w-full max-w-xs" />
-                                    </div>
-                                    <div className="text-lg basis-1/2 font-semibold mb-2">
-                                        <label className="block text-gray-700 text-sm font-bold mb-2">Zip Code</label>
-                                        <input type="text" name="zipcode" onChange={handleInput} value={formData.zipcode} className="input input-bordered w-full max-w-xs" />
-                                    </div>
-                                </div>
-                                <div className="flex flex-row">
-                                    <div className="text-lg basis-1/2 font-semibold mb-2">
-                                        <label className="block text-gray-700 text-sm font-bold mb-2">State</label>
-                                        <input type="text" name="state" onChange={handleInput} value={formData.state} className="input input-bordered w-full max-w-xs" />
-                                    </div>
-                                    <div className="text-lg basis-1/2 font-semibold mb-2">
-                                        <label className="block text-gray-700 text-sm font-bold mb-2">Phone Number</label>
-                                        <input type="text" name="phno" onChange={handleInput} value={formData.phno} className="input input-bordered w-full max-w-xs" />
-                                    </div>
-                                </div>
-                                <div className="flex flex-row">
-                                    <div className="text-lg basis-1/2 font-semibold mb-2">
-                                        <label className="block text-gray-700 text-sm font-bold mb-2">gmail</label>
-                                        <input type="text" name="gmail" onChange={handleInput} value={formData.gmail} className="input input-bordered w-full max-w-xs" />
-                                    </div>
-                                </div>
-                                <div>
-                                    <button style={{ position: 'absolute', top: '0', right: '0' }} className="bg-ghost-500 hover:bg-blue-200 text-black font-bold py-2 px-4 rounded" type="submit">
-                                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="25" height="25" viewBox="0 0 50 50">
-                                            <path d="M 25 2 C 12.309295 2 2 12.309295 2 25 C 2 37.690705 12.309295 48 25 48 C 37.690705 48 48 37.690705 48 25 C 48 12.309295 37.690705 2 25 2 z M 25 4 C 36.609824 4 46 13.390176 46 25 C 46 36.609824 36.609824 46 25 46 C 13.390176 46 4 36.609824 4 25 C 4 13.390176 13.390176 4 25 4 z M 24 13 L 24 24 L 13 24 L 13 26 L 24 26 L 24 37 L 26 37 L 26 26 L 37 26 L 37 24 L 26 24 L 26 13 L 24 13 z"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </form>
-                        }
-                    </div>
-                </dialog>
-            )}
-            <div className="grid grid-cols-1 gap-6">
-                {theaters.map((theater, index) => (
-                    <div key={index} className="bg-white p-6 rounded-lg shadow-lg flex flex-col md:flex-row items-center md:items-start">
-                        <img src={theater.imageUrl} alt="Theater" className="mb-4 md:mb-0 md:mr-6 w-48 h-auto rounded-lg" />
-                        <div className="flex-1">
-                            <div className="flex justify-between items-center mb-6">
-                                <a href={theater.locationUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                                    <h3 className="font-semibold text-xl mb-2">{theater.name}</h3>
-                                </a>
-                                <span>
-                                    <button className="btn btn-square">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 2.175a2.75 2.75 0 0 1 3.889 3.889L10.5 14.696l-4.75.594a.75.75 0 0 1-.849-.849l.594-4.75 8.737-8.616z" />
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 3.636a1.75 1.75 0 1 1 2.475 2.475L19 8.95" />
-                                        </svg>
-                                    </button>
-                                    <button className="btn" onClick={addScreen}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="25" height="25">
-                                            <path d="M 25 2 C 12.309295 2 2 12.309295 2 25 C 2 37.690705 12.309295 48 25 48 C 37.690705 48 48 37.690705 48 25 C 48 12.309295 37.690705 2 25 2 z M 25 4 C 36.609824 4 46 13.390176 46 25 C 46 36.609824 36.609824 46 25 46 C 13.390176 46 4 36.609824 4 25 C 4 13.390176 13.390176 4 25 4 z M 24 13 L 24 24 L 13 24 L 13 26 L 24 26 L 24 37 L 26 37 L 26 26 L 37 26 L 37 24 L 26 24 L 26 13 L 24 13 z"></path>
-                                        </svg>
-                                        Show Screens
-                                    </button>
-                                </span>
-                            </div>
+        <React.Fragment>
+            <CssBaseline />
+            <Container style={{ backgroundColor: "#F9FBE7", marginLeft: "0px", marginRight: "0px", maxWidth: "2000px", marginTop: "3%" }}>
+                {/* <Box sx={{ bgcolor: '#cfe8fc', display: 'flex', minHeight: '100vh' }}> */}
+                <Grid container spacing={2}>
+                    <Grid item xs={12} container justifyContent="flex-end" sx={{ mb: 2, marginTop: 5 }}>
+                        <Typography variant="h4" style={{ marginRight: "40%" }}>Theaters</Typography>
+                        <Button variant="contained" startIcon={<AddCircleOutlineIcon />} onClick={() => setOpen(true)} style={{ backgroundColor: "#AFB42B", color: "black", fontSize: "bold" }}>
+                            Add Theater
+                        </Button>
+                    </Grid>
+                    <Grid item xs={12} container>
+                        <Grid container spacing={2} alignItems="center" justifyContent="left">
+                            {theaters.map((theater, index) => (
+                                <Grid item xs={12} md={6} lg={4} key={index}>
+                                    <Box sx={{ bgcolor: 'white', p: 3, borderRadius: 2, boxShadow: 3, display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: 'center' }}>
+                                        <img src={theater.imageUrl} alt="Theater" style={{ marginBottom: 16, marginRight: 24, width: 192, borderRadius: 8 }} />
+                                        <Box sx={{ flex: 1 }}>
+                                            <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+                                                <Link href={theater.locationUrl} target="_blank" rel="noopener noreferrer" underline="hover" style={{ textDecoration: "none" }}>
+                                                    <Typography variant="h6" component="h3" sx={{ mb: 1, fontWeight: 'medium', fontSize: '2rem' }} style={{}} color="#01579B">{theater.name}</Typography>
+                                                </Link>
+                                                <Box>
+                                                    <Button startIcon={<EditIcon />} sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }} />
+                                                    <Button sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }} onClick={addScreen}>
+                                                        Show Screens
+                                                    </Button>
+                                                </Box>
+                                            </Grid>
+                                            <Typography variant="body2" color="text.secondary" sx={{ fontSize: '1rem' }}>{theater.description}</Typography>
+                                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontSize: '1rem' }}>{theater.address}</Typography>
+                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', mb: 2 }}>
+                                                <Box sx={{ bgcolor: 'blue.100', color: 'blue.800', px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }}>{`Screens: ${theater.nScreens}`}</Box>
+                                                {theater.screenDetails.map((screen, screenIndex) => (
+                                                    <Button key={screenIndex} sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }}>{screen}</Button>
+                                                ))}
+                                            </Box>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', fontSize: '0.875rem', color: 'text.secondary' }}>
+                                                <Box sx={{ mr: 2 }}><i className="fas fa-envelope mr-1"></i>{theater.email}</Box>
+                                                <Box><i className="fas fa-phone mr-1"></i>{theater.phoneNumber}</Box>
+                                            </Box>
+                                        </Box>
+                                    </Box>
+                                </Grid>
+                            ))}
+                        </Grid>
+                    </Grid>
+                </Grid>
+                {/* </Box> */}
+                <Modal
+                    aria-labelledby="transition-modal-title"
+                    aria-describedby="transition-modal-description"
+                    open={open}
+                    onClose={handleClose}
+                    closeAfterTransition
+                    slots={{ backdrop: Backdrop }}
+                    slotProps={{
+                        backdrop: {
+                            timeout: 500,
+                        },
+                    }}
+                >
+                    <Fade in={open}>
+                        <Box sx={{
+                            ...style, // Your existing styles
+                            display: 'flex', // Ensures flexbox layout
+                            justifyContent: 'center', // Centers horizontally
+                            alignItems: 'center', // Centers vertically
+                            // Full width of the parent
+                            width: '600px',
+                            maxWidth: '1000px'
+                        }} >
+                            <Stack direction="column" spacing={2}>
+                                {formSuccess ?
+                                    ('successs') : ('')}
+                                <form onSubmit={submitForm} encType='multipart/form-data' action='/Theater/addtheater'>
+                                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                        <Button
+                                            sx={{ width: 200 }}
+                                            component="label"
+                                            variant="contained"
+                                            startIcon={<CloudUploadIcon />}
+                                        >
+                                            {selectedFile ? (
+                                                <>
+                                                    File Uploaded <CheckCircleOutlineIcon sx={{ ml: 1 }} />
+                                                </>
+                                            ) : (
+                                                'Upload Image'
+                                            )}
+                                            <VisuallyHiddenInput type="file" onChange={handleFileChange} />
+                                        </Button>
+                                    </Box>
+                                    <Grid container spacing={2} >
+                                        <Grid item xs={12} md={12} lg={6}>
+                                            <TextField
+                                                margin="normal"
+                                                required
+                                                fullWidth
+                                                id="theater_name"
+                                                label="Theater Name"
+                                                name="theater_name"
+                                                autoComplete="theater"
+                                                autoFocus
+                                                onChange={handleInput}
+                                            />
+                                            <TextField
+                                                margin="normal"
+                                                required
+                                                fullWidth
+                                                id="description"
+                                                label="Description"
+                                                name="description"
+                                                autoComplete="description"
+                                                autoFocus
+                                                onChange={handleInput}
+                                            />
+                                            <TextField
+                                                margin="normal"
+                                                required
+                                                fullWidth
+                                                id="phno"
+                                                label="Phone Number"
+                                                name="phno"
+                                                autoComplete="phno"
+                                                autoFocus
+                                                onChange={handleInput}
+                                            />
+                                            <TextField
+                                                margin="normal"
+                                                required
+                                                fullWidth
+                                                id="email"
+                                                label="Email Address"
+                                                name="email"
+                                                autoComplete="email"
+                                                autoFocus
+                                                type="email"
+                                                onChange={handleInput}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} md={12} lg={6}>
+                                            <TextField
+                                                margin="normal"
+                                                required
+                                                fullWidth
+                                                id="address"
+                                                label="Address"
+                                                name="address"
+                                                autoComplete="address"
+                                                autoFocus
+                                                onChange={handleInput}
+                                            />
+                                            <TextField
+                                                margin="normal"
+                                                required
+                                                fullWidth
+                                                id="city"
+                                                label="City"
+                                                name="city"
+                                                autoComplete="city"
+                                                autoFocus
+                                                onChange={handleInput}
+                                            />
+                                            <TextField
+                                                margin="normal"
+                                                required
+                                                fullWidth
+                                                id="zipcode"
+                                                label="Zip Code"
+                                                name="zipcode"
+                                                autoComplete="zipcode"
+                                                autoFocus
+                                                onChange={handleInput}
+                                            />
+                                            <TextField
+                                                margin="normal"
+                                                required
+                                                fullWidth
+                                                id="state"
+                                                label="State"
+                                                name="state"
+                                                autoComplete="state"
+                                                autoFocus
+                                                onChange={handleInput}
+                                            />
+                                        </Grid>
+                                    </Grid>
+                                    <TextField
+                                        margin="normal"
+                                        required
+                                        fullWidth
+                                        id="location_url"
+                                        label="Location Url"
+                                        name="location_url"
+                                        autoComplete="location_url"
+                                        autoFocus
+                                        onChange={handleInput}
+                                    />
 
-                            <p className="text-gray-600 mb-1">{theater.description}</p>
-                            <p className="text-gray-600 mb-1">{theater.address}</p>
-                            <div className="flex flex-wrap items-center mb-4">
-                                <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-2 mb-2">{`Screens: ${theater.nScreens}`}</span>
-                                {theater.screenDetails.map((screen, screenIndex) => (
-                                    <span key={screenIndex} className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded mr-2 mb-2">{screen}</span>
-                                ))}
-                            </div>
-                            <div className="flex items-center text-sm text-gray-600">
-                                <span className="mr-4"><i className="fas fa-envelope mr-1"></i>{theater.email}</span>
-                                <span><i className="fas fa-phone mr-1"></i>{theater.phoneNumber}</span>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
+                                    <Button variant="contained" endIcon={<SendIcon />} style={{ width: "300px", left: '125px' }} type="submit">
+                                        Add Theater
+                                    </Button>
+                                </form>
+                            </Stack>
+                        </Box>
+                    </Fade>
+                </Modal>
+            </Container>
+        </React.Fragment >
     )
 }

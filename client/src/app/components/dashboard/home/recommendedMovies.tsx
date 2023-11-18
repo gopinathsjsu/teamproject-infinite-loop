@@ -3,8 +3,10 @@ import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Box, Card, CardActionArea, CardMedia, CardContent, Typography } from '@mui/material';
+import Container from '@mui/material/Container';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+
 
 const movies = [
     {
@@ -17,7 +19,7 @@ const movies = [
     {
         "id": "eb1cbd47-ad32-4c6e-ae7e-d57dd2a36920",
         "movieTitle": "The Lion King",
-        "movieImage": "https://res.cloudinary.com/dare4eibk/movieImage/upload/v1682706194/movies/movie-movieImage-TheLionKing.png",
+        "movieImage": "https://assets-in.bmscdn.com/iedb/movies/images/mobile/thumbnail/xlarge/keedaa-cola-et00369553-1699610496.jpg",
         "genres": "Adventure",
         "category": "Action, Adventure, Fantasy"
     },
@@ -31,49 +33,49 @@ const movies = [
     {
         "id": "dec9c725-3673-4e36-afc9-065d6b8c8f8d",
         "movieTitle": "JUNG_E",
-        "movieImage": "https://res.cloudinary.com/dare4eibk/movieImage/upload/v1683081550/movies/movie-movieImage-JUNG_E.jpg",
+        "movieImage": "https://assets-in.bmscdn.com/iedb/movies/images/mobile/thumbnail/xlarge/keedaa-cola-et00369553-1699610496.jpg",
         "genres": "Action",
         "category": "Action, Adventure, Sci-Fi"
     },
     {
         "id": "769cbd36-2b7c-4713-bf31-51dba69cdbf6",
         "movieTitle": "Spider-Man: No Way Home",
-        "movieImage": "https://res.cloudinary.com/dare4eibk/movieImage/upload/v1683082954/movies/movie-movieImage-Spider-Man:NoWayHome.jpg",
+        "movieImage": "https://assets-in.bmscdn.com/iedb/movies/images/mobile/thumbnail/xlarge/keedaa-cola-et00369553-1699610496.jpg",
         "genres": "Action",
         "category": "Action, Adventure, Sci-Fi"
     },
     {
         "id": "f77fa2a9-b04c-41df-aa1b-d170a55ef908",
         "movieTitle": "Guardians of the Galaxy Vol. 3",
-        "movieImage": "https://res.cloudinary.com/dare4eibk/movieImage/upload/v1683099358/movies/movie-movieImage-GuardiansoftheGalaxyVol.3.jpg",
+        "movieImage": "https://assets-in.bmscdn.com/iedb/movies/images/mobile/thumbnail/xlarge/keedaa-cola-et00369553-1699610496.jpg",
         "genres": "Adventure",
         "category": "Action, Comedy, Adventure, Sci-Fi"
     },
     {
         "id": "af4ce5a9-5524-4bbe-b4b4-e3cb82c68451",
         "movieTitle": "The Super Mario Bros. Movie",
-        "movieImage": "https://res.cloudinary.com/dare4eibk/movieImage/upload/v1683103052/movies/movie-movieImage-TheSuperMarioBros.Movie.jpg",
+        "movieImage": "https://assets-in.bmscdn.com/iedb/movies/images/mobile/thumbnail/xlarge/keedaa-cola-et00369553-1699610496.jpg",
         "genres": "Fantasy",
         "category": "Animation, Comedy, Adventure, Fantasy"
     },
     {
         "id": "31bf35a7-16cf-4003-b72a-6c50f693b082",
         "movieTitle": "The Pope's Exorcist",
-        "movieImage": "https://res.cloudinary.com/dare4eibk/movieImage/upload/v1683131710/movies/movie-movieImage-ThePope%27sExorcist.jpg",
+        "movieImage": "https://assets-in.bmscdn.com/iedb/movies/images/mobile/thumbnail/xlarge/keedaa-cola-et00369553-1699610496.jpg",
         "genres": "Horor",
         "category": "Horor, Thriller"
     },
     {
         "id": "2ceb60eb-2240-4666-8928-23e676043d4b",
         "movieTitle": "John Wick: Chapter 4",
-        "movieImage": "https://res.cloudinary.com/dare4eibk/movieImage/upload/v1683134185/movies/movie-movieImage-JohnWick:Chapter4.jpg",
+        "movieImage": "https://assets-in.bmscdn.com/iedb/movies/images/mobile/thumbnail/xlarge/keedaa-cola-et00369553-1699610496.jpg",
         "genres": "Action",
         "category": "Action, Crime, Thriller"
     },
     {
         "id": "26e54af3-bf61-40b4-ad12-1c23f96adeb5",
         "movieTitle": "Fast X",
-        "movieImage": "https://res.cloudinary.com/dare4eibk/movieImage/upload/v1683162347/movies/movie-movieImage-FastX.jpg",
+        "movieImage": "https://assets-in.bmscdn.com/iedb/movies/images/mobile/thumbnail/xlarge/keedaa-cola-et00369553-1699610496.jpg",
         "genres": "Action",
         "category": "Action, Crime"
     },
@@ -107,7 +109,7 @@ const MovieSlider = () => {
         dots: false,
         infinite: true,
         speed: 500,
-        slidesToShow: 5,
+        slidesToShow: 6,
         slidesToScroll: 5,
         nextArrow: <SampleNextArrow />,
         prevArrow: <SamplePrevArrow />,
@@ -119,7 +121,7 @@ const MovieSlider = () => {
     };
 
     return (
-        <Box sx={{ padding: '20px'}}>
+        <Box>
             <Typography variant="h6" sx={{ mb: 2 }}>
                 Recommended Movies
             </Typography>
