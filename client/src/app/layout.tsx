@@ -2,7 +2,6 @@
 import type { Metadata } from 'next'
 import { ThemeProvider } from "@mui/material";
 import theme from "@/src/app/styles/theme";
-
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';

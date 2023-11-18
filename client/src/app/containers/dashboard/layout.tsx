@@ -162,9 +162,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     overflow: 'auto',
                 }}
             >
-                <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
                     {children}
-                </Container>
                 <Footer />
             </Box>
         </Box>
