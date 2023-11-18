@@ -1,6 +1,8 @@
 'use client'
 import React, { ChangeEvent, useState } from "react";
 import InnerPageContainer from "../components/dashboard/common/InnerPageContainer";
+import { styled } from '@mui/material/styles';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import {
   Button,
   Grid,
@@ -88,6 +90,17 @@ export default function Contact() {
         setIsEditable(false);
     });
 }
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
 
 
 const handleFileChange = (e: any) => {
@@ -97,7 +110,7 @@ const handleFileChange = (e: any) => {
 };
 
 return (
-  <div style={{ display: 'block', width: '50%', margin: 'auto', paddingTop: '20px' }}>
+  <div style={{ display: 'block', width: '50%', margin: 'auto', paddingTop: '60px' }}>
   <form
       method="POST"
       action="https://www.formbackend.com/f/664decaabbf1c319"
@@ -112,12 +125,20 @@ return (
               <Typography variant="h5" gutterBottom>
                 User Image
               </Typography>
-              <input
-                type="file"
-                name="image"
-                onChange={handleFileChange}
-                accept="image/*"
-              />
+              <Box sx={{ display: 'flex', justifyContent: 'left' }}>
+              <Button
+                sx={{
+                  width: 200,
+                  marginLeft: 0, // Ensure no left margin
+                }}
+                component="label"
+                variant="contained"
+                startIcon={<CloudUploadIcon />}
+              >
+                Upload file
+                <VisuallyHiddenInput type="file" />
+              </Button>
+              </Box>
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography variant="body1" gutterBottom>
