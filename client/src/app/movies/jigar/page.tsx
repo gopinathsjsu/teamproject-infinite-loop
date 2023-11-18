@@ -1,4 +1,5 @@
 'use client'
+import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -9,7 +10,10 @@ import Chip from '@mui/material/Chip';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import FormControl from '@mui/material/FormControl';
-import { Container, Grid, Input, Paper, Typography } from '@mui/material';
+import { Container, Grid, Input, List, ListItem, ListItemAvatar, ListItemText, Paper, Typography, styled, IconButton, makeStyles } from '@mui/material';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
 
 import React, { ChangeEvent, useState } from "react";
 import InnerPageContainer from "@/src/app/components/dashboard/common/InnerPageContainer";
@@ -29,7 +33,7 @@ const App: React.FC = () => {
     releaseDate: '10 Nov, 2023',
     description: 'Karthik, an aspiring filmmaker finds a producer who is willing to make his film on one condition - that it should be a fierce gangster flick. Due to this, Karthik decides to take inspiration from a real-life gangster, Karthik comes to the temple town of Madurai along with his friend Ooruni for research on thugs.They come to know of the ruthless gangster and a terror in that area Assault Sethu. Karthik takes the help of Kayal and her mother who cook food for Sethu and his henchmen. He also pretends to be in love with the young girl. As he embarks on his task what follows is a commercial cocktail of action, humor and thrills. How Karthik comes out of this tricky web is the rest of the story',
     backgroundPoster: 'https://assets-in.bmscdn.com/iedb/movies/images/mobile/listing/xxlarge/jigarthanda-double-x-et00359702-1699446701.jpg', // Add your background poster path here
-    trailerLink: 'https://youtu.be/uaqz9v6HdKs?si=V8qc0VSBQpKc75YO', // Add your YouTube video id here
+    trailerLink: 'https://www.youtube.com/watch?v=uaqz9v6HdKs', // Add your YouTube video id here
   };
   const dates = ['Tue 14', 'Wed 15', 'Thu 16', 'Fri 17', 'Sat 18'];
 
@@ -52,26 +56,17 @@ const App: React.FC = () => {
     // ... add more cinema data as needed
   ];
 
-  const getDateButtonClass = (availability: string) => {
-    switch (availability) {
-      case "fast-filling":
-        return "bg-orange-200 text-orange-800";
-      case "almost-full":
-        return "bg-red-200 text-red-800";
-      default:
-        return "bg-green-200 text-green-800";
-    }
-    };
+
 
   const cast = [
-    { name: 'Actor Name 1', character: 'Character Name 1' },
-    { name: 'Actor Name 2', character: 'Character Name 2' },
+    { name: 'Aishwariya', role:"", imageurl: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D"},
+    { name: 'Mahesh Babu', role:"", imageurl: "https://upload.wikimedia.org/wikipedia/commons/9/9a/Mahesh_Babu_in_Spyder_%28cropped%29.jpg"},
     // ... other cast members
   ];
   
   const crew = [
-    { name: 'Director Name', role: 'Director' },
-    { name: 'Producer Name', role: 'Producer' },
+    { name: 'Raghu', role: 'Director' , imageurl:""},
+    { name: 'Vamshi', role: 'Producer' ,imageurl:""},
     // ... other crew members
   ];
 
@@ -98,140 +93,160 @@ const App: React.FC = () => {
   };
 
 
+
+  const videoOpts = {
+    height: '450px', // Set the height of the video player
+    width: '900px', // Set the width of the video player
+    border: 'none', // No border
+    borderRadius: '20px', // Rounded corners
+    overflow: 'hidden', // Prevents the content from spilling outside the border-radius
+  };
+
+  // Style for the container that will center the video
+  const videoContainerStyle = {
+    display: 'flex', // Use flexbox for centering
+    justifyContent: 'center', // Center horizontally
+    alignItems: 'center', // Center vertically
+    height: '40vh', // Full viewport height to center within the page vertically
+    width: '100%', // Ensure the container takes up the full width to center the video properly
+  };
+
+  const DateScrollContainer = styled('div')({
+    display: 'flex',
+    overflowX: 'auto', // Horizontal scroll
+    gap: '0.5rem',
+    marginBottom: '1rem',
+    padding: '0.5rem',
+    '&::-webkit-scrollbar': {
+      display: 'none', // Hide scrollbar for webkit browsers
+    },
+  });
+
+  const CinemaButton = styled(Button)({
+    textTransform: 'none',
+    margin: '0.25rem',
+    '&:hover': {
+      backgroundColor: '#f50057', // Example hover color, adjust as needed
+      color: '#fff',
+    },
+  });
+
+
+  
+
+  
   return (
     <>
     <div>
-    <div style={backgroundStyle}>
+    <div style = {backgroundStyle} >
     <div style={contentStyle}>
-          <Typography variant="h3" component="h1" gutterBottom style={{ fontSize: '80px' }}>
+          <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2 }} component="h1" gutterBottom style={{ fontSize: '80px' }}>
             {movie.title}
           </Typography>
-          <Typography variant="subtitle1" gutterBottom style={{ fontSize: '30px' }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }} gutterBottom style={{ fontSize: '30px' }}>
             {movie.releaseDate}
           </Typography>
-          <Typography variant="subtitle1" gutterBottom style={{ fontSize: '30px' }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }} gutterBottom style={{ fontSize: '30px' }}>
             {movie.languages.join(', ')} | {movie.duration} | UA
           </Typography>
-          <Typography variant="subtitle1" gutterBottom style={{ fontSize: '30px' }}>
+          <Typography variant="subtitle1"sx={{ fontWeight: 'bold', mb: 1 }}  gutterBottom style={{ fontSize: '30px' }}>
             {movie.genres.join(', ')}
           </Typography>
         </div>
-      </div>
-
-      <Container
-        maxWidth='lg'
-        sx={{ borderRadius: 10, overflow: 'hidden', padding: 4, marginTop: 4 }}
-      >
-        <Typography variant='h5' gutterBottom style={{ fontSize: '40px' }}>
-          About the movie
-        </Typography>
-        <Typography variant='body1' style={{ fontSize: '20px' }} >{movie.description}</Typography>
-      </Container>
-      <Container
-        maxWidth='lg'
-        sx={{ borderRadius: 10, overflow: 'hidden', padding: 4, marginTop: 4 }}
-      >
-        <Typography variant='h5' gutterBottom>
-          Cast
-        </Typography>
-        <ul>
-          {cast.map((actor, index) => (
-            <li key={`cast-${index}`}>
-              <strong>{actor.name}</strong> as {actor.character}
-            </li>
-          ))}
-        </ul>
-      </Container>
-      <Container
-        maxWidth='lg'
-        sx={{ borderRadius: 10, overflow: 'hidden', padding: 4, marginTop: 4 }}
-      >
-        <Typography variant='h5' gutterBottom>
-          Crew
-        </Typography>
-        <ul>
-          {crew.map((member, index) => (
-            <li key={`crew-${index}`}>
-              <strong>{member.role}:</strong> {member.name}
-            </li>
-          ))}
-        </ul>
-      </Container>
-      <Container maxWidth='lg' sx={{ padding: 4, marginTop: 4 }}>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 2,
+        </div>
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '40px',
+            right: '40px',
           }}
         >
-          <Typography variant='h5' gutterBottom>
-            Cinema Listings
-          </Typography>
-          <div
+          <Button
+            variant="contained"
             style={{
-              display: 'flex',
-              gap: '0.5rem',
+              backgroundColor: 'red',
+              color: 'white',
+              fontWeight: 'bold',
+               width: '150px',  // Adjust the width as needed
+            height: '50px',
             }}
           >
-            {dates.map((date, index) => (
-              <Button
-                key={index}
-                variant='outlined'
-                sx={{ textTransform: 'none', color: 'black' }}
-              >
-                {date}
-              </Button>
-            ))}
-          </div>
-        </Box>
-        {cinemas.map((cinema, index) => (
-          <Paper
-            key={index}
-            elevation={3}
-            sx={{ borderRadius: 10, padding: 4, marginBottom: 4 }}
-          >
-            <Typography variant='h6' gutterBottom>
-              {cinema.name}
+            Buy Tickets
+          </Button>
+        </div>
+
+      <Grid item xs={12} sm={6}>
+            <Container
+              maxWidth='lg'
+              sx={{ borderRadius: 10, overflow: 'hidden', padding: 4, marginTop: 4 }}
+            >
+              <Typography variant='h5' sx={{ fontWeight: 'bold', mb: 2 }} gutterBottom style={{ fontSize: '40px' }}>
+                About the movie
+              </Typography>
+              <Typography variant='body1' style={{ fontSize: '20px' }}>
+                {movie.description}
+              </Typography>
+              <div>
+              <Typography variant='body1' padding= '10px' paddingTop='20px'sx={{ fontWeight: 'bold', mb: 2 }} style={{ fontSize: '40px' }}>
+                Trailer of the movie
+              </Typography>
+              <div style={videoContainerStyle}>
+                <iframe
+                  title="Movie Trailer"
+                  src="https://www.youtube.com/embed/uaqz9v6HdKs" // Replace with your video link
+                  style={videoOpts}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </div>
+              </div>
+            </Container>
+          </Grid>
+        
+
+          <Container maxWidth='lg' sx={{ borderRadius: 2, overflow: 'hidden', mt: 2, mb: 4 }}>
+            <Typography variant='h5' component="div" sx={{ fontWeight: 'bold', mb: 2 }}>
+              Cast
             </Typography>
-            <div
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '0.5rem',
-              }}
-            >
-              {cinema.times.map((time, timeIndex) => (
-                <Button
-                  key={timeIndex}
-                  variant='outlined'
-                  sx={{
-                    textTransform: 'none',
-                    ...getDateButtonClass(time.availability),
-                  }}
-                >
-                  {time.showtime} <span style={{ marginLeft: '4px' }}>{time.format}</span>
-                </Button>
+            <Grid container spacing={1}>  {/* Reduced spacing between grid items */}
+              {cast.map((actor, index) => (
+                <Grid item key={`cast-${index}`} xs={6} sm={4} md={3} lg={2}> {/* Adjusted grid sizes for less space */}
+                  <Box sx={{ textAlign: 'center' }}>
+                    <Avatar alt={actor.name} src={actor.imageurl} sx={{ width: 90, height: 90, margin: 'auto', mb: 1 }} />
+                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                      {actor.name}
+                    </Typography>
+                    <Typography variant="body2">
+                      {actor.role}
+                    </Typography>
+                  </Box>
+                </Grid>
               ))}
-            </div>
-            <div
-              style={{
-                marginTop: '1rem',
-                display: 'flex',
-                gap: '1rem',
-              }}
-            >
-              <Button variant='text' color='primary'>
-                Get Directions
-              </Button>
-              <Button variant='text' color='primary'>
-                More Info
-              </Button>
-            </div>
-          </Paper>
-        ))}
-      </Container>
+            </Grid>
+          </Container>
+
+          <Container maxWidth='lg' sx={{ borderRadius: 2, overflow: 'hidden', mt: 2, mb: 4 }}>
+            <Typography variant='h5' component="div" sx={{ fontWeight: 'bold', mb: 2 }}>
+              Crew
+            </Typography>
+            <Grid container spacing={1}>  {/* Reduced spacing between grid items */}
+              {crew.map((crewMember, index) => (
+                <Grid item key={`crew-${index}`} xs={6} sm={4} md={3} lg={2}> {/* Adjusted grid sizes for less space */}
+                  <Box sx={{ textAlign: 'center' }}>
+                    <Avatar alt={crewMember.name} src={crewMember.imageurl} sx={{ width: 90, height: 90, margin: 'auto', mb: 1 }} />
+                    <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                      {crewMember.role}
+                    </Typography>
+                    <Typography variant="subtitle2">
+                      {crewMember.name}
+                    </Typography>
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+
+          </Container>
     </div>
     </>
   );

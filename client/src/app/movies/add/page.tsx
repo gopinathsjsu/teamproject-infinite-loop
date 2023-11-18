@@ -146,7 +146,7 @@ export default function Contact() {
       Object.entries(formData).forEach(([key, value]) => {
         if (key === "genre" || key === "format") {
             // Join the array values into a single string with comma separation
-            data.append(key, value.join(', '));
+            data.append(key, (value as string[]).join(', '));
           } else {
             // Append non-array and other array values normally
             data.append(key, value as string | Blob);
@@ -218,9 +218,11 @@ export default function Contact() {
     const file = e.target.files[0];
     setSelectedFile(file);
   };
+
+  
   
   return (
-    <div style={{ display: 'block', width: '50%', margin: 'auto', paddingTop: '20px' }}>
+    <div style={{ display: 'block', width: '50%', margin: 'auto', paddingTop: '100px' }}>
       <Paper elevation={3} style={{ padding: '20px', textAlign: 'center', marginBottom: '30px' }}>
         <Typography
           variant="h4"
