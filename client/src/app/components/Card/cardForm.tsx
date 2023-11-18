@@ -1,4 +1,5 @@
 "use client"
+import { DatePicker } from '@mui/x-date-pickers';
 import React, { useState } from 'react';
 
 const CardForm = () => {
@@ -126,14 +127,18 @@ const CardForm = () => {
                         <span className="label-text">Expiration Date (DD/MM)</span>
                     </label>
                     <input
-                        type="text"
+                        type="Date"
                         name="expirationDate"
                         value={cardDetails.expirationDate}
                         onChange={handleChange}
                         placeholder="DD/MM"
                         className="input input-bordered w-full max-w-xs"
                     />
-
+                    {/* <DatePicker label={'"month" and "year"'} views={['month', 'year']}
+                        name="expirationDate"
+                        value={cardDetails.expirationDate}
+                        onChange={handleChange}
+                        placeholder="DD/MM" /> */}
                     <label className="label">
                         <span className="label-text">Cardholder Name</span>
                     </label>
