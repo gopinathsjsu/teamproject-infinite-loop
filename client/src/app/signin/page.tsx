@@ -1,8 +1,6 @@
 'use client'
 import * as React from 'react';
-import { useForm } from 'react-hook-form';
 import { useRouter } from "next/navigation";
-
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -13,11 +11,13 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { apiRegisterUser } from '@/src/lib/auth-api';
+
+import { apiLoginUser } from '@/src/lib/auth-api';
 import { handleApiError } from '@/src/lib/helpers';
 import toast from 'react-hot-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { RegisterUserSchema } from '@/src/lib/validations/user.schema';
+import { LoginUserSchema } from '@/src/lib/validations/user.schema';
+import { useForm } from 'react-hook-form';
 
 function Copyright(props: any) {
     return (
@@ -32,12 +32,12 @@ function Copyright(props: any) {
     );
 }
 
-export default function SignUp() {
-
+export default function SignIn() {
     const [loading, setLoading] = React.useState(false);
-    const { register, handleSubmit, formState: { errors } } = useForm({resolver: zodResolver(RegisterUserSchema),});
+    const { register, handleSubmit, formState: { errors } } = useForm({ resolver: zodResolver(LoginUserSchema), });
+
     const onSubmit = (data: any) => {
-        registerUser(data);
+        signInUser(data);
     }
     const router = useRouter();
 
@@ -45,11 +45,11 @@ export default function SignUp() {
         return error && typeof error.message === 'string' ? error.message : '';
     };
 
-    async function registerUser(data: any){        
+    async function signInUser(data: any) {
         setLoading(true);
         try {
-            const user = await apiRegisterUser(JSON.stringify(data));
-            return router.push("/signin");
+            const user = await apiLoginUser(JSON.stringify(data));
+            return router.push("/");
         } catch (error: any) {
             if (error instanceof Error) {
                 handleApiError(error);
@@ -77,21 +77,10 @@ export default function SignUp() {
                     <LockOutlinedIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                    Sign up
+                    Sign in
                 </Typography>
                 <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <TextField
-                                {...register('name')}
-                                fullWidth
-                                id="name"
-                                label="Full Name"
-                                autoFocus
-                                error={!!errors.name}
-                                helperText={getErrorMessage(errors.name)}
-                            />
-                        </Grid>
                         <Grid item xs={12}>
                             <TextField
                                 {...register('email')}
@@ -115,17 +104,6 @@ export default function SignUp() {
                                 helperText={getErrorMessage(errors.password)}
                             />
                         </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                {...register('confirmPassword')}
-                                fullWidth
-                                type="password"
-                                id="confirmPassword"
-                                label="Confirm Password"
-                                error={!!errors.confirmPassword}
-                                helperText={getErrorMessage(errors.confirmPassword)}
-                            />
-                        </Grid>
                     </Grid>
                     <Button
                         type="submit"
@@ -133,18 +111,23 @@ export default function SignUp() {
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
                     >
-                        {!loading ? <span> Sign Up</span> : <span>Loading...</span>}
+                        {!loading ? <span> Sign In</span> : <span>Loading...</span>}
                     </Button>
-                    <Grid container justifyContent="flex-end">
+                    <Grid container>
+                        <Grid item xs>
+                            <Link href="#" variant="body2">
+                                Forgot password?
+                            </Link>
+                        </Grid>
                         <Grid item>
-                            <Link href="/signin" variant="body2">
-                                Already have an account? Sign in
+                            <Link href="/signup" variant="body2">
+                                {"Don't have an account? Sign Up"}
                             </Link>
                         </Grid>
                     </Grid>
                 </Box>
             </Box>
-            <Copyright sx={{ mt: 5 }} />
+            <Copyright sx={{ mt: 8, mb: 4 }} />
         </Container>
     );
 }
