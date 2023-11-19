@@ -28,7 +28,7 @@ app.use(
 app.use('/artist', ArtistRoute)
 app.use('/Theater', TheatreRoute)
 app.use('/Screen', ScreenRoute)
-app.use('/movie', MovieRoute)
+app.use('/movies', MovieRoute)
 app.use('/User', UserRoute)
 app.get('/home', (req, res) => {
   res.json({ message: 'Hello World!' })
