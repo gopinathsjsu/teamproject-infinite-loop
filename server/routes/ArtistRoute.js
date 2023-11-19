@@ -12,6 +12,7 @@ router.post('/add', upload.single('image'),async (req, res) => {
         console.log(req.body);
         console.log(req.file);
         const newArtist = new Artist({
+            id:uniqid(),
             name: req.body.fullname,
             gender: req.body.gender,
             profile_url: req.file.location,
