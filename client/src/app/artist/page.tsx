@@ -174,7 +174,7 @@ export default function Contact() {
     if (response.status === 200) {
       setCastAndCrew([...castandcrew, response.artist]);
     }
-     handleClose();
+    handleClose();
     console.log(response);
   };
 
@@ -207,7 +207,7 @@ export default function Contact() {
             <form
               onSubmit={submitForm}
               encType="multipart/form-data"
-              // action="/artist/add"
+            // action="/artist/add"
             >
               <Stack direction="column" spacing={2}>
                 <Box sx={{ display: "flex", justifyContent: "center" }}>

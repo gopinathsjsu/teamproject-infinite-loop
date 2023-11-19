@@ -1,6 +1,6 @@
 "use client"
-import React from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -10,7 +10,16 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as zod from 'zod';
-
+import { getDataFromEndPoint } from "@/src/lib/backend-api";
+interface Screen {
+    id: string,
+    name: string,
+    timings: string[],
+    maxCapacity: string,
+    imageUrl: string,
+    format: string,
+    currentMovie: string,
+}
 const screenData = [
     {
         id: 1,
@@ -60,6 +69,9 @@ const schema = zod.object({
 
 export default function Screen() {
     const router = useRouter();
+    const { theaterId } = useParams();
+    console.log(theaterId);
+    const [screenData, setScreenData] = useState<Screen[]>([]);
     const { handleSubmit, control, formState: { errors } } = useForm({
         resolver: zodResolver(schema)
     });
@@ -71,13 +83,34 @@ export default function Screen() {
         width: 400,
         bgcolor: 'background.paper',
         border: '2px solid #000',
-        overflow:'scroll',
+        overflow: 'scroll',
         boxShadow: 24,
         p: 4,
     };
+    useEffect(() => {
+        const fetchData = async () => {
+            console.log("USE EFFECT");
+            const response = await getDataFromEndPoint("", 'screen/all', 'GET');
+            const data = JSON.parse(response.screens)
+            const mappedData: Screen[] = data.map((screenItem: any) => ({
+                id: screenItem.screen_id,
+                name: screenItem.screen_name,
+                timings: screenItem.show_times,
+                maxCapacity: screenItem.seating_capacity,
+                imageUrl: screenItem.image_url,
+                format: screenItem.screen_type,
+                currentMovie: screenItem.currentMovie,
+            }));
+            console.log(data);
+            console.log(mappedData);
+            setScreenData(mappedData);
+            console.log(screenData);
+        };
 
+        fetchData();
+    }, []);
     const addNewScreen = () => {
-        router.push("/theater/1/addScreen");
+        router.push("/theater/" + theaterId + "/addScreen");
     }
     return (
         <React.Fragment>
