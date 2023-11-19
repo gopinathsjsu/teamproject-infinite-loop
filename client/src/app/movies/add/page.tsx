@@ -16,7 +16,7 @@ import { any, string } from "zod";
 import { getDataFromEndPoint } from "@/src/lib/backend-api";
 import { Theme, useTheme } from "@mui/material";
 import theme from "../../styles/theme";
-import { format } from "path";
+import Autocomplete from "@mui/material/Autocomplete";
 
 export function MultipleSelectChip() {
   const theme = useTheme();
@@ -32,6 +32,11 @@ export function MultipleSelectChip() {
     );
   };
 }
+
+const top100Films = [
+  { title: 'The Shawshank Redemption', year: 1994 , image:'https://upload.wikimedia.org/wikipedia/en/8/81/ShawshankRedemptionMoviePoster.jpg'},
+  { title: 'The Godfather', year: 1972 , image:'https://upload.wikimedia.org/wikipedia/en/1/1c/Godfather_ver1.jpg'},
+];
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -148,14 +153,46 @@ export default function Contact() {
       genre: value as string[], // Ensure the value is treated as string[]
     }));
   };
+ const [cast, setCast] = useState<CastMember[]>([]);
+ const [crew, setCrew] = useState<CrewMember[]>([]);
+  const [selectedCast, setSelectedCast] = useState<CastMember[]>([]);
+  const [selectedCrew, setSelectedCrew] = useState<CrewMember[]>([]);
+ useEffect(() => {
+   const fetchData = async () => {
+     try {
+       const response = await fetch("http://localhost:8080/artist/all");
+       if (!response.ok) {
+         throw new Error(`Error: ${response.status}`);
+       }
+       const data = await response.json();
+       setCrew(data.Crew);
+       setCast(data.Cast);
+       console.log(data);
+     } catch (error) {
+       console.error("Failed to fetch data:", error);
+     }
+   };
 
+   fetchData();
+ }, []);
   const toggleEdit = () => {
     setIsEditable(!isEditable);
   };
+  interface CastMember { 
+    id: string;
+  name: string;
+  profile_url: string;
+  }
 
+  interface CrewMember {
+     id: string;
+     name: string;
+     profile_url: string;
+   }
+   
   const submitForm = async (e: any) => {
     e.preventDefault();
-
+   
     const data = new FormData();
 
     Object.entries(formData).forEach(([key, value]) => {
@@ -172,41 +209,15 @@ export default function Contact() {
     if (selectedFile) {
       data.append("movieposter", selectedFile);
     }
+     data.append(
+       "castIds",
+       selectedCast.map((artist) => artist.id).join(",")
+     );
+    console.log(selectedCrew);
+     data.append("crewIds", selectedCrew.map((artist) => artist.id).join(","));
     const formURL = "movies/add"; // Replace with your form's URL
     const response = await getDataFromEndPoint(data, formURL, "POST");
-    // POST the FormData to the URL of the form
-    // const formURL = e.currentTarget.action; // Use currentTarget for form's action
-    // fetch(formURL, {
-    //   method: "POST",
-    //   body: data,
-    //   // Do not set the Content-Type header when using FormData
-    // })
-    // .then(response => response.json())
-    // .then(data => {
-    //   // Handle form submission success
-    //   setFormSuccess(true);
-    //   setIsEditable(false);
-    //   setFormSuccessMessage("Movie added successfully!"); // Optional: Set a success message
-    //   setFormData({
-    //     // Reset formData to initial state
-    //     movieName: "",
-    //     AboutTheMovie: "",
-    //     movieposter: "",
-    //     movieTrailerLink: "",
-    //     Runtime: "",
-    //     genre: [] ,
-    //     format: [],
-    //     endDate: "",
-    //     releaseDate: "",
-    //     cast: "",
-    //     crew: "",
-    //     certificate: "",
-    //     languages: ""
-    //   });
-    // }).catch(error => {
-    //   // Handle errors if any
-    //   console.error("Error submitting form:", error);
-    // });
+   
   };
 
   const handleFormatChange = (event: SelectChangeEvent<string[]>) => {
@@ -259,7 +270,7 @@ export default function Contact() {
           Add Movies
         </Typography>
       </Paper>
-      <form method="POST"  onSubmit={submitForm}>
+      <form method="POST" onSubmit={submitForm}>
         <Box
           component="div"
           sx={{
@@ -460,32 +471,117 @@ export default function Contact() {
             </div>
 
             {/* Cast and Crew side by side */}
-            <div style={{ display: "flex", gap: "16px" }}>
-              {/* Cast Input */}
-              <div>
-                <TextField
-                  label="Cast"
-                  variant="outlined"
-                  fullWidth
-                  name="cast"
-                  placeholder="Cast"
-                  onChange={handleInput}
-                  value={formData.cast}
-                />
-              </div>
 
-              {/* Crew Input */}
-              <div>
-                <TextField
-                  label="Crew"
-                  variant="outlined"
-                  fullWidth
-                  name="crew"
-                  placeholder="Crew"
-                  onChange={handleInput}
-                  value={formData.crew}
-                />
-              </div>
+            {/* Cast Input */}
+            <div>
+              <Autocomplete
+                multiple
+                id="tags-outlined"
+                options={cast}
+                getOptionLabel={(option) => option.name || ""}
+                onChange={(event, newValue) => {
+                  setSelectedCast(newValue);
+                }}
+                renderOption={(props, option) => (
+                  <Box component="li" {...props}>
+                    <img
+                      src={option.profile_url}
+                      alt={option.name}
+                      style={{
+                        width: "30px",
+                        height: "30px",
+                        marginRight: "10px",
+                        borderRadius: "50%",
+                      }}
+                    />
+                    {option.name}
+                  </Box>
+                )}
+                renderTags={(value, getTagProps) =>
+                  value.map((option, index) => (
+                    <Box
+                      key={option.title}
+                      {...getTagProps({ index })}
+                      component="div"
+                      sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                    >
+                      <img
+                        src={option.profile_url}
+                        alt={option.name}
+                        style={{
+                          width: "30px",
+                          height: "30px",
+                          borderRadius: "50%",
+                        }}
+                      />
+                      {option.name}
+                    </Box>
+                  ))
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Movie Cast"
+                    placeholder="Cast"
+                  />
+                )}
+              />
+            </div>
+
+            {/* Crew Input */}
+            <div>
+              <Autocomplete
+                multiple
+                id="tags-outlined"
+                options={crew}
+                getOptionLabel={(option) => option.name || ""}
+                onChange={(event, newValue) => {
+                  setSelectedCrew(newValue);
+                }}
+                renderOption={(props, option) => (
+                  <Box component="li" {...props}>
+                    <img
+                      src={option.profile_url}
+                      alt={option.name}
+                      style={{
+                        width: "30px",
+                        height: "30px",
+                        marginRight: "10px",
+                        borderRadius: "50%",
+                      }}
+                    />
+                    {option.name}
+                  </Box>
+                )}
+                renderTags={(value, getTagProps) =>
+                  value.map((option, index) => (
+                    <Box
+                      key={option.title}
+                      {...getTagProps({ index })}
+                      component="div"
+                      sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                    >
+                      <img
+                        src={option.profile_url}
+                        alt={option.name}
+                        style={{
+                          width: "30px",
+                          height: "30px",
+                          borderRadius: "50%",
+                        }}
+                      />
+                      {option.name}
+                    </Box>
+                  ))
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Movie Crew"
+                    placeholder="Crew"
+                  />
+                )}
+              />
             </div>
 
             {/* Certificate and Language side by side */}
