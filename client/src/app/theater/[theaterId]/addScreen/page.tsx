@@ -35,7 +35,7 @@ const screen =
 }
 
 export default function addScreen() {
-    
+
     const router = useRouter();
     const [seatDetails, setSeatDetails] = useState<Seats>(screen?.seats || {});
     const [row, setRow] = useState<number>(screen?.rows || 0);
@@ -167,15 +167,15 @@ export default function addScreen() {
         return error && typeof error.message === 'string' ? error.message : '';
     };
 
-    async function onSubmit(data: any){
+    async function onSubmit(data: any) {
         data['rows'] = row;
         data['col'] = column;
         data['seats'] = seatDetails;
         const formUrl = 'screen/addScreen';
         console.log(formUrl);
-        try{
+        try {
             await getDataFromEndPoint(data, formUrl, 'POST');
-        }catch(error){
+        } catch (error) {
             console.log(error);
         }
     };

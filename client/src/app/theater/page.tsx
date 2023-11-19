@@ -14,6 +14,9 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/material/styles';
 import SendIcon from '@mui/icons-material/Send';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as zod from 'zod';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -25,6 +28,24 @@ const MenuProps = {
         },
     },
 };
+
+const schema = zod.object({
+    theater_name: zod.string().min(1, 'Screen Name is required'),
+    description: zod.string().min(1, 'description is required').max(350, 'Must be under 350 chareceters'),
+    city: zod.string().min(1, 'city is required'),
+    location_url: zod.string().min(1, 'locationUrl is required').url("Invalid Url"),
+    address: zod.string().min(1, 'address is required'),
+    zipcode: zod.string().refine((value) => /^\d{5}$/.test(value), {
+        message: 'Invalid ZipCode number. Must be 5 digits.',
+    }),
+    email: zod.string().min(1, "Email is required").email("Email is invalid"),
+    // phno: zod.number().min(1, 'Phone Number is required').max(10, 'Phone number should have only 10 digits'),
+    phno: zod.string().refine((value) => /^\d{10}$/.test(value), {
+        message: 'Invalid phone number. Must be 10 digits.',
+    }),
+    state: zod.string().min(1, 'state is required'),
+});
+
 
 export interface theater {
     name: string,
@@ -171,10 +192,10 @@ export default function Theater() {
         accept: "image/*",
     });
 
-    const submitForm = (e: any) => {
-        e.preventDefault()
+    const onSubmit = (e: any) => {
         if (selectedFile) {
-            const formURL = e.target.action
+            console.log("here");
+            const formURL = 'Theater/addtheater'
             const data = new FormData()
             data.append('file', selectedFile);
             Object.entries(formData).forEach(([key, value]) => {
@@ -186,12 +207,21 @@ export default function Theater() {
             setFormSuccess(true);
             console.log(get_data);
         }
+        setIsFile(true);
+
     }
+    const { handleSubmit, control, formState: { errors } } = useForm({
+        resolver: zodResolver(schema)
+    });
+    const getErrorMessage = (error: any) => {
+        return error && typeof error.message === 'string' ? error.message : '';
+    };
 
     const addScreen = () => {
         router.push("/theater/1/screens")
     }
     const [open, setOpen] = React.useState<boolean>(false);
+    const [isFile, setIsFile] = React.useState<boolean>(false);
     const handleClose = () => setOpen(false);
     return (
         <React.Fragment>
@@ -268,7 +298,7 @@ export default function Theater() {
                             <Stack direction="column" spacing={2}>
                                 {formSuccess ?
                                     ('successs') : ('')}
-                                <form onSubmit={submitForm} encType='multipart/form-data' action='/Theater/addtheater'>
+                                <form encType='multipart/form-data' action='/Theater/addtheater' onSubmit={handleSubmit(onSubmit)}>
                                     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                                         <Button
                                             sx={{ width: 200 }}
@@ -284,114 +314,144 @@ export default function Theater() {
                                                 'Upload Image'
                                             )}
                                             <VisuallyHiddenInput type="file" onChange={handleFileChange} />
+                                            {(isFile && !selectedFile) ? (<Typography>File required</Typography>) : ("")}
                                         </Button>
                                     </Box>
                                     <Grid container spacing={2} >
                                         <Grid item xs={12} md={12} lg={6}>
-                                            <TextField
-                                                margin="normal"
-                                                required
-                                                fullWidth
-                                                id="theater_name"
-                                                label="Theater Name"
+                                            <Controller
                                                 name="theater_name"
-                                                autoComplete="theater"
-                                                autoFocus
-                                                onChange={handleInput}
-                                            />
-                                            <TextField
-                                                margin="normal"
-                                                required
-                                                fullWidth
-                                                id="description"
-                                                label="Description"
+                                                control={control}
+                                                defaultValue=""
+                                                render={({ field }) =>
+                                                    <TextField {...field}
+                                                        margin="normal"
+                                                        fullWidth
+                                                        id="theater_name"
+                                                        label="Theater Name"
+                                                        autoComplete="theater"
+                                                        autoFocus
+                                                        error={!!errors.theater_name} helperText={getErrorMessage(errors.theater_name)}
+                                                    />} />
+                                            <Controller
                                                 name="description"
-                                                autoComplete="description"
-                                                autoFocus
-                                                onChange={handleInput}
-                                            />
-                                            <TextField
-                                                margin="normal"
-                                                required
-                                                fullWidth
-                                                id="phno"
-                                                label="Phone Number"
+                                                control={control}
+                                                defaultValue=""
+                                                render={({ field }) =>
+                                                    <TextField {...field}
+                                                        margin="normal"
+                                                        fullWidth
+                                                        id="description"
+                                                        label="Description"
+                                                        autoComplete="description"
+                                                        autoFocus
+                                                        error={!!errors.description} helperText={getErrorMessage(errors.description)}
+                                                    />} />
+                                            <Controller
                                                 name="phno"
-                                                autoComplete="phno"
-                                                autoFocus
-                                                onChange={handleInput}
-                                            />
-                                            <TextField
-                                                margin="normal"
-                                                required
-                                                fullWidth
-                                                id="email"
-                                                label="Email Address"
+                                                control={control}
+                                                defaultValue=""
+                                                render={({ field }) =>
+                                                    <TextField {...field}
+                                                        margin="normal"
+                                                        fullWidth
+                                                        id="phno"
+                                                        label="Phone Number"
+                                                        autoComplete="phno"
+                                                        autoFocus
+                                                        error={!!errors.phno} helperText={getErrorMessage(errors.phno)}
+                                                    />} />
+                                            <Controller
                                                 name="email"
-                                                autoComplete="email"
-                                                autoFocus
-                                                type="email"
-                                                onChange={handleInput}
-                                            />
+                                                control={control}
+                                                defaultValue=""
+                                                render={({ field }) =>
+                                                    <TextField {...field}
+                                                        margin="normal"
+                                                        fullWidth
+                                                        id="email"
+                                                        label="Email Address"
+                                                        autoComplete="email"
+                                                        autoFocus
+                                                        type="email"
+                                                        error={!!errors.email} helperText={getErrorMessage(errors.email)}
+                                                    />} />
                                         </Grid>
                                         <Grid item xs={12} md={12} lg={6}>
-                                            <TextField
-                                                margin="normal"
-                                                required
-                                                fullWidth
-                                                id="address"
-                                                label="Address"
+                                            <Controller
                                                 name="address"
-                                                autoComplete="address"
-                                                autoFocus
-                                                onChange={handleInput}
-                                            />
-                                            <TextField
-                                                margin="normal"
-                                                required
-                                                fullWidth
-                                                id="city"
-                                                label="City"
+                                                control={control}
+                                                defaultValue=""
+                                                render={({ field }) =>
+                                                    <TextField {...field}
+                                                        margin="normal"
+                                                        fullWidth
+                                                        id="address"
+                                                        label="Address"
+                                                        autoComplete="address"
+                                                        autoFocus
+                                                        error={!!errors.address} helperText={getErrorMessage(errors.address)}
+                                                    />} />
+                                            <Controller
                                                 name="city"
-                                                autoComplete="city"
-                                                autoFocus
-                                                onChange={handleInput}
-                                            />
-                                            <TextField
-                                                margin="normal"
-                                                required
-                                                fullWidth
-                                                id="zipcode"
-                                                label="Zip Code"
+                                                control={control}
+                                                defaultValue=""
+                                                render={({ field }) =>
+                                                    <TextField {...field}
+                                                        margin="normal"
+                                                        fullWidth
+                                                        id="city"
+                                                        label="City"
+                                                        autoComplete="city"
+                                                        autoFocus
+                                                        error={!!errors.city} helperText={getErrorMessage(errors.city)}
+                                                    />} />
+                                            <Controller
                                                 name="zipcode"
-                                                autoComplete="zipcode"
-                                                autoFocus
-                                                onChange={handleInput}
-                                            />
-                                            <TextField
-                                                margin="normal"
-                                                required
-                                                fullWidth
-                                                id="state"
-                                                label="State"
+                                                control={control}
+                                                defaultValue=""
+                                                render={({ field }) =>
+                                                    <TextField {...field}
+                                                        margin="normal"
+                                                        fullWidth
+                                                        id="zipcode"
+                                                        label="Zip Code"
+                                                        name="zipcode"
+                                                        autoComplete="zipcode"
+                                                        autoFocus
+                                                        error={!!errors.zipcode} helperText={getErrorMessage(errors.zipcode)}
+                                                    />} />
+                                            <Controller
                                                 name="state"
-                                                autoComplete="state"
-                                                autoFocus
-                                                onChange={handleInput}
-                                            />
+                                                control={control}
+                                                defaultValue=""
+                                                render={({ field }) =>
+                                                    <TextField {...field}
+                                                        margin="normal"
+                                                        fullWidth
+                                                        id="state"
+                                                        label="State"
+                                                        name="state"
+                                                        autoComplete="state"
+                                                        autoFocus
+                                                        error={!!errors.state} helperText={getErrorMessage(errors.state)}
+                                                    />} />
                                         </Grid>
                                     </Grid>
-                                    <TextField
-                                        margin="normal"
-                                        required
-                                        fullWidth
-                                        id="location_url"
-                                        label="Location Url"
+                                    <Controller
                                         name="location_url"
-                                        autoComplete="location_url"
-                                        autoFocus
-                                        onChange={handleInput}
-                                    />
+                                        control={control}
+                                        defaultValue=""
+                                        render={({ field }) =>
+                                            <TextField {...field}
+                                                margin="normal"
+                                                fullWidth
+                                                id="location_url"
+                                                label="Location Url"
+                                                autoComplete="location_url"
+                                                autoFocus
+                                                error={!!errors.location_url} helperText={getErrorMessage(errors.location_url)}
+                                            />} />
 
                                     <Button variant="contained" endIcon={<SendIcon />} style={{ width: "300px", left: '125px' }} type="submit">
                                         Add Theater
