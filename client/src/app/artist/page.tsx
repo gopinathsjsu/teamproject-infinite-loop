@@ -27,9 +27,9 @@ import Chip from "@mui/material/Chip";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
 import { Container, Grid, Link } from "@mui/material";
-import { useState } from "react";
 import { getDataFromEndPoint } from "@/src/lib/backend-api";
 import theme from "../styles/theme";
+import { useState, useEffect, useContext } from "react";
 
 const style = {
   position: "absolute",
@@ -79,29 +79,13 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-const castandcrew = [
-  // Adding some crew members
-  {
-    name: "John Doe",
-    role: "Director",
-    imageurl: "path_to_director_image.jpg",
-  },
-  {
-    name: "Jane Smith",
-    role: "Producer",
-    imageurl: "path_to_producer_image.jpg",
-  },
-  // ...
+interface CastAndCrewMember {
+  name: string;
+  profession: string;
+  profile_url: string;
+  // Include other properties as needed
+}
 
-  // Adding some cast members
-  { name: "Actor One", role: "Actor", imageurl: "path_to_actor_image.jpg" },
-  {
-    name: "Actress Two",
-    role: "Actress",
-    imageurl: "path_to_actress_image.jpg",
-  },
-  // ...
-];
 
 // Function to get styles for select items
 function getStyles(
@@ -118,6 +102,26 @@ function getStyles(
 }
 
 export default function Contact() {
+  const [castandcrew, setCastAndCrew] = useState<CastAndCrewMember[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/artist/all");
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+        const data = await response.json();
+        setCastAndCrew(data.artists);
+        console.log(data);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const [formData, setFormData] = useState({
     fullname: "",
     dateOfBirth: "",
@@ -130,6 +134,7 @@ export default function Contact() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
 
   // File upload handling
   const [selectedFile, setSelectedFile] = useState(null);
@@ -146,7 +151,7 @@ export default function Contact() {
   const [formSuccess, setFormSuccess] = useState(false);
   const [formSuccessMessage, setFormSuccessMessage] = useState("");
 
-  const submitForm = (e: { preventDefault: () => void }) => {
+  const submitForm = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     const data = new FormData();
 
@@ -164,29 +169,13 @@ export default function Contact() {
       }
     });
 
-    const formURL = "/artist/add"; // Replace with your form's URL
-    const get_data = getDataFromEndPoint(data, "artist/add", "POST");
-    //  fetch(formURL, {
-    //    method: "POST",
-    //    body: data,
-    //  })
-    //  .then(response => response.json())
-    //  .then(data => {
-    //    setFormSuccess(true);
-    //    setFormSuccessMessage("Artist added successfully!");
-    //    // Reset form data
-    //    setFormData({
-    //      fullname: "",
-    //      dateOfBirth: "",
-    //      gender: "",
-    //      category: "",
-    //      profession: [],
-    //    });
-    //  })
-    //  .catch(error => {
-    //    console.error("Error submitting form:", error);
-    //  });
-    console.log(get_data);
+    const formURL = "artist/add"; // Replace with your form's URL
+    const response = await getDataFromEndPoint(data, formURL, "POST");
+    if (response.status === 200) {
+      setCastAndCrew([...castandcrew, response.artist]);
+    }
+     handleClose();
+    console.log(response);
   };
 
   // Form input change handling
@@ -428,13 +417,13 @@ export default function Contact() {
               <Box sx={{ textAlign: "center", p: 1 }}>
                 <Avatar
                   alt={member.name}
-                  src={member.imageurl}
+                  src={member.profile_url}
                   sx={{ width: 120, height: 120, margin: "auto", mb: 1 }}
                 />
                 <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
                   {member.name}
                 </Typography>
-                <Typography variant="body2">{member.role}</Typography>
+                <Typography variant="body2">{member.profession}</Typography>
               </Box>
             </Grid>
           ))}
