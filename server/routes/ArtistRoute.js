@@ -21,10 +21,30 @@ router.post('/add', upload.single('image'),async (req, res) => {
         });
 
         // Save the user to the database
-        await newArtist.save();
-        res.json({ message: "Added artist successfully", status: HTTP_STATUS_CODES.OK });
+      const artist =  await newArtist.save();
+        res.json({artist:newArtist, message: "Added artist successfully", status: HTTP_STATUS_CODES.OK });
     } catch (error) {
-        console.error('Error creating user:', error);
+        console.error('Error creating artist:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+router.get('/all', async (req, res) => {
+    try {
+        const artists = await Artist.find();
+        res.json({ artists: artists, status: HTTP_STATUS_CODES.OK });
+    } catch (error) {
+        console.error('Error sending artist details:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+router.get('/get/:id', async (req, res) => { 
+    try {
+        const artist = await Artist.findOne({id: req.params.id});
+        res.json({ artist: artist, status: HTTP_STATUS_CODES.OK });
+    } catch (error) {
+        console.error('Error sending artist details:', error);
         res.status(500).send('Internal Server Error');
     }
 });
