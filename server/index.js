@@ -26,8 +26,8 @@ app.use(
   }));
 
 app.use('/artist', ArtistRoute)
-app.use('/Theater', TheatreRoute)
-app.use('/Screen', ScreenRoute)
+app.use('/theater', TheatreRoute)
+app.use('/screen', ScreenRoute)
 app.use('/movie', MovieRoute)
 app.use('/User', UserRoute)
 app.get('/home', (req, res) => {

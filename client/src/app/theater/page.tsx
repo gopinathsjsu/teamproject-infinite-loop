@@ -1,6 +1,6 @@
 "use client"
 import { getDataFromEndPoint } from "@/src/lib/backend-api";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -47,7 +47,7 @@ const schema = zod.object({
 });
 
 
-export interface theater {
+interface Theater {
     name: string,
     description: string,
     locationUrl: string,
@@ -57,90 +57,92 @@ export interface theater {
     nScreens: number,
     email: string,
     phoneNumber: string,
+    theater_id: string,
 }
 
-const theaters: theater[] = [
-    {
-        name: "cinemark",
-        description: "new Theater",
-        locationUrl: "someurl",
-        address: "some address",
-        screenDetails: ["screen1", "screen2"],
-        imageUrl: "https://lumiere-a.akamaihd.net/v1/images/p_avengersendgame_19751_e14a0104.jpeg?region=0%2C0%2C540%2C810", // Dummy image URL for a larger movie poster
-        nScreens: 2,
-        email: "cinemark@gmail.com",
-        phoneNumber: "1234567890",
-    },
-    {
-        name: "cinemark",
-        description: "new Theater",
-        locationUrl: "someurl",
-        address: "some address",
-        screenDetails: ["screen1", "screen2"],
-        imageUrl: "https://lumiere-a.akamaihd.net/v1/images/p_avengersendgame_19751_e14a0104.jpeg?region=0%2C0%2C540%2C810", // Dummy image URL for a larger movie poster
-        nScreens: 2,
-        email: "cinemark@gmail.com",
-        phoneNumber: "1234567890",
-    },
-    {
-        name: "cinemark",
-        description: "new Theater",
-        locationUrl: "someurl",
-        address: "some address",
-        screenDetails: ["screen1", "screen2"],
-        imageUrl: "https://lumiere-a.akamaihd.net/v1/images/p_avengersendgame_19751_e14a0104.jpeg?region=0%2C0%2C540%2C810", // Dummy image URL for a larger movie poster
-        nScreens: 2,
-        email: "cinemark@gmail.com",
-        phoneNumber: "1234567890",
-    },
-    {
-        name: "cinemark",
-        description: "new Theater",
-        locationUrl: "someurl",
-        address: "some address",
-        screenDetails: ["screen1", "screen2"],
-        imageUrl: "https://lumiere-a.akamaihd.net/v1/images/p_avengersendgame_19751_e14a0104.jpeg?region=0%2C0%2C540%2C810", // Dummy image URL for a larger movie poster
-        nScreens: 2,
-        email: "cinemark@gmail.com",
-        phoneNumber: "1234567890",
-    },
-    {
-        name: "cinemark",
-        description: "new Theater",
-        locationUrl: "someurl",
-        address: "some address",
-        screenDetails: ["screen1", "screen2"],
-        imageUrl: "https://lumiere-a.akamaihd.net/v1/images/p_avengersendgame_19751_e14a0104.jpeg?region=0%2C0%2C540%2C810", // Dummy image URL for a larger movie poster
-        nScreens: 2,
-        email: "cinemark@gmail.com",
-        phoneNumber: "1234567890",
-    },
-    {
-        name: "cinemark",
-        description: "new Theater",
-        locationUrl: "someurl",
-        address: "some address",
-        screenDetails: ["screen1", "screen2"],
-        imageUrl: "https://lumiere-a.akamaihd.net/v1/images/p_avengersendgame_19751_e14a0104.jpeg?region=0%2C0%2C540%2C810", // Dummy image URL for a larger movie poster
-        nScreens: 2,
-        email: "cinemark@gmail.com",
-        phoneNumber: "1234567890",
-    },
-    {
-        name: "cinemark",
-        description: "new Theater",
-        locationUrl: "someurl",
-        address: "some address",
-        screenDetails: ["screen1", "screen2"],
-        imageUrl: "https://lumiere-a.akamaihd.net/v1/images/p_avengersendgame_19751_e14a0104.jpeg?region=0%2C0%2C540%2C810", // Dummy image URL for a larger movie poster
-        nScreens: 2,
-        email: "cinemark@gmail.com",
-        phoneNumber: "1234567890",
-    },
-];
+// const theaters: Theater[] = [
+//     {
+//         name: "cinemark",
+//         description: "new Theater",
+//         locationUrl: "someurl",
+//         address: "some address",
+//         screenDetails: ["screen1", "screen2"],
+//         imageUrl: "https://lumiere-a.akamaihd.net/v1/images/p_avengersendgame_19751_e14a0104.jpeg?region=0%2C0%2C540%2C810", // Dummy image URL for a larger movie poster
+//         nScreens: 2,
+//         email: "cinemark@gmail.com",
+//         phoneNumber: "1234567890",
+//     },
+//     {
+//         name: "cinemark",
+//         description: "new Theater",
+//         locationUrl: "someurl",
+//         address: "some address",
+//         screenDetails: ["screen1", "screen2"],
+//         imageUrl: "https://lumiere-a.akamaihd.net/v1/images/p_avengersendgame_19751_e14a0104.jpeg?region=0%2C0%2C540%2C810", // Dummy image URL for a larger movie poster
+//         nScreens: 2,
+//         email: "cinemark@gmail.com",
+//         phoneNumber: "1234567890",
+//     },
+//     {
+//         name: "cinemark",
+//         description: "new Theater",
+//         locationUrl: "someurl",
+//         address: "some address",
+//         screenDetails: ["screen1", "screen2"],
+//         imageUrl: "https://lumiere-a.akamaihd.net/v1/images/p_avengersendgame_19751_e14a0104.jpeg?region=0%2C0%2C540%2C810", // Dummy image URL for a larger movie poster
+//         nScreens: 2,
+//         email: "cinemark@gmail.com",
+//         phoneNumber: "1234567890",
+//     },
+//     {
+//         name: "cinemark",
+//         description: "new Theater",
+//         locationUrl: "someurl",
+//         address: "some address",
+//         screenDetails: ["screen1", "screen2"],
+//         imageUrl: "https://lumiere-a.akamaihd.net/v1/images/p_avengersendgame_19751_e14a0104.jpeg?region=0%2C0%2C540%2C810", // Dummy image URL for a larger movie poster
+//         nScreens: 2,
+//         email: "cinemark@gmail.com",
+//         phoneNumber: "1234567890",
+//     },
+//     {
+//         name: "cinemark",
+//         description: "new Theater",
+//         locationUrl: "someurl",
+//         address: "some address",
+//         screenDetails: ["screen1", "screen2"],
+//         imageUrl: "https://lumiere-a.akamaihd.net/v1/images/p_avengersendgame_19751_e14a0104.jpeg?region=0%2C0%2C540%2C810", // Dummy image URL for a larger movie poster
+//         nScreens: 2,
+//         email: "cinemark@gmail.com",
+//         phoneNumber: "1234567890",
+//     },
+//     {
+//         name: "cinemark",
+//         description: "new Theater",
+//         locationUrl: "someurl",
+//         address: "some address",
+//         screenDetails: ["screen1", "screen2"],
+//         imageUrl: "https://lumiere-a.akamaihd.net/v1/images/p_avengersendgame_19751_e14a0104.jpeg?region=0%2C0%2C540%2C810", // Dummy image URL for a larger movie poster
+//         nScreens: 2,
+//         email: "cinemark@gmail.com",
+//         phoneNumber: "1234567890",
+//     },
+//     {
+//         name: "cinemark",
+//         description: "new Theater",
+//         locationUrl: "someurl",
+//         address: "some address",
+//         screenDetails: ["screen1", "screen2"],
+//         imageUrl: "https://lumiere-a.akamaihd.net/v1/images/p_avengersendgame_19751_e14a0104.jpeg?region=0%2C0%2C540%2C810", // Dummy image URL for a larger movie poster
+//         nScreens: 2,
+//         email: "cinemark@gmail.com",
+//         phoneNumber: "1234567890",
+//     },
+// ];
 
 export default function Theater() {
     const router = useRouter();
+    const [theaterData, setTheaterData] = useState<Theater[]>([]);
     const [formData, setFormData] = useState({
         theater_name: "",
         description: "",
@@ -191,21 +193,56 @@ export default function Theater() {
         width: 1,
         accept: "image/*",
     });
+    useEffect(() => {
+        const fetchData = async () => {
+            const response = await getDataFromEndPoint("", 'theater/all', 'GET');
+            const data = JSON.parse(response.data)
+            const mappedData: Theater[] = data.map((theaterItem: any) => ({
+                name: theaterItem.name,
+                description: theaterItem.description,
+                locationUrl: theaterItem.theater_url,
+                address: theaterItem.address,
+                screenDetails: theaterItem.screen_details,
+                imageUrl: theaterItem.image_url,
+                nScreens: theaterItem.screen_details.length,
+                email: theaterItem.mail,  // Replace with actual email property from your data
+                phoneNumber: theaterItem.mobile,
+                theater_id: theaterItem.theater_id  // Assuming mobile is a number
+            }));
+            console.log(data);
+            setTheaterData(mappedData);
+            console.log(theaterData);
+        };
 
-    const onSubmit = (e: any) => {
+        fetchData();
+    }, []);
+    const onSubmit = async (e: any) => {
         if (selectedFile) {
-            console.log("here");
-            const formURL = 'Theater/addtheater'
+            const formURL = 'theater/add'
             const data = new FormData()
             data.append('file', selectedFile);
-            Object.entries(formData).forEach(([key, value]) => {
-                data.append(key, value);
-            });
-
+            data.append('data', JSON.stringify(e));
             console.log(data);
-            const get_data = getDataFromEndPoint(data, formURL, 'POST');
+            const get_data = await getDataFromEndPoint(data, formURL, 'POST');
+            if (get_data.status === 200) {
+                console.log(get_data);
+                const data_req = [get_data.data]
+                console.log(data_req);
+                const mappedData: Theater[] = data_req.map((theaterItem: any) => ({
+                    name: theaterItem.name,
+                    description: theaterItem.description,
+                    locationUrl: theaterItem.theater_url,
+                    address: theaterItem.address,
+                    screenDetails: theaterItem.screen_details,
+                    imageUrl: theaterItem.image_url,
+                    nScreens: theaterItem.screen_details.length,
+                    email: theaterItem.mail,
+                    phoneNumber: theaterItem.mobile,
+                    theater_id: theaterItem.theater_id
+                }));
+                setTheaterData([...theaterData, ...mappedData])
+            }
             setFormSuccess(true);
-            console.log(get_data);
         }
         setIsFile(true);
 
@@ -217,8 +254,8 @@ export default function Theater() {
         return error && typeof error.message === 'string' ? error.message : '';
     };
 
-    const addScreen = () => {
-        router.push("/theater/1/screens")
+    const addScreen = (theaterId: any) => {
+        router.push("/theater/" + theaterId + "/screens/")
     }
     const [open, setOpen] = React.useState<boolean>(false);
     const [isFile, setIsFile] = React.useState<boolean>(false);
@@ -237,7 +274,7 @@ export default function Theater() {
                     </Grid>
                     <Grid item xs={12} container>
                         <Grid container spacing={2} alignItems="center" justifyContent="left">
-                            {theaters.map((theater, index) => (
+                            {theaterData.map((theater, index) => (
                                 <Grid item xs={12} md={6} lg={6} key={index}>
                                     <Box sx={{ bgcolor: 'white', p: 3, borderRadius: 2, boxShadow: 3, display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: 'center' }}>
                                         <img src={theater.imageUrl} alt="Theater" style={{ marginBottom: 16, marginRight: 24, width: 192, borderRadius: 8 }} />
@@ -248,7 +285,7 @@ export default function Theater() {
                                                 </Link>
                                                 <Box>
                                                     <Button startIcon={<EditIcon />} sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }} />
-                                                    <Button sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }} onClick={addScreen}>
+                                                    <Button sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }} onClick={() => addScreen(theater.theater_id)}>
                                                         Show Screens
                                                     </Button>
                                                 </Box>
@@ -257,9 +294,11 @@ export default function Theater() {
                                             <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontSize: '1rem' }}>{theater.address}</Typography>
                                             <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', mb: 2 }}>
                                                 <Box sx={{ bgcolor: 'blue.100', color: 'blue.800', px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }}>{`Screens: ${theater.nScreens}`}</Box>
-                                                {theater.screenDetails.map((screen, screenIndex) => (
-                                                    <Button key={screenIndex} sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }}>{screen}</Button>
-                                                ))}
+                                                {
+                                                    theater.screenDetails.map((screen, screenIndex) => (
+                                                        <Button key={screenIndex} sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }}>{screen}</Button>
+                                                    ))
+                                                }
                                             </Box>
                                             <Box sx={{ display: 'flex', alignItems: 'center', fontSize: '0.875rem', color: 'text.secondary' }}>
                                                 <Box sx={{ mr: 2 }}><i className="fas fa-envelope mr-1"></i>{theater.email}</Box>

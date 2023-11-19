@@ -16,10 +16,12 @@ router.post('/addScreen', async (req, res) => {
             })
         });
         console.log('at /addScreeen');
-        const count = await ScreenModel.countDocuments();
+        const theater_id = req.body.theater_id;
+        const screen_count = await ScreenModel.countDocuments({ theater_id: theater_id });
+        console.log(screen_count);
         const newScreen = new ScreenModel({
-            screen_id: `${req.body.name}_${count + 1}`,
-            screen_name: req.body.name,
+            screen_id: `${theater_id}_Screen_${screen_count + 1}`,
+            screen_name: req.body.screenName,
             show_times: req.body.timing,
             screen_type: req.body.format,
             rows: req.body.rows,
@@ -27,7 +29,10 @@ router.post('/addScreen', async (req, res) => {
             seating_capacity: req.body.rows * req.body.col,
             cost: req.body.cost,
             seat_array: seatArray,
+            theater_id: theater_id,
         });
+        console.log(newScreen);
+
         // Save the Screen to the database
         await newScreen.save();
         res.json({ message: "Added movie successfully", status: HTTP_STATUS_CODES.OK });
@@ -40,12 +45,13 @@ router.post('/addScreen', async (req, res) => {
     }
 })
 
-router.get('/getAllScreens', async (req, res) => {
+router.get('/all', async (req, res) => {
     try {
 
         // Save the user to the database
+        console.log('/screen/all');
         const screen = await ScreenModel.find();
-        res.json({ message: "Screens Found", status: HTTP_STATUS_CODES.OK, screens: screen });
+        res.json({ message: "Screens Found", status: HTTP_STATUS_CODES.OK, screens: JSON.stringify(screen) });
     } catch (error) {
         console.error('Error creating user:', error);
         res.json({
