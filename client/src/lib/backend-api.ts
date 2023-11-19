@@ -18,11 +18,9 @@ async function handleResponse<T>(response: Response): Promise<T> {
     return data as T;
 }
 export async function getDataFromEndPoint(credentials: any, endpoint: string, method: string): Promise<any> {
-    const pathSegments = endpoint.split('/');
-    console.log(pathSegments);
-    const pathVariable = pathSegments.join('/');
-    console.log(pathVariable);
-
+  
+    const fetchUrl = SERVER_ENDPOINT+'/'+endpoint
+  
     const isFormData = credentials instanceof FormData;
 
     const fetchOptions: RequestInit = {
@@ -37,8 +35,7 @@ export async function getDataFromEndPoint(credentials: any, endpoint: string, me
         };
         fetchOptions.body = JSON.stringify(credentials);
     }
+    const response = await fetch(fetchUrl, fetchOptions);
 
-    const response = await fetch(`${SERVER_ENDPOINT}/${pathVariable}`, fetchOptions);
-    console.log(response);
     return handleResponse<GetEndpointResponse>(response).then((data) => data);
 }

@@ -2,13 +2,15 @@ require('dotenv').config()
 const express = require('express')
 const router = express.Router();
 const Movie = require('../models/MovieModel');
+const uniqid = require('uniqid');
 const { upload } = require('../Helpers/S3');
+const { HTTP_STATUS_CODES } = require('../constants')
 
-router.post('/add', upload.single('banner'),async (req, res) => {
+router.post('/add', upload.single('movieposter'),async (req, res) => {
      try {
         console.log(req.body);
         const newMovie = new Movie({
-            movie_id:{type: String},
+            id:uniqid(),
             title: req.body.movieName,
             cast: req.body.cast,
             description: req.body.AboutTheMovie,
@@ -20,8 +22,8 @@ router.post('/add', upload.single('banner'),async (req, res) => {
             rating:0,
             release_date: req.body.releaseDate,
             end_date: req.body.endDate,
-            cast: req.body.cast,
-            crew: req.body.crew,
+            cast: req.body.castIds.split(','),
+            crew: req.body.crewIds.split(',') ,
             certificate:req.body.certificate,
             ticket_price:0,
             tickets_sold:0,
@@ -38,7 +40,7 @@ router.post('/add', upload.single('banner'),async (req, res) => {
     }
 })
 
-router.get('/list/all', async (req, res) => {
+router.get('/all', async (req, res) => {
      try {
       
         // Save the user to the database
