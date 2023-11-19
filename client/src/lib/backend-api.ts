@@ -18,23 +18,33 @@ async function handleResponse<T>(response: Response): Promise<T> {
     return data as T;
 }
 export async function getDataFromEndPoint(credentials: any, endpoint: string, method: string): Promise<any> {
-  
-    const fetchUrl = SERVER_ENDPOINT+'/'+endpoint
-  
+
+    const fetchUrl = SERVER_ENDPOINT + '/' + endpoint
+
     const isFormData = credentials instanceof FormData;
 
+    if (method == 'GET') {
+        const fetchOptions: RequestInit = {
+            method: method,
+            credentials: "include",
+        };
+        const response = await fetch(fetchUrl, fetchOptions);
+
+        return handleResponse<GetEndpointResponse>(response).then((data) => data);
+    }
     const fetchOptions: RequestInit = {
         method: method,
         credentials: "include",
         body: credentials,
     };
-
+    console.log(credentials);
     if (!isFormData) {
         fetchOptions.headers = {
             'Content-Type': 'application/json'
         };
         fetchOptions.body = JSON.stringify(credentials);
     }
+    console.log(fetchOptions.body);
     const response = await fetch(fetchUrl, fetchOptions);
 
     return handleResponse<GetEndpointResponse>(response).then((data) => data);
