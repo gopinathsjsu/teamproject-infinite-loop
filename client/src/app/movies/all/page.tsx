@@ -12,8 +12,6 @@ import {
   Button,
 } from "@mui/material";
 import Container from "@mui/material/Container";
-import { useNavigate } from "react-router-dom";
-
 
 const MovieCard = ({
   movie,
@@ -68,7 +66,7 @@ const MovieSlider = () => {
      useEffect(() => {
        const fetchData = async () => {
          try {
-           const response = await fetch("http://localhost:8080/movies/all");
+           const response = await fetch("http://localhost:8080/movie/all");
            if (!response.ok) {
              throw new Error(`Error: ${response.status}`);
            }
@@ -96,7 +94,7 @@ const MovieSlider = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ my: 5 }}>
+    <Container maxWidth={false} sx={{ my: 5 }}>
       <Typography variant="h6" sx={{ mb: 2 }}>
         Recommended Movies
       </Typography>

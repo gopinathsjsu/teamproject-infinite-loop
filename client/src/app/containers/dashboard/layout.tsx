@@ -162,7 +162,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     overflow: 'auto',
                 }}
             >
-                    {children}
+                {children}
                 <Footer />
             </Box>
         </Box>

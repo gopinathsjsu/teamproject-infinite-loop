@@ -51,7 +51,7 @@ interface Theater {
     name: string,
     description: string,
     locationUrl: string,
-    address: string,
+    address: string,    
     screenDetails: string[],
     imageUrl: string,
     nScreens: number,
