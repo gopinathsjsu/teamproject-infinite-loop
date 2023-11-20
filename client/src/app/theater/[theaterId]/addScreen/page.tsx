@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as zod from 'zod';
@@ -38,6 +38,7 @@ export default function addScreen() {
 
     const router = useRouter();
     const [seatDetails, setSeatDetails] = useState<Seats>(screen?.seats || {});
+    const { theaterId } = useParams();
     const [row, setRow] = useState<number>(screen?.rows || 0);
     const [column, setColumn] = useState<number>(screen?.cols || 0);
     const [editable, setEditable] = useState<boolean>(false);
@@ -168,13 +169,16 @@ export default function addScreen() {
     };
 
     async function onSubmit(data: any) {
+        router.push("/theater/" + theaterId + "/screens/");
         data['rows'] = row;
         data['col'] = column;
         data['seats'] = seatDetails;
+        data['theater_id'] = theaterId;
         const formUrl = 'screen/addScreen';
         console.log(formUrl);
         try {
             await getDataFromEndPoint(data, formUrl, 'POST');
+
         } catch (error) {
             console.log(error);
         }
@@ -206,7 +210,7 @@ export default function addScreen() {
                                     <FormControl fullWidth margin="normal" error={!!errors.timing}>
                                         <InputLabel>Timing</InputLabel>
                                         <Select {...field} multiple label="Timing">
-                                            {['9am', '10am', '1pm'].map((time) => (
+                                            {['9:00 am', '1:00 pm', '6:00 pm', '10:00 pm'].map((time) => (
                                                 <MenuItem key={time} value={time}>{time}</MenuItem>
                                             ))}
                                         </Select>

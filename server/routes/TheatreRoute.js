@@ -4,42 +4,44 @@ const router = express.Router();
 const { upload } = require('../Helpers/S3');
 const { HTTP_STATUS_CODES } = require('../constants')
 const Theater = require('../models/TheaterModel');
-router.post('/addTheater', upload.single('file'), async (req, res) => {
+router.post('/add', upload.single('file'), async (req, res) => {
     try {
         console.log('at /addTheater');
+        // console.log(JSON.parse(req.body.data).theater_name);
+        const post_data = JSON.parse(req.body.data);
         const count = await Theater.countDocuments();
         image_url = req.file.location;
         console.log(req.body);
         const newTheater = new Theater({
-            id:uniqid(),
-            name: req.body.theater_name,
-            description: req.body.description,
-            location: req.body.state,
-            zipcode: req.body.zipcode,
-            theater_url: req.file.location,
-            theater_constructed_date: req.body.theatre_constructed_date,
-            theater_id: `${req.body.theater_name}_${count + 1}`,
-            address: req.body.address,
-            mobile: req.body.phno,
-            city: req.body.city,
-            mail: req.body.gmail
+            name: post_data.theater_name,
+            description: post_data.description,
+            location: post_data.state,
+            zipcode: post_data.zipcode,
+            theater_url: post_data.location_url,
+            image_url: image_url,
+            theater_constructed_date: post_data.theatre_constructed_date,
+            theater_id: `${post_data.theater_name}_${count + 1}`,
+            address: post_data.address,
+            mobile: post_data.phno,
+            city: post_data.city,
+            mail: post_data.email
         })
         console.log(newTheater);
         await newTheater.save();
-        res.json({ message: "Theatre Created successfully", status: HTTP_STATUS_CODES.OK });
+        res.json({ message: "Theatre Created successfully", status: HTTP_STATUS_CODES.OK, data: newTheater });
     }
     catch (err) {
         console.log(err);
         res.json({
             message: 'Uff...Contact..Admin',
             status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
-            data: JSON.stringify("")
+            data: JSON.stringify(err)
         })
 
     }
 })
 
-router.post('/getAllTheater', async (req, res) => {
+router.get('/all', async (req, res) => {
     try {
         const theaters = await Theater.find();
         console.log(theaters)
