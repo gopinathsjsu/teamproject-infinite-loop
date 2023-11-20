@@ -110,8 +110,9 @@ router.post('/updateProfile', upload.single('file'), async (req, res) => {
 });
 
 
-router.post('/uploadFile', upload.array('file1',2), (req, res) => {
-    const uploadedFile = req.files;
+router.post('/uploadFile', upload.single('file1'), (req, res) => {
+    upload.single('file2')
+    const uploadedFile = req.file;
     console.log(uploadedFile);
     const imageUrls = uploadedFile.map((file) => {
     return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}`;
