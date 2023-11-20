@@ -34,7 +34,7 @@ const ImageSlider = () => {
   };
 
   return (
-    <Box sx={{ marginTop: '70px' }}>
+    <Box>
       <Slider {...settings}>
         {images.map((image, index) => (
           <div key={index}>

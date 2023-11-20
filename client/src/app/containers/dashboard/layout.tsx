@@ -19,7 +19,9 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 
 import Footer from './footer';
+import ResponsiveAppBar from './navigationBar';
 import { mainListItems, secondaryListItems } from './listItems';
+import { Button } from '@mui/material';
 
 function Copyright(props: any) {
     return (
@@ -92,13 +94,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <Box sx={{ display: 'flex' }}>
-            <CssBaseline />
-            <AppBar position="absolute" open={open}>
-                <Toolbar
-                    sx={{
-                        pr: '24px', // keep right padding when drawer closed
-                    }}
+        <Box>
+
+            {/* <AppBar position="absolute" open={open}>
+                 
+                <Toolbar sx={{ pr: '24px' }}
+                    // keep right padding when drawer closed 
                 >
                     {showToggle && <IconButton
                         edge="start"
@@ -114,14 +115,25 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     </IconButton>
                     }
                     <Typography
-                        component="h1"
+                        // component="h1"
+                        // variant="h6"
+                        // color="inherit"
+                        // noWrap
+                        // sx={{ flexGrow: 1 }}
                         variant="h6"
-                        color="inherit"
                         noWrap
-                        sx={{ flexGrow: 1 }}
+                        component="a"
+                        sx={{
+                          mr: 2,
+                          display: { xs: 'none', md: 'flex' },
+                          color: 'inherit',
+                          textDecoration: 'none',
+                        }}
                     >
                         Box Office
                     </Typography>
+                    <Button color="inherit" variant="text">Sign Up</Button>
+                    <Button color="inherit" variant="text">Sign In</Button>
                     <IconButton color="inherit">
                         <Badge badgeContent={4} color="secondary">
                             <NotificationsIcon />
@@ -149,7 +161,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     {secondaryListItems}
                 </List>
             </Drawer>
-            }
+            } */}
+            < ResponsiveAppBar />
             <Box
                 component="main"
                 sx={{
