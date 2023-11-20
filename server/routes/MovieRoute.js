@@ -56,10 +56,11 @@ router.get('/all', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
      try {
-      
+      console.log(req.params.id);
         // Save the user to the database
-        const movies = await Movie.find({movie_id:id});
-        res.json({ message: "Added movie successfully", status: HTTP_STATUS_CODES.OK,movies:movies });
+         const movie = await Movie.find({ title: req.params.id });
+         console.log(movie);
+        res.json({ message: "Added movie successfully", status: HTTP_STATUS_CODES.OK,movie:movie });
     } catch (error) {
         console.error('Error creating user:', error);
         res.status(500).send('Internal Server Error');
