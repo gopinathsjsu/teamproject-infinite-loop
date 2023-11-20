@@ -21,6 +21,9 @@ interface Screen {
     imageUrl: string,
     format: string,
     currentMovie: string,
+    runtime: string,
+    cost: string,
+
 }
 
 const style = {
@@ -37,7 +40,7 @@ const style = {
 
 const schema = zod.object({
     movie: zod.string().min(1, 'Movie is required'),
-    ticketPrice: zod.number().min(1, 'ticket price is required')
+    ticketPrice: zod.string().min(1, 'ticket price is required')
 });
 
 export default function Screen() {
@@ -46,6 +49,7 @@ export default function Screen() {
     const [screenData, setScreenData] = useState<Screen[]>([]);
     const [open, setOpen] = React.useState<boolean>(false);
     const [movieData, setMovieData] = useState<any[]>([]);
+    const [selectedScreenId, setSelectedScreenId] = useState(null);
     const handleClose = () => setOpen(false);
 
     const { handleSubmit, control, formState: { errors } } = useForm({
@@ -54,16 +58,23 @@ export default function Screen() {
 
     useEffect(() => {
         const fetchScreenData = async () => {
-            const response = await getDataFromEndPoint("", 'screen/all', 'GET');
+            console.log(theaterId);
+            const theater_id = String(theaterId);
+            const response = await getDataFromEndPoint("", 'screen/' + theater_id, 'GET');
             const data = response.data;
+            console.log("here");
+            console.log(data);
+            console.log("here");
             const mappedData: Screen[] = data.map((screenItem: any) => ({
                 id: screenItem.screen_id,
                 name: screenItem.screen_name,
                 timings: screenItem.show_times,
                 maxCapacity: screenItem.seating_capacity,
-                imageUrl: screenItem.image_url,
+                imageUrl: screenItem.movie_image,
                 format: screenItem.screen_type,
-                currentMovie: screenItem.currentMovie,
+                currentMovie: screenItem.movie_name,
+                runtime: screenItem.run_time,
+                cost: screenItem.cost,
             }));
             setScreenData(mappedData);
         };
@@ -93,14 +104,32 @@ export default function Screen() {
 
     async function onSubmit(data: any) {
         data['theater_id'] = theaterId;
+        data['screen_id'] = selectedScreenId;
         const formUrl = 'screen/addMovie';
         try {
             await getDataFromEndPoint(data, formUrl, 'POST');
+            const response = await getDataFromEndPoint("", 'screen/' + theaterId, 'GET');
+            const data_req = response.data;
+            const mappedData: Screen[] = data_req.map((screenItem: any) => ({
+                id: screenItem.screen_id,
+                name: screenItem.screen_name,
+                timings: screenItem.show_times,
+                maxCapacity: screenItem.seating_capacity,
+                imageUrl: screenItem.movie_image,
+                format: screenItem.screen_type,
+                currentMovie: screenItem.movie_name,
+                runtime: String(screenItem.run_time),
+                cost: screenItem.cost,
+            }));
+            setScreenData([...screenData, ...mappedData])
         } catch (error) {
             console.log(error);
         }
     };
-
+    const handleOpenModal = (screen_id: any) => {
+        setSelectedScreenId(screen_id); // Set the selected screen id
+        setOpen(!open); // Open the modal
+    };
     return (
         <React.Fragment>
             <CssBaseline />
@@ -123,13 +152,19 @@ export default function Screen() {
                                                 <Typography variant="h6" component="h3" sx={{ mb: 1, fontWeight: 'medium', fontSize: '2rem' }} style={{}} color="#01579B">{screen.name}</Typography>
                                                 <Box>
                                                     <Button startIcon={<EditIcon />} sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }} />
-                                                    <Button sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }} onClick={() => setOpen(!open)}>
+                                                    <Button sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }} onClick={() => handleOpenModal(screen.id)}>
                                                         Add Movie
                                                     </Button>
                                                 </Box>
                                             </Grid>
                                             <Box sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }}>
                                                 {`Current Movie: `}{screen.currentMovie}
+                                            </Box>
+                                            <Box sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }}>
+                                                {`Run time: `}{screen.runtime}
+                                            </Box>
+                                            <Box sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }}>
+                                                {`cost: `}{screen.cost}{`$`}
                                             </Box>
                                             <Box sx={{ bgcolor: 'blue.100', color: 'blue.800', px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }}>{`Maximum Capacity: `}{screen.maxCapacity}</Box>
                                             <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', mb: 2 }}>

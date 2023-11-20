@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const router = express.Router();
 const { status, ScreenModel } = require('../models/ScreenModel');
+const MovieModel = require('../models/MovieModel');
 const { upload } = require('../Helpers/S3');
 const { HTTP_STATUS_CODES } = require('../constants')
 router.post('/addScreen', async (req, res) => {
@@ -49,7 +50,7 @@ router.get('/all', async (req, res) => {
     try {
         console.log('/screen/all');
         const screen = await ScreenModel.find();
-        res.json({ message: "Screens Found", status: HTTP_STATUS_CODES.OK, data: screen});
+        res.json({ message: "Screens Found", status: HTTP_STATUS_CODES.OK, data: screen });
     } catch (error) {
         console.error('Error creating user:', error);
         res.json({
@@ -58,17 +59,17 @@ router.get('/all', async (req, res) => {
         })
     }
 })
-router.get('/getScreen/:id', async (req, res) => {
+router.get('/:id', async (req, res) => {
 
     try {
         id = req.params['id'];
-        fields = ['screen_id', 'screen_name', 'show_times', 'screen_type', 'seat_array', 'rows', 'col']
-        const screen = await ScreenModel.find({ screen_id: id }).select(fields);
+        console.log("hello");
+        const screen = await ScreenModel.find({ theater_id: id })
         console.log(screen);
         res.json({
             message: 'Screen found',
             status: HTTP_STATUS_CODES.OK,
-            data: JSON.stringify(screen)
+            data: screen
         })
 
     }
@@ -78,6 +79,33 @@ router.get('/getScreen/:id', async (req, res) => {
             message: 'screen Not found',
             status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
             data: JSON.stringify("")
+        })
+    }
+})
+router.post('/addMovie', async (req, res) => {
+    try {
+        console.log('/screen/addMovie');
+        console.log(req.body);
+        const movie_id = req.body.movie;
+        const screenId = req.body.screen_id;
+        const tkt_price = req.body.ticketPrice;
+        const movie = await MovieModel.find({ id: movie_id })
+        await ScreenModel.updateOne({ screen_id: screenId }, {
+            movie_name: movie[0].title,
+            movie_image: movie[0].poster_url,
+            run_time: movie[0].run_time,
+            cost: tkt_price
+        }).then((result) => {
+            console.log(result);
+        }).catch((error) => {
+            console.error(error);
+        });
+        res.json({ message: "Updated Movies in Screen", status: HTTP_STATUS_CODES.OK, data: "" });
+    } catch (error) {
+        console.error('Error creating user:', error);
+        res.json({
+            message: "Internal Server Error",
+            status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR
         })
     }
 })
