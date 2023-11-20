@@ -11,7 +11,7 @@ const movieSchema = new mongoose.Schema({
   languages: {type:Array},
   run_time:{type: Number},
   rating: { type: Number },
-  movie_trailer_url: {type: String},
+  trailer_url: {type: String},
   release_date:{type: Date},
   ticket_price:{type: Number},
   tickets_sold:{type: Number},
