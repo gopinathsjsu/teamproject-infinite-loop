@@ -112,7 +112,7 @@ export default function Contact() {
           throw new Error(`Error: ${response.status}`);
         }
         const data = await response.json();
-        setCastAndCrew(data.artists);
+        setCastAndCrew(data.Crew);
         console.log(data);
       } catch (error) {
         console.error("Failed to fetch data:", error);

@@ -47,11 +47,9 @@ router.post('/addScreen', async (req, res) => {
 
 router.get('/all', async (req, res) => {
     try {
-
-        // Save the user to the database
         console.log('/screen/all');
         const screen = await ScreenModel.find();
-        res.json({ message: "Screens Found", status: HTTP_STATUS_CODES.OK, screens: JSON.stringify(screen) });
+        res.json({ message: "Screens Found", status: HTTP_STATUS_CODES.OK, data: screen});
     } catch (error) {
         console.error('Error creating user:', error);
         res.json({
