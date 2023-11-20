@@ -6,9 +6,10 @@ const uniqid = require('uniqid');
 const { upload } = require('../Helpers/S3');
 const { HTTP_STATUS_CODES } = require('../constants')
 
-router.post('/add', upload.single('movieposter'),async (req, res) => {
+router.post('/add', upload.array('movieposter',2),async (req, res) => {
      try {
-        console.log(req.body);
+         console.log(req.body);
+         console.log(req.files);
         const newMovie = new Movie({
             id:uniqid(),
             title: req.body.movieName,
@@ -27,7 +28,8 @@ router.post('/add', upload.single('movieposter'),async (req, res) => {
             certificate:req.body.certificate,
             ticket_price:0,
             tickets_sold:0,
-            movie_url:req.file.location,
+            poster_url: req.files[0].location,
+            banner_url: req.files[1].location,
             popularity: 0,          
         });
 

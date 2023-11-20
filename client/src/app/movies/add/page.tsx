@@ -134,13 +134,14 @@ export default function Contact() {
       [fieldName]: fieldValue,
     }));
   };
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[] | null>(null);
 
   const handleFileChange = (e: any) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      const file = files[0];
-      setSelectedFile(file);
+      console.log(files);
+      const selectedFilesArray: File[] = Array.from(files);
+      setSelectedFiles(selectedFilesArray); // Update the state
     }
   };
   const handleGenreChange = (event: SelectChangeEvent<string[]>) => {
@@ -206,8 +207,10 @@ export default function Contact() {
     });
 
     // If there's a file selected, append it to FormData
-    if (selectedFile) {
-      data.append("movieposter", selectedFile);
+    if (selectedFiles) {
+      selectedFiles.forEach((file, index) => {
+        data.append(`movieposter`, file);
+      });
     }
      data.append(
        "castIds",
@@ -231,12 +234,7 @@ export default function Contact() {
     }));
   };
 
-  const handleFileUpload = (e: any) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      setSelectedFile(file); // This should be the state updater function from useState
-    }
-  };
+ 
 
   return (
     <div
@@ -322,6 +320,7 @@ export default function Contact() {
                   name="movieposter"
                   type="file"
                   onChange={handleFileChange}
+                  inputProps={{ multiple: true }}
                 />
               </div>
               <div style={{ display: "flex", gap: "20px" }}>

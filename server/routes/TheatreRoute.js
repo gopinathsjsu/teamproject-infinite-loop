@@ -11,6 +11,7 @@ router.post('/addTheater', upload.single('file'), async (req, res) => {
         image_url = req.file.location;
         console.log(req.body);
         const newTheater = new Theater({
+            id:uniqid(),
             name: req.body.theater_name,
             description: req.body.description,
             location: req.body.state,
