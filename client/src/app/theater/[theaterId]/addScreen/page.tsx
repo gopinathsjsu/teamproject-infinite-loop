@@ -291,6 +291,9 @@ export default function addScreen() {
                         <p className={styles.header}>Select Seats to be <b className={styles.headerBlockedText}>Removed</b></p>
                         {seatDetails && editable && <RenderSeats />}
                         {seatDetails && !editable && <RenderFormatedSeats />}
+                        <div className={styles.cont_screen}>
+                            <div className={styles.screen}></div>
+                        </div>
                     </div>
                 </>
             </Container>
