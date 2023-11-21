@@ -22,6 +22,7 @@ const screenSchema = new mongoose.Schema({
     theater_id: String,
     seat_array: { type: [], required: true },
     occupancy_status: [String],
+    seats_day_wise: { type: Object },
     created_on: { type: Date, default: Date.now },
     updated_on: { type: Date, default: Date.now }
 

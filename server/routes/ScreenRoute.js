@@ -1,5 +1,6 @@
 require('dotenv').config()
 const express = require('express')
+const moment = require('moment');
 const router = express.Router();
 const { status, ScreenModel } = require('../models/ScreenModel');
 const MovieModel = require('../models/MovieModel');
@@ -10,6 +11,9 @@ router.post('/addScreen', async (req, res) => {
         screen = req.body;
         console.log(screen);
         const seatArray = []
+        let count0 = 0;
+        let count1 = 0;
+        let count2 = 0;
         Object.entries(screen.seats).forEach(([row, col]) => {
             seatArray.push({
                 Row: `${row}`,
@@ -59,18 +63,39 @@ router.get('/all', async (req, res) => {
         })
     }
 })
-router.get('/:id', async (req, res) => {
+router.get('/:id/:value?', async (req, res) => {
 
     try {
         id = req.params['id'];
-        console.log("hello");
-        const screen = await ScreenModel.find({ theater_id: id })
-        console.log(screen);
-        res.json({
-            message: 'Screen found',
-            status: HTTP_STATUS_CODES.OK,
-            data: screen
-        })
+        console.log("at Scressns/get");
+        console.log(req.params['value']);
+        // return "";
+        if (req.params['value']) {
+            const date = new Date(Number(req.params['value']));
+            const filter_data = date.toISOString().split('T')[0];
+            // return "";
+            const screen = await ScreenModel.find({
+                [`seats_day_wise.${filter_data}`]: { $exists: true }
+            });
+            console.log(screen);
+            // return "";
+            res.json({
+                message: 'Screen found',
+                status: HTTP_STATUS_CODES.OK,
+                data: screen
+            })
+        }
+        else {
+            const screen = await ScreenModel.find({ theater_id: id });
+            console.log(screen);
+            // return "";
+            res.json({
+                message: 'Screen found',
+                status: HTTP_STATUS_CODES.OK,
+                data: screen
+            })
+        }
+
 
     }
     catch (err) {
@@ -89,18 +114,52 @@ router.post('/addMovie', async (req, res) => {
         const movie_id = req.body.movie;
         const screenId = req.body.screen_id;
         const tkt_price = req.body.ticketPrice;
+        const theater_id = req.body.theater_id;
         const movie = await MovieModel.find({ id: movie_id })
-        await ScreenModel.updateOne({ screen_id: screenId }, {
-            movie_name: movie[0].title,
-            movie_image: movie[0].poster_url,
-            run_time: movie[0].run_time,
-            cost: tkt_price
-        }).then((result) => {
-            console.log(result);
-        }).catch((error) => {
-            console.error(error);
-        });
-        res.json({ message: "Updated Movies in Screen", status: HTTP_STATUS_CODES.OK, data: "" });
+        const screen = await ScreenModel.find({ screen_id: screenId })
+        console.log(screen);
+        seatArray = screen[0].seat_array;
+        const timestampsForDays = {};
+        for (let i = 0; i < 5; i++) {
+            const currentDate = moment().add(i, 'days');
+            const formattedDate = currentDate.format('YYYY-MM-DD');
+            timestampsForDays[formattedDate] = {};
+
+            // Assuming you want a single timestamp for each day at 9:00 AM
+            timestampsForDays[formattedDate]['09:00 am'] = {
+                SeatArray: seatArray,
+                occupancy_status: 'available', // Replace with the actual occupancy status
+            };
+            timestampsForDays[formattedDate]['1:00 pm'] = {
+                SeatArray: seatArray,
+                occupancy_status: 'available', // Replace with the actual occupancy status
+            };
+            timestampsForDays[formattedDate]['06:00 pm'] = {
+                SeatArray: seatArray,
+                occupancy_status: 'available', // Replace with the actual occupancy status
+            };
+            timestampsForDays[formattedDate]['10:00 pm'] = {
+                SeatArray: seatArray,
+                occupancy_status: 'available', // Replace with the actual occupancy status
+            };
+        }
+        if (screen[0].movie_name) {
+            res.json({ message: "screen already have a movie ", status: HTTP_STATUS_CODES.BAD_REQUEST, data: "" });
+        }
+        else {
+            await ScreenModel.updateOne({ screen_id: screenId }, {
+                movie_name: movie[0].title,
+                movie_image: movie[0].poster_url,
+                run_time: movie[0].run_time,
+                cost: tkt_price,
+                seats_day_wise: timestampsForDays
+            }).then((result) => {
+                console.log(result);
+            }).catch((error) => {
+                console.error(error);
+            });
+            res.json({ message: "Updated Movies in Screen", status: HTTP_STATUS_CODES.OK, data: "" });
+        }
     } catch (error) {
         console.error('Error creating user:', error);
         res.json({

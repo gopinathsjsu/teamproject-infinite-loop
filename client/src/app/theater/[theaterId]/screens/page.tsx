@@ -1,7 +1,7 @@
 "use client"
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Box, Grid, Typography, Button, Modal, Backdrop, Fade, Stack, TextField, FormControl, FormHelperText, InputLabel, Select, MenuItem } from '@mui/material';
@@ -11,6 +11,9 @@ import SendIcon from '@mui/icons-material/Send';
 import { getDataFromEndPoint } from "@/src/lib/backend-api";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import * as zod from 'zod';
 
 interface Screen {
@@ -121,7 +124,7 @@ export default function Screen() {
                 runtime: String(screenItem.run_time),
                 cost: screenItem.cost,
             }));
-            setScreenData([...screenData, ...mappedData])
+            setScreenData(mappedData)
         } catch (error) {
             console.log(error);
         }
@@ -130,6 +133,31 @@ export default function Screen() {
         setSelectedScreenId(screen_id); // Set the selected screen id
         setOpen(!open); // Open the modal
     };
+    const handleDateChange = async (value: any) => {
+        setDateValue(value);
+        const date_value = Date.parse(String(value));
+        const date = new Date(Number(date_value));
+        const filter_data = date.toISOString().split('T')[0];
+        console.log(filter_data);
+        const response = await getDataFromEndPoint("", 'screen/' + theaterId + '/' + value, 'GET');
+        const data = response.data
+        console.log(data);
+        const mappedData: Screen[] = data.map((screenItem: any) => ({
+            id: screenItem.screen_id,
+            name: screenItem.screen_name,
+            timings: screenItem.show_times,
+            maxCapacity: screenItem.seating_capacity,
+            imageUrl: screenItem.movie_image,
+            format: screenItem.screen_type,
+            currentMovie: screenItem.movie_name,
+            runtime: String(screenItem.run_time),
+            cost: screenItem.cost,
+        }));
+        console.log(mappedData)
+        setScreenData(mappedData)
+
+    };
+    const [dateValue, setDateValue] = React.useState<Dayjs | null>(dayjs(Date.now()))
     return (
         <React.Fragment>
             <CssBaseline />
@@ -137,6 +165,13 @@ export default function Screen() {
                 <Grid container spacing={2}>
                     <Grid container sx={{ mb: 2, marginTop: 10, justifyContent: 'space-between' }}>
                         <Typography variant="h4">Screens</Typography>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
+                                label="Select Date"
+                                value={dateValue}
+                                onChange={(newValue) => handleDateChange(newValue)}
+                            />
+                        </LocalizationProvider>
                         <Button variant="contained" startIcon={<AddCircleOutlineIcon />} onClick={addNewScreen}>
                             Add Screen
                         </Button>
