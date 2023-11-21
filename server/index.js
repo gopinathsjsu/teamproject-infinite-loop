@@ -9,6 +9,7 @@ const ScreenRoute = require('../server/routes/ScreenRoute')
 const ArtistRoute = require('../server/routes/ArtistRoute')
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+const paymentRoute = require('../server/routes/PaymentRoute');
 const port = 8080
 const corsOptions = {
   origin: 'http://localhost:3000',
@@ -25,6 +26,7 @@ app.use(
     // You can use the default in-memory store or choose another session store here
   }));
 
+  app.use('/payment/api',paymentRoute)
 app.use('/artist', ArtistRoute)
 app.use('/theater', TheatreRoute)
 app.use('/screen', ScreenRoute)
