@@ -6,6 +6,7 @@ const User = require('../models/UserModel');
 const { HTTP_STATUS_CODES } = require('../constants')
 const { createToken } = require('../Helpers/JwtAuth');
 const { upload } = require('../Helpers/S3');
+const {sendMessage} = require('../Helpers/WhatsappAPI');
 const uniqid = require('uniqid');
 const saltRounds = 10;
 router.get('/addUser', (req, res) => {
@@ -118,5 +119,11 @@ router.post('/uploadFile', upload.single('file1'), (req, res) => {
     return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}`;
   });
   res.json({ imageUrls });
+});
+
+router.get('/sendMessage', async (req, res) => {
+   // console.log(req.body);
+    sendMessage(req, res);
+    // res.json({ message: "User details updated successfully", status: HTTP_STATUS_CODES.OK });
 });
 module.exports = router;

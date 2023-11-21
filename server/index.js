@@ -9,6 +9,7 @@ const ScreenRoute = require('../server/routes/ScreenRoute')
 const ArtistRoute = require('../server/routes/ArtistRoute')
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 const paymentRoute = require('../server/routes/PaymentRoute');
 const port = 8080
 const corsOptions = {
@@ -16,6 +17,10 @@ const corsOptions = {
   credentials: true,
 };
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
 app.use(express.json());
 app.use(cors(corsOptions));
 app.use(
