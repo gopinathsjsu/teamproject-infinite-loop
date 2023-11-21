@@ -51,7 +51,7 @@ interface Theater {
     name: string,
     description: string,
     locationUrl: string,
-    address: string,    
+    address: string,
     screenDetails: string[],
     imageUrl: string,
     nScreens: number,
@@ -209,7 +209,7 @@ export default function Theater() {
                 phoneNumber: theaterItem.mobile,
                 theater_id: theaterItem.theater_id  // Assuming mobile is a number
             }));
-            console.log(data);
+            console.log(mappedData);
             setTheaterData(mappedData);
             console.log(theaterData);
         };
