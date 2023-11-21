@@ -4,8 +4,6 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Box, Card, CardActionArea, CardMedia, CardContent, Typography } from '@mui/material';
 import Container from '@mui/material/Container';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 
 const movies = [
@@ -110,7 +108,7 @@ const MovieSlider = () => {
         infinite: true,
         speed: 500,
         slidesToShow: 6,
-        slidesToScroll: 5,
+        slidesToScroll: 6,
         nextArrow: <SampleNextArrow />,
         prevArrow: <SamplePrevArrow />,
     };
@@ -138,26 +136,22 @@ const MovieSlider = () => {
 function SampleNextArrow(props: any) {
     const { className, style, onClick } = props;
     return (
-        <Box
+        <div
             className={className}
-            style={{ ...style, display: 'block', right: '-25px' }}
+            style={{ ...style,fontSize:"100px", color: "#00378f", display: 'block', right: '20px', zIndex:'1' }}
             onClick={onClick}
-        >
-            <ArrowForwardIosIcon />
-        </Box>
+        />
     );
 }
 
 function SamplePrevArrow(props: any) {
     const { className, style, onClick } = props;
     return (
-        <Box
+        <div
             className={className}
-            style={{ ...style, display: 'block', left: '-25px', zIndex: 1 }}
+            style={{ ...style,fontSize:"100px", color: "#00378f", display: 'block', left: '2px', zIndex: '1' }}
             onClick={onClick}
-        >
-            <ArrowBackIosIcon />
-        </Box>
+        />
     );
 }
 

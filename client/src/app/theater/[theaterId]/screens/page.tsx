@@ -104,7 +104,7 @@ export default function Screen() {
     return (
         <React.Fragment>
             <CssBaseline />
-            <Container maxWidth="xl" style={{ marginTop: "3%" }}>
+            <Container maxWidth="xl">
                 <Grid container spacing={2}>
                     <Grid container sx={{ mb: 2, marginTop: 10, justifyContent: 'space-between' }}>
                         <Typography variant="h4">Screens</Typography>
@@ -138,9 +138,11 @@ export default function Screen() {
                                                     <Button key={screenIndex} sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }}>{time}</Button>
                                                 ))}
                                             </Box>
-                                            <Button variant="contained">
-                                                Book Ticket
-                                            </Button>
+                                            {/* {screen.currentMovie != null &&  */}
+                                                <Button variant="contained">
+                                                    Book Ticket
+                                                </Button>
+                                            {/* } */}
                                         </Box>
                                     </Box>
                                 </Grid>
