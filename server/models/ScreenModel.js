@@ -14,12 +14,15 @@ const screenSchema = new mongoose.Schema({
     screen_name: { type: String, required: true },
     rows: { type: Number, required: true },
     columns: { type: Number, required: true },
-    movie_id: String,
+    movie_name: String,
+    movie_image: String,
+    run_time: String,
     show_times: { type: [String], required: true },
     cost: { type: Number },
     theater_id: String,
     seat_array: { type: [], required: true },
     occupancy_status: [String],
+    seats_day_wise: { type: Object },
     created_on: { type: Date, default: Date.now },
     updated_on: { type: Date, default: Date.now }
 

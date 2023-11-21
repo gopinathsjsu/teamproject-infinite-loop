@@ -1,9 +1,15 @@
-import React from 'react';
+'use client'
+
+import React, { useEffect, useState } from 'react';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Box, Card, CardActionArea, CardMedia, CardContent, Typography } from '@mui/material';
 import Container from '@mui/material/Container';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { useRouter } from 'next/navigation'; // Import the useRouter hook
+
 
 
 const movies = [
@@ -82,27 +88,36 @@ const movies = [
 const MovieCard = ({ movie, onImageClick }: { movie: any, onImageClick: any }) => {
     return (
         <Card sx={{ width: 200, height: 360, m: 1, boxShadow: 3 }}>
-            <CardMedia
-                component="img"
-                height="250"
-                image={movie.movieImage}
-                alt={movie.movieTitle}
-                onClick={() => onImageClick(movie.movieTitle)} // Click handler is now on the image
-                sx={{ cursor: 'pointer' }} // Add a pointer cursor on hover
-            />
-            <CardContent>
-                <Typography gutterBottom variant="h6" component="div">
-                    {movie.movieTitle}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                    {movie.category}
-                </Typography>
-            </CardContent>
+            <CardActionArea onClick={() => onImageClick(movie.id)}>
+                <CardMedia
+                    component="img"
+                    height="250"
+                    image={movie.movieImage}
+                    alt={movie.movieTitle}
+                    sx={{ cursor: 'pointer' }}
+                />
+                <CardContent>
+                    <Typography gutterBottom variant="h6" component="div">
+                        {movie.movieTitle}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        {movie.category}
+                    </Typography>
+                </CardContent>
+            </CardActionArea>
         </Card>
     );
 };
 
 const MovieSlider = () => {
+    const router = useRouter();
+
+    const handleCardClick = (movieId: string) => {
+        // Assuming that movieName is a URL-friendly version of the movie title
+        const movieName = movieId; // Replace this with appropriate conversion if needed
+        router.push(`/movies/${movieName}`); // Use the correct path for routing
+    };
+
     const settings = {
         dots: false,
         infinite: true,
@@ -111,11 +126,6 @@ const MovieSlider = () => {
         slidesToScroll: 6,
         nextArrow: <SampleNextArrow />,
         prevArrow: <SamplePrevArrow />,
-    };
-
-    const handleCardClick = (movieName: string) => {
-        console.log(`Clicked on ${movieName}`);
-        // Implement your own logic here, such as navigation
     };
 
     return (

@@ -9,12 +9,18 @@ const ScreenRoute = require('../server/routes/ScreenRoute')
 const ArtistRoute = require('../server/routes/ArtistRoute')
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const paymentRoute = require('../server/routes/PaymentRoute');
 const port = 8080
 const corsOptions = {
   origin: 'http://localhost:3000',
   credentials: true,
 };
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
 app.use(express.json());
 app.use(cors(corsOptions));
 app.use(
@@ -25,6 +31,7 @@ app.use(
     // You can use the default in-memory store or choose another session store here
   }));
 
+  app.use('/payment/api',paymentRoute)
 app.use('/artist', ArtistRoute)
 app.use('/theater', TheatreRoute)
 app.use('/screen', ScreenRoute)
