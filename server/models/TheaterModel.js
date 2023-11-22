@@ -15,7 +15,7 @@ const theaterSchema = new mongoose.Schema({
   theater_url: { type: String },
   image_url: { type: String },
   screen_ids: { type: Array },
-  movie_ids: { type: Array },
+  movie_ids: { type: Array , default:[]},
   created_on: { type: Date, default: Date.now },
   updated_on: { type: Date, default: Date.now }
 });
