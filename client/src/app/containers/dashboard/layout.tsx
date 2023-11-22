@@ -175,7 +175,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     overflow: 'auto',
                 }}
             >
-                {children}
+                <Container maxWidth={false}>
+                    {children}
+                </Container>
                 <Footer />
             </Box>
         </Box>

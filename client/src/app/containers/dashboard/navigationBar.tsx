@@ -16,6 +16,11 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
+import PinDropIcon from '@mui/icons-material/PinDrop';
+
+import LocationSearchInput from './LocationSearchInput'; // adjust the path as necessary
+import Script from 'next/script';
+import { Backdrop, Fade, Modal, Stack } from '@mui/material';
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -24,13 +29,15 @@ const Search = styled('div')(({ theme }) => ({
     '&:hover': {
         backgroundColor: alpha(theme.palette.common.white, 0.25),
     },
+    marginRight: theme.spacing(2),
     marginLeft: 0,
     width: '100%',
     [theme.breakpoints.up('sm')]: {
-        marginLeft: theme.spacing(1),
+        marginLeft: theme.spacing(3),
         width: 'auto',
     },
 }));
+
 
 const SearchIconWrapper = styled('div')(({ theme }) => ({
     padding: theme.spacing(0, 2),
@@ -42,6 +49,18 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
     justifyContent: 'center',
 }));
 
+const MapIconWrapper = styled('div')(({ theme }) => ({
+    padding: theme.spacing(0, 2),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: '10px',
+    left: '-60px'
+}));
+
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
     '& .MuiInputBase-input': {
@@ -50,11 +69,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
         paddingLeft: `calc(1em + ${theme.spacing(4)})`,
         transition: theme.transitions.create('width'),
         width: '100%',
-        [theme.breakpoints.up('sm')]: {
-            width: '12ch',
-            '&:focus': {
-                width: '20ch',
-            },
+        [theme.breakpoints.up('md')]: {
+            width: '20ch',
         },
     },
 }));
@@ -69,10 +85,22 @@ const settings = [
     { name: 'Purchases', route: '/purchases' },
     { name: 'Rewards', route: '/rewards' },
     { name: 'Logout', route: '/logout' },
-    ];
+];
+
+const style = {
+    position: 'absolute' as 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+};
 
 function ResponsiveAppBar() {
     const router = useRouter();
+    const [location, setLocation] = React.useState(null);
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -92,11 +120,24 @@ function ResponsiveAppBar() {
     };
 
     function redirectToPage(page: any) {
-       router.push(page.route);
+        router.push(page.route);
     }
+
+    function sendLocation(location: any) {
+        console.log(location);
+        setOpen(false);
+        setLocation(location.split(",")[0]);
+    }
+
+    const [open, setOpen] = React.useState<boolean>(false);
+    const handleClose = () => setOpen(false);
 
     return (
         <AppBar position="static">
+            <Script
+                src={`https://maps.googleapis.com/maps/api/js?key=AIzaSyAH_4KikoUaqV41Fq09gBEsXzADYU1xM8w&libraries=places`}
+                strategy="beforeInteractive"
+            />
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                     <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
@@ -147,79 +188,118 @@ function ResponsiveAppBar() {
                         >
                             {pages.map((page) => (
                                 <MenuItem key={page.name} onClick={handleCloseNavMenu}>
-                                    <Typography onClick={() => { redirectToPage(page)}} textAlign = "center" > { page.name }</Typography>
+                                    <Typography onClick={() => { redirectToPage(page) }} textAlign="center" > {page.name}</Typography>
                                 </MenuItem>
                             ))}
-                    </Menu>
-                </Box>
-                <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-                <Typography
-                    variant="h5"
-                    noWrap
-                    component="a"
-                    href="/"
-                    sx={{
-                        mr: 2,
-                        display: { xs: 'flex', md: 'none' },
-                        flexGrow: 1,
-                        fontWeight: 700,
-                        color: 'inherit',
-                        textDecoration: 'none',
-                    }}
-                >
-                    Box Office
-                </Typography>
-                <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                    {pages.map((page) => (
-                        <Button
-                            key={page.name}
-                            onClick={() => { redirectToPage(page) }}
-                            sx={{ my: 2, color: 'white', display: 'block' }}
-                        >
-                            {page.name}
-                        </Button>
-                    ))}
-                </Box>
-                <Search sx={({ mr: '10px' })}>
-                    <SearchIconWrapper>
-                        <SearchIcon />
-                    </SearchIconWrapper>
-                    <StyledInputBase
-                        placeholder="Search…"
-                        inputProps={{ 'aria-label': 'search' }}
-                    />
-                </Search>
-                <Box sx={{ flexGrow: 0 }}>
-                    <Tooltip title="Open settings">
-                        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                            <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-                        </IconButton>
-                    </Tooltip>
-                    <Menu
-                        sx={{ mt: '45px' }}
-                        id="menu-appbar"
-                        anchorEl={anchorElUser}
-                        anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
+                        </Menu>
+                    </Box>
+                    <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+                    <Typography
+                        variant="h5"
+                        noWrap
+                        component="a"
+                        href="/"
+                        sx={{
+                            mr: 2,
+                            display: { xs: 'flex', md: 'none' },
+                            flexGrow: 1,
+                            fontWeight: 700,
+                            color: 'inherit',
+                            textDecoration: 'none',
                         }}
-                        keepMounted
-                        transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                        }}
-                        open={Boolean(anchorElUser)}
-                        onClose={handleCloseUserMenu}
                     >
-                        {settings.map((setting) => (
-                            <MenuItem key={setting.name} onClick={handleCloseUserMenu}>
-                                <Typography  onClick={() => { redirectToPage(setting) }} textAlign="center">{setting.name}</Typography>
-                            </MenuItem>
+                        Box Office
+                    </Typography>
+                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                        {pages.map((page) => (
+                            <Button
+                                key={page.name}
+                                onClick={() => { redirectToPage(page) }}
+                                sx={{ my: 2, color: 'white', display: 'block' }}
+                            >
+                                {page.name}
+                            </Button>
                         ))}
-                    </Menu>
-                </Box>
-            </Toolbar>
-        </Container>
+                    </Box>
+                    <Search sx={({ mr: '20px' })}>
+                        <SearchIconWrapper>
+                            <SearchIcon />
+                        </SearchIconWrapper>
+                        <StyledInputBase
+                            placeholder="Search…"
+                            inputProps={{ 'aria-label': 'search' }}
+                        />
+                    </Search>
+                    <Button
+                        key="location"
+                        onClick={() => { setOpen(true) }}
+                        sx={{ my: 2, color: 'white', display: 'block' }}
+                    >
+                        <Search>
+                            <MapIconWrapper>
+                                <PinDropIcon />
+                            </MapIconWrapper>
+                        </Search>
+                        {location != null ? location : "Select Location"}
+                    </Button>
+                    <Box sx={{ flexGrow: 0 }}>
+                        <Tooltip title="Open settings">
+                            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                            </IconButton>
+                        </Tooltip>
+                        <Menu
+                            sx={{ mt: '45px' }}
+                            id="menu-appbar"
+                            anchorEl={anchorElUser}
+                            anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            keepMounted
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            open={Boolean(anchorElUser)}
+                            onClose={handleCloseUserMenu}
+                        >
+                            {settings.map((setting) => (
+                                <MenuItem key={setting.name} onClick={handleCloseUserMenu}>
+                                    <Typography onClick={() => { redirectToPage(setting) }} textAlign="center">{setting.name}</Typography>
+                                </MenuItem>
+                            ))}
+                        </Menu>
+                    </Box>
+                </Toolbar>
+            </Container>
+            <Modal
+                aria-labelledby="transition-modal-title"
+                aria-describedby="transition-modal-description"
+                open={open}
+                onClose={handleClose}
+                closeAfterTransition
+                slots={{ backdrop: Backdrop }}
+                slotProps={{
+                    backdrop: {
+                        timeout: 500,
+                    },
+                }}
+            >
+                <Fade in={open}>
+                    <Box sx={{
+                        ...style,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        width: '600px',
+                        maxWidth: '1000px',
+                        height: '400px'
+                    }} >
+                        <LocationSearchInput sendLocation={sendLocation} />
+                    </Box>
+                </Fade>
+            </Modal>
         </AppBar >
     );
 }
