@@ -1,8 +1,10 @@
 'use client'
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import InnerPageContainer from "../components/dashboard/common/InnerPageContainer";
 import { styled } from '@mui/material/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import type { CastAndCrewMember } from '../artist/page';
+
 import {
   Button,
   Grid,
@@ -35,6 +37,9 @@ export default function Contact() {
   const [formSuccess, setFormSuccess] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedGenres, setSelectedGenres] = useState([]);
+  const [selectedArtists, setSelectedArtists] = useState([]);
+  const [artists, setArtists] = useState<CastAndCrewMember[]>([]);
 
 
   
@@ -51,6 +56,22 @@ export default function Contact() {
     setIsEditable(!isEditable);
   };
 
+  useEffect(() => {
+    fetch('http://localhost:8080/artist/all')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        setArtists(data.Cast); // Adjust this based on your actual API response structure
+      })
+      .catch(error => {
+        console.error('Fetching artists failed:', error);
+      });
+  }, []);
+  
   const submitForm = (e:any) => {
     e.preventDefault();
 
@@ -102,11 +123,25 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
+const genres = [
+  "Action", "Drama", "Comedy", "Science Fiction", "Horror",
+  "Romance", "Fantasy", "Thriller", "Adventure", "Mystery"
+];
+
+
 
 const handleFileChange = (e: any) => {
   e.preventDefault();
   const file = e.target.files[0];
   setSelectedFile(file);
+};
+
+const handleGenreChange = (event:any) => {
+  setSelectedGenres(event.target.value);
+};
+
+const handleArtistChange = (event:any) => {
+  setSelectedArtists(event.target.value);
 };
 
 return (
@@ -278,82 +313,47 @@ return (
             </Grid>
           </Box>
 
-          <Box mt={3}>
+                <Box mt={3}>
             <Typography variant="h5" gutterBottom>
-              Address
+              Additional Information
             </Typography>
             <Grid container spacing={3}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Area Pincode"
-                  name="zip"
-                  placeholder="Area Pincode"
-                  value={formData.zip}
-                  onChange={handleInput}
-                  fullWidth
-                  variant="outlined"
-                  disabled={!isEditable}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Address Line 1"
-                  name="addressLine1"
-                  placeholder="Address Line 1"
-                  value={formData.addressLine1}
-                  onChange={handleInput}
-                  fullWidth
-                  variant="outlined"
-                  disabled={!isEditable}
-                />
-              </Grid>
+              {/* Genre Dropdown */}
               <Grid item xs={12}>
-                <TextField
-                  label="Address Line 2"
-                  name="addressLine2"
-                  placeholder="Address Line 2"
-                  value={formData.addressLine2}
-                  onChange={handleInput}
-                  fullWidth
-                  variant="outlined"
-                  disabled={!isEditable}
-                />
+                <FormControl fullWidth>
+                  <InputLabel>Favorite Genres</InputLabel>
+                  <Select
+                    multiple
+                    value={selectedGenres}
+                    onChange={handleGenreChange}
+                    renderValue={(selected) => selected.join(', ')}
+                  >
+                    {genres.map((genre) => (
+                      <MenuItem key={genre} value={genre}>
+                        {genre}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Landmark"
-                  name="landmark"
-                  placeholder="Landmark"
-                  value={formData.landmark}
-                  onChange={handleInput}
-                  fullWidth
-                  variant="outlined"
-                  disabled={!isEditable}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Town / City"
-                  name="city"
-                  placeholder="Town / City"
-                  value={formData.city}
-                  onChange={handleInput}
-                  fullWidth
-                  variant="outlined"
-                  disabled={!isEditable}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="State"
-                  name="state"
-                  placeholder="State"
-                  value={formData.state}
-                  onChange={handleInput}
-                  fullWidth
-                  variant="outlined"
-                  disabled={!isEditable}
-                />
+
+              {/* Artist Dropdown */}
+              <Grid item xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel>Favorite Artists</InputLabel>
+                  <Select
+                    multiple
+                    value={selectedArtists}
+                    onChange={handleArtistChange}
+                    renderValue={(selected) => selected.join(', ')}
+                  >
+                    {artists.map((artist) => (
+                      <MenuItem key={artist.name} value={artist.name}>
+                        {artist.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
             </Grid>
           </Box>

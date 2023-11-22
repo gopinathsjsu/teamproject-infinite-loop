@@ -4,7 +4,7 @@ const router = express.Router();
 const  Artist  = require('../models/ArtistModel');
 const { upload } = require('../Helpers/S3');
 const { HTTP_STATUS_CODES } = require('../constants')
-
+const uniqid = require('uniqid');
 
 
 router.post('/add', upload.single('image'),async (req, res) => {
@@ -41,7 +41,7 @@ router.get('/all', async (req, res) => {
     }
 });
 
-router.get('/get/:id', async (req, res) => { 
+router.get('/:id', async (req, res) => { 
     try {
         const artist = await Artist.findOne({id: req.params.id});
         res.json({ artist: artist, status: HTTP_STATUS_CODES.OK });

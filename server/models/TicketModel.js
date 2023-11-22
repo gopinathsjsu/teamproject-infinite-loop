@@ -8,7 +8,7 @@ const ticketSchema = new mongoose.Schema({
     screen_id: { type: String, required: true },
     transaction_id: { type: String, required: true },
     show_time: { type: Date, default: Date.now },
-    seat_nos: { type: [String], required: true },
+    seat_ids: { type: [String], required: true },
     qr_urls: { type: [String], required: true },
     created_on: { type: Date, default: Date.now },
     updated_on: { type: Date, default: Date.now }
