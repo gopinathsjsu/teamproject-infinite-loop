@@ -20,7 +20,7 @@ import PinDropIcon from '@mui/icons-material/PinDrop';
 
 import LocationSearchInput from './LocationSearchInput'; // adjust the path as necessary
 import Script from 'next/script';
-import { Backdrop, Fade, Modal, Stack } from '@mui/material';
+import { Backdrop, Drawer, Fade, List, ListItem, ListItemText, ListSubheader, Modal, Stack } from '@mui/material';
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -84,7 +84,7 @@ const settings = [
     { name: 'Profile', route: '/personal_profile' },
     { name: 'Purchases', route: '/purchases' },
     { name: 'Rewards', route: '/rewards' },
-    { name: 'Logout', route: '/logout' },
+    { name: 'Logout', route: '/logout', icon:'LogoutIcon' },
 ];
 
 const style = {
@@ -101,6 +101,7 @@ const style = {
 function ResponsiveAppBar() {
     const router = useRouter();
     const [location, setLocation] = React.useState(null);
+    const [drawerOpen, setDrawerOpen] = React.useState(false);
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -119,6 +120,14 @@ function ResponsiveAppBar() {
         setAnchorElUser(null);
     };
 
+    const handleDrawerOpen = () => {
+        setDrawerOpen(true);
+    };
+    const handleDrawerClose = () => {
+        setDrawerOpen(false);
+    };
+
+
     function redirectToPage(page: any) {
         router.push(page.route);
     }
@@ -133,174 +142,223 @@ function ResponsiveAppBar() {
     const handleClose = () => setOpen(false);
 
     return (
-        <AppBar position="static">
-            <Script
-                src={`https://maps.googleapis.com/maps/api/js?key=AIzaSyAH_4KikoUaqV41Fq09gBEsXzADYU1xM8w&libraries=places`}
-                strategy="beforeInteractive"
-            />
-            <Container maxWidth="xl">
-                <Toolbar disableGutters>
-                    <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="a"
-                        href="/"
-                        sx={{
-                            mr: 2,
-                            display: { xs: 'none', md: 'flex' },
-                            fontWeight: 700,
-                            color: 'inherit',
-                            textDecoration: 'none',
-                        }}
-                    >
-                        Box Office
-                    </Typography>
-
-                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-                        <IconButton
-                            size="large"
-                            aria-label="account of current user"
-                            aria-controls="menu-appbar"
-                            aria-haspopup="true"
-                            onClick={handleOpenNavMenu}
-                            color="inherit"
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorElNav}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'left',
-                            }}
-                            open={Boolean(anchorElNav)}
-                            onClose={handleCloseNavMenu}
+        <Box>
+            <AppBar position="static">
+                <Script
+                    src={`https://maps.googleapis.com/maps/api/js?key=AIzaSyAH_4KikoUaqV41Fq09gBEsXzADYU1xM8w&libraries=places`}
+                    strategy="beforeInteractive"
+                />
+                <Container maxWidth="xl">
+                    <Toolbar disableGutters>
+                        <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+                        <Typography
+                            variant="h6"
+                            noWrap
+                            component="a"
+                            href="/"
                             sx={{
-                                display: { xs: 'block', md: 'none' },
+                                mr: 2,
+                                display: { xs: 'none', md: 'flex' },
+                                fontWeight: 700,
+                                color: 'inherit',
+                                textDecoration: 'none',
                             }}
                         >
-                            {pages.map((page) => (
-                                <MenuItem key={page.name} onClick={handleCloseNavMenu}>
-                                    <Typography onClick={() => { redirectToPage(page) }} textAlign="center" > {page.name}</Typography>
-                                </MenuItem>
-                            ))}
-                        </Menu>
-                    </Box>
-                    <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-                    <Typography
-                        variant="h5"
-                        noWrap
-                        component="a"
-                        href="/"
-                        sx={{
-                            mr: 2,
-                            display: { xs: 'flex', md: 'none' },
-                            flexGrow: 1,
-                            fontWeight: 700,
-                            color: 'inherit',
-                            textDecoration: 'none',
-                        }}
-                    >
-                        Box Office
-                    </Typography>
-                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        {pages.map((page) => (
-                            <Button
-                                key={page.name}
-                                onClick={() => { redirectToPage(page) }}
-                                sx={{ my: 2, color: 'white', display: 'block' }}
+                            Box Office
+                        </Typography>
+
+                        <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+                            <IconButton
+                                size="large"
+                                aria-label="account of current user"
+                                aria-controls="menu-appbar"
+                                aria-haspopup="true"
+                                onClick={handleOpenNavMenu}
+                                color="inherit"
                             >
-                                {page.name}
-                            </Button>
-                        ))}
-                    </Box>
-                    <Search sx={({ mr: '20px' })}>
-                        <SearchIconWrapper>
-                            <SearchIcon />
-                        </SearchIconWrapper>
-                        <StyledInputBase
-                            placeholder="Search…"
-                            inputProps={{ 'aria-label': 'search' }}
-                        />
-                    </Search>
-                    <Button
-                        key="location"
-                        onClick={() => { setOpen(true) }}
-                        sx={{ my: 2, color: 'white', display: 'block' }}
-                    >
-                        <Search>
-                            <MapIconWrapper>
-                                <PinDropIcon />
-                            </MapIconWrapper>
-                        </Search>
-                        {location != null ? location : "Select Location"}
-                    </Button>
-                    <Box sx={{ flexGrow: 0 }}>
-                        <Tooltip title="Open settings">
-                            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                                <MenuIcon />
                             </IconButton>
-                        </Tooltip>
-                        <Menu
-                            sx={{ mt: '45px' }}
-                            id="menu-appbar"
-                            anchorEl={anchorElUser}
-                            anchorOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
+                            <Menu
+                                id="menu-appbar"
+                                anchorEl={anchorElNav}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                }}
+                                keepMounted
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'left',
+                                }}
+                                open={Boolean(anchorElNav)}
+                                onClose={handleCloseNavMenu}
+                                sx={{
+                                    display: { xs: 'block', md: 'none' },
+                                }}
+                            >
+                                {pages.map((page) => (
+                                    <MenuItem key={page.name} onClick={handleCloseNavMenu}>
+                                        <Typography onClick={() => { redirectToPage(page) }} textAlign="center" > {page.name}</Typography>
+                                    </MenuItem>
+                                ))}
+                            </Menu>
+                        </Box>
+                        <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+                        <Typography
+                            variant="h5"
+                            noWrap
+                            component="a"
+                            href="/"
+                            sx={{
+                                mr: 2,
+                                display: { xs: 'flex', md: 'none' },
+                                flexGrow: 1,
+                                fontWeight: 700,
+                                color: 'inherit',
+                                textDecoration: 'none',
                             }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            open={Boolean(anchorElUser)}
-                            onClose={handleCloseUserMenu}
                         >
-                            {settings.map((setting) => (
-                                <MenuItem key={setting.name} onClick={handleCloseUserMenu}>
-                                    <Typography onClick={() => { redirectToPage(setting) }} textAlign="center">{setting.name}</Typography>
-                                </MenuItem>
+                            Box Office
+                        </Typography>
+                        <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                            {pages.map((page) => (
+                                <Button
+                                    key={page.name}
+                                    onClick={() => { redirectToPage(page) }}
+                                    sx={{ my: 2, color: 'white', display: 'block' }}
+                                >
+                                    {page.name}
+                                </Button>
                             ))}
-                        </Menu>
-                    </Box>
-                </Toolbar>
-            </Container>
-            <Modal
-                aria-labelledby="transition-modal-title"
-                aria-describedby="transition-modal-description"
-                open={open}
-                onClose={handleClose}
-                closeAfterTransition
-                slots={{ backdrop: Backdrop }}
-                slotProps={{
-                    backdrop: {
-                        timeout: 500,
-                    },
-                }}
+                        </Box>
+                        <Search sx={({ mr: '20px' })}>
+                            <SearchIconWrapper>
+                                <SearchIcon />
+                            </SearchIconWrapper>
+                            <StyledInputBase
+                                placeholder="Search…"
+                                inputProps={{ 'aria-label': 'search' }}
+                            />
+                        </Search>
+                        <Button
+                            key="location"
+                            onClick={() => { setOpen(true) }}
+                            sx={{ my: 2, color: 'white', display: 'block' }}
+                        >
+                            <Search>
+                                <MapIconWrapper>
+                                    <PinDropIcon />
+                                </MapIconWrapper>
+                            </Search>
+                            {location != null ? location : "Select Location"}
+                        </Button>
+                        <Button key="signup" sx={{ my: 2, fontWeight: 700, color: 'inherit', textDecoration: 'none' }} >
+                            Sign Up
+                        </Button>
+                        <Button key="signin" sx={{ my: 2, fontWeight: 700, color: 'inherit', textDecoration: 'none' }}>
+                            Sign In
+                        </Button>
+                        <Box sx={{ flexGrow: 0 }}>
+                            <Tooltip title="Open settings">
+                                <IconButton onClick={handleDrawerOpen} sx={{ p: 0 }}>
+                                    <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                                </IconButton>
+                            </Tooltip>
+                            <Menu
+                                sx={{ mt: '45px' }}
+                                id="menu-appbar"
+                                anchorEl={anchorElUser}
+                                anchorOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                keepMounted
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                open={Boolean(anchorElUser)}
+                                onClose={handleCloseUserMenu}
+                            >
+                                {settings.map((setting) => (
+                                    <MenuItem key={setting.name} onClick={handleCloseUserMenu}>
+                                        <Typography onClick={() => { redirectToPage(setting) }} textAlign="center">{setting.name}</Typography>
+                                    </MenuItem>
+                                ))}
+                            </Menu>
+                        </Box>
+                    </Toolbar>
+                </Container>
+                <Modal
+                    aria-labelledby="transition-modal-title"
+                    aria-describedby="transition-modal-description"
+                    open={open}
+                    onClose={handleClose}
+                    closeAfterTransition
+                    slots={{ backdrop: Backdrop }}
+                    slotProps={{
+                        backdrop: {
+                            timeout: 500,
+                        },
+                    }}
+                >
+                    <Fade in={open}>
+                        <Box sx={{
+                            ...style,
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            width: '600px',
+                            maxWidth: '1000px',
+                            height: '400px'
+                        }} >
+                            <LocationSearchInput sendLocation={sendLocation} />
+                        </Box>
+                    </Fade>
+                </Modal>
+            </AppBar >
+            <Drawer
+                anchor="right"
+                open={drawerOpen}
+                onClose={handleDrawerClose}
             >
-                <Fade in={open}>
-                    <Box sx={{
-                        ...style,
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        width: '600px',
-                        maxWidth: '1000px',
-                        height: '400px'
-                    }} >
-                        <LocationSearchInput sendLocation={sendLocation} />
-                    </Box>
-                </Fade>
-            </Modal>
-        </AppBar >
+                <Box
+                    sx={{
+                        width: 250
+                    }}
+                    role="presentation"
+                    onClick={handleDrawerClose}
+                    onKeyDown={handleDrawerClose}
+                >
+                    <List
+                        subheader={
+                            <ListSubheader 
+                                component="div" 
+                                id="nested-list-subheader"
+                                sx={{
+                                    backgroundColor: (theme) => theme.palette.primary.main, 
+                                    color: (theme) => theme.palette.primary.contrastText,   
+                                    fontWeight: 'bold',                                     
+                                    fontSize: '2rem',                                     
+                                    lineHeight: 'normal',
+                                    height:'70px',                                     
+                                    display: 'flex',                                         
+                                    alignItems: 'center',                 
+                                }}
+                            >
+                                Hello
+                            </ListSubheader>
+                        }
+                    >
+                        {settings.map((setting, index) => (
+                            <ListItem button key={setting.name} onClick={() => redirectToPage(setting)}>
+                                <ListItemText primary={setting.name} />
+                            </ListItem>
+                        ))}
+                    </List>
+                </Box>
+            </Drawer>
+        </Box>
     );
 }
 export default ResponsiveAppBar;
