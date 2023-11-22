@@ -30,6 +30,7 @@ interface Movie {
   poster_url: string;
   banner_url: string;
   trailer_url: string;
+  format: string;
 }
 
 const defaultMovie: Movie = {
@@ -42,6 +43,7 @@ const defaultMovie: Movie = {
   poster_url: "",
   banner_url: "",
   trailer_url: "",
+  format: "",
 };
 const App: React.FC = () => {
   const { movieName } = useParams();
@@ -88,6 +90,7 @@ const App: React.FC = () => {
   // };
   const dates = ["Tue 14", "Wed 15", "Thu 16", "Fri 17", "Sat 18"];
 
+
   // Sample data for theater times
   const cinemas = [
     {
@@ -131,15 +134,17 @@ const App: React.FC = () => {
 
   const backgroundStyle = {
     backgroundImage: `linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0)), url(${movie.poster_url})`,
+    // backgroundImage: `linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0)), url(${poster.backgroundPoster})`,
     backgroundSize: "cover",
-    backgroundPosition: "center center",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
     color: "#fff",
     fontFamily: "Arial, sans-serif",
-    padding: "2rem",
+    padding: "2rem", // top, right, bottom, left
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-end",
-    minHeight: "100vh",
+    minHeight: "75vh",
   };
 
   const contentStyle = {
@@ -218,9 +223,9 @@ const App: React.FC = () => {
               variant="subtitle1"
               sx={{ fontWeight: "bold", mb: 1 }}
               gutterBottom
-              style={{ fontSize: "30px" }}
+              style={{ fontSize: "24px" }}
             >
-              {movie.languages} | {movie.run_time} | UA
+              {movie.languages} | {movie.run_time} | {movie.format}
             </Typography>
             <Typography
               variant="subtitle1"
@@ -280,11 +285,13 @@ const App: React.FC = () => {
                 variant="body1"
                 padding="10px"
                 paddingTop="20px"
+                paddingBottom="85px"
                 sx={{ fontWeight: "bold", mb: 2 }}
                 style={{ fontSize: "40px" }}
               >
                 Trailer of the movie
               </Typography>
+
               <div style={videoContainerStyle}>
                 <iframe
                   title="Movie Trailer"
@@ -306,6 +313,7 @@ const App: React.FC = () => {
           <Typography
             variant="h5"
             component="div"
+            paddingTop="20px"
             sx={{ fontWeight: "bold", mb: 2 }}
           >
             Cast
