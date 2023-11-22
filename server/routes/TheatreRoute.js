@@ -3,7 +3,9 @@ const express = require('express');
 const router = express.Router();
 const { upload } = require('../Helpers/S3');
 const { HTTP_STATUS_CODES } = require('../constants')
+const { status, ScreenModel } = require('../models/ScreenModel');
 const Theater = require('../models/TheaterModel');
+const uniqueId = require('uniqid');
 router.post('/add', upload.single('file'), async (req, res) => {
     try {
         console.log('at /addTheater');
@@ -13,6 +15,7 @@ router.post('/add', upload.single('file'), async (req, res) => {
         image_url = req.file.location;
         console.log(req.body);
         const newTheater = new Theater({
+            id: uniqueId(),
             name: post_data.theater_name,
             description: post_data.description,
             location: post_data.state,
@@ -20,7 +23,8 @@ router.post('/add', upload.single('file'), async (req, res) => {
             theater_url: post_data.location_url,
             image_url: image_url,
             theater_constructed_date: post_data.theatre_constructed_date,
-            theater_id: `${post_data.theater_name}_${count + 1}`,
+            theater_id:uniqueId ,
+            movie_ids: [],
             address: post_data.address,
             mobile: post_data.phno,
             city: post_data.city,
@@ -48,7 +52,7 @@ router.get('/all', async (req, res) => {
         res.json({
             message: 'Theater found',
             status: HTTP_STATUS_CODES.OK,
-            data: JSON.stringify(theaters)
+            data: theaters
         })
     }
     catch (err) {
@@ -84,4 +88,33 @@ router.get('/getTheaterDetail/:id', async (req, res) => {
         })
     }
 })
+
+router.get('/getAllTheatersScreens/:id', async (req, res) => {
+    try {
+        console.log(req.params['id']);
+        const Theaters = await Theater.find({ movie_ids: { $in: [req.params['id']] } }).select({ name: 1, id: 1,_id:0 });
+        console.log(Theaters);
+        var response = [];
+        Theaters.forEach(async (element, key )=> {
+            response[key] = element;
+            console.log( element.id, req.params['id']);
+            const screenDetails = await ScreenModel.find({ theater_id: element.id, movie_id: req.params['id'] }).select({ name: 1, id: 1, _id: 0 });
+            console.log(screenDetails);
+            response[key].screen_details =screenDetails
+        });
+        res.json({
+            message: 'Theaters found',
+            status: HTTP_STATUS_CODES.OK,
+            data: response
+        })
+    }
+    catch (err) {
+        console.log(err);
+        res.json({
+            message: 'Theaters Not found',
+            status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+            data: JSON.stringify("")
+        })
+    }
+});
 module.exports = router; 
