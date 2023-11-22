@@ -4,7 +4,9 @@ const moment = require('moment');
 const router = express.Router();
 const { status, ScreenModel } = require('../models/ScreenModel');
 const MovieModel = require('../models/MovieModel');
+const TheaterModel = require('../models/TheaterModel');
 const { upload } = require('../Helpers/S3');
+const uniqid = require('uniqid');
 const { HTTP_STATUS_CODES } = require('../constants')
 router.post('/addScreen', async (req, res) => {
     try {
@@ -22,10 +24,10 @@ router.post('/addScreen', async (req, res) => {
         });
         console.log('at /addScreeen');
         const theater_id = req.body.theater_id;
-        const screen_count = await ScreenModel.countDocuments({ theater_id: theater_id });
-        console.log(screen_count);
+        // const screen_count = await ScreenModel.countDocuments({ theater_id: theater_id });
+        // console.log(screen_count);
         const newScreen = new ScreenModel({
-            id: `${theater_id}_Screen_${screen_count + 1}`,
+            id:uniqid() ,
             name: req.body.screenName,
             show_timings: req.body.timing,
             format: req.body.format,
@@ -86,6 +88,7 @@ router.get('/:id/:value?', async (req, res) => {
             })
         }
         else {
+            console.log(id);
             const screen = await ScreenModel.find({ theater_id: id });
             console.log(screen);
             // return "";
@@ -116,9 +119,18 @@ router.post('/addMovie', async (req, res) => {
         const tkt_price = req.body.ticketPrice;
         const theater_id = req.body.theater_id;
         const movie = await MovieModel.find({ id: movie_id })
-        const screen = await ScreenModel.find({ screen_id: screenId })
+        const screen = await ScreenModel.find({ id: screenId })
+        const theater = await TheaterModel.findOne({ id: theater_id });
+        await TheaterModel.updateOne({ id: theater_id }, {
+            movie_ids: [...theater.movie_ids, movie_id]
+        }).then((result) => {
+            console.log(result);
+        }).catch((error) => {
+            console.error(error);
+        });
+        console.log(screenId);
         console.log(screen);
-        seatArray = screen[0].seat_array;
+        seatArray = screen[0].seating_arrangement;
         const timestampsForDays = {};
         for (let i = 0; i < 5; i++) {
             const currentDate = moment().add(i, 'days');
@@ -147,9 +159,10 @@ router.post('/addMovie', async (req, res) => {
             res.json({ message: "screen already have a movie ", status: HTTP_STATUS_CODES.BAD_REQUEST, data: "" });
         }
         else {
-            await ScreenModel.updateOne({ screen_id: screenId }, {
+            await ScreenModel.updateOne({ id: screenId }, {
                 movie_name: movie[0].title,
                 movie_image: movie[0].poster_url,
+                movie_id:movie[0].id,
                 run_time: movie[0].run_time,
                 cost: tkt_price,
                 seats_day_wise: timestampsForDays
