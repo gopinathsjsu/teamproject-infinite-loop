@@ -25,15 +25,15 @@ router.post('/addScreen', async (req, res) => {
         const screen_count = await ScreenModel.countDocuments({ theater_id: theater_id });
         console.log(screen_count);
         const newScreen = new ScreenModel({
-            screen_id: `${theater_id}_Screen_${screen_count + 1}`,
-            screen_name: req.body.screenName,
-            show_times: req.body.timing,
-            screen_type: req.body.format,
+            id: `${theater_id}_Screen_${screen_count + 1}`,
+            name: req.body.screenName,
+            show_timings: req.body.timing,
+            format: req.body.format,
             rows: req.body.rows,
             columns: req.body.col,
             seating_capacity: req.body.rows * req.body.col,
             cost: req.body.cost,
-            seat_array: seatArray,
+            seating_arrangement: seatArray,
             theater_id: theater_id,
         });
         console.log(newScreen);

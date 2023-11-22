@@ -7,22 +7,19 @@ const status = {
 }
 
 const screenSchema = new mongoose.Schema({
-    screen_id: String,
-    screen_type: { type: String, required: true },
+    id: String,
+    name: { type: String, required: true },
+    format: { type: String, required: true },
     seating_capacity: { type: Number, required: true },
     theatre_id: String,
-    screen_name: { type: String, required: true },
     rows: { type: Number, required: true },
     columns: { type: Number, required: true },
-    movie_name: String,
-    movie_image: String,
-    run_time: String,
-    show_times: { type: [String], required: true },
-    cost: { type: Number },
-    theater_id: String,
-    seat_array: { type: [], required: true },
+    movie_id: String,
+    show_timings: { type: [String], required: true },
+    price: { type: Number },
+    seating_arrangement: { type: [], required: true },
     occupancy_status: [String],
-    seats_day_wise: { type: Object },
+    total_tickets_booked: { type: Number, default: 0 },
     created_on: { type: Date, default: Date.now },
     updated_on: { type: Date, default: Date.now }
 
