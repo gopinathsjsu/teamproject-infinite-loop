@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 
 const theaterSchema = new mongoose.Schema({
-  theater_id: { type: String, unique: true },
+  id: { type: String, unique: true },
   name: { type: String },
   description: { type: String },
   location: { type: String },
@@ -14,7 +14,8 @@ const theaterSchema = new mongoose.Schema({
   city: { type: String },
   theater_url: { type: String },
   image_url: { type: String },
-  screen_details: { type: Array },
+  screen_ids: { type: Array },
+  movie_ids: { type: Array },
   created_on: { type: Date, default: Date.now },
   updated_on: { type: Date, default: Date.now }
 });
