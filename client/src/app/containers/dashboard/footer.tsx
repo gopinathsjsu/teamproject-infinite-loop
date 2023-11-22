@@ -7,7 +7,7 @@ import Link from '@mui/material/Link';
 
 function Copyright() {
     return (
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" color="text.secondary" align="center">
             {'Copyright © '}
             <Link color="inherit" href="https://mui.com/">
                 Box Office
@@ -20,12 +20,7 @@ function Copyright() {
 
 export default function Footer() {
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-            }}
-        >
+        <>
             <CssBaseline />
             <Box
                 component="footer"
@@ -40,12 +35,12 @@ export default function Footer() {
                 }}
             >
                 <Container maxWidth="sm">
-                    <Typography variant="body1">
+                    <Typography variant="body1" align="center">
                         Box Office Footer
                     </Typography>
                     <Copyright />
                 </Container>
             </Box>
-        </Box>
+        </>
     );
 }
