@@ -15,6 +15,7 @@ router.post('/add', upload.single('image'),async (req, res) => {
             id:uniqid(),
             name: req.body.fullname,
             gender: req.body.gender,
+            description: req.body.about,
             profile_url: req.file.location,
             type: req.body.category,
             profession: req.body.profession,
