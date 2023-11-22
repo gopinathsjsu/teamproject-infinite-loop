@@ -58,18 +58,20 @@ router.get('/all', async (req, res) => {
 
 async function getMovieArtists(movie, key) {
     const artists = movie[key];
+  //  console.log(artists);
     const artists_details = await Artist.find({ id: { $in: artists } });
+    console.log(artists_details);
     return artists_details;
 }
 
 router.get('/:id', async (req, res) => {
      try {
-      console.log(req.params.id);
+     // console.log(req.params.id);
         // Save the user to the database
          const movie = await Movie.findOne({ id: req.params.id });
-         const cast = getMovieArtists(movie, 'cast');
-         const crew = getMovieArtists(movie, 'crew');
-         console.log(movie);
+         const cast = await getMovieArtists(movie, 'cast');
+         const crew = await getMovieArtists(movie, 'crew');
+       //  console.log(movie);
         res.json({ message: "Added movie successfully", status: HTTP_STATUS_CODES.OK,movie:movie,cast:cast,crew:crew });
     } catch (error) {
         console.error('Error creating user:', error);
