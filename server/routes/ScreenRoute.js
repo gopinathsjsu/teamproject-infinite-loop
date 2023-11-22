@@ -18,8 +18,7 @@ router.post('/addScreen', async (req, res) => {
         let count2 = 0;
         Object.entries(screen.seats).forEach(([row, col]) => {
             seatArray.push({
-                Row: `${row}`,
-                Status: col
+                [row]: col
             })
         });
         console.log('at /addScreeen');
@@ -71,6 +70,7 @@ router.get('/:id/:value?', async (req, res) => {
         id = req.params['id'];
         console.log("at Scressns/get");
         console.log(req.params['value']);
+        console.log(id);
         // return "";
         if (req.params['value']) {
             const date = new Date(Number(req.params['value']));
@@ -140,23 +140,27 @@ router.post('/addMovie', async (req, res) => {
             // Assuming you want a single timestamp for each day at 9:00 AM
             timestampsForDays[formattedDate]['09:00 am'] = {
                 SeatArray: seatArray,
-                occupancy_status: 'available', // Replace with the actual occupancy status
+                occupancy_status: 'available',
+                tickets_bought: 0, // Replace with the actual occupancy status
             };
             timestampsForDays[formattedDate]['1:00 pm'] = {
                 SeatArray: seatArray,
-                occupancy_status: 'available', // Replace with the actual occupancy status
+                occupancy_status: 'available',
+                tickets_bought: 0, // Replace with the actual occupancy status
             };
             timestampsForDays[formattedDate]['06:00 pm'] = {
                 SeatArray: seatArray,
-                occupancy_status: 'available', // Replace with the actual occupancy status
+                occupancy_status: 'available',
+                tickets_bought: 0, // Replace with the actual occupancy status
             };
             timestampsForDays[formattedDate]['10:00 pm'] = {
                 SeatArray: seatArray,
-                occupancy_status: 'available', // Replace with the actual occupancy status
+                occupancy_status: 'available',
+                tickets_bought: 0, // Replace with the actual occupancy status
             };
         }
         if (screen[0].movie_name) {
-            res.json({ message: "screen already have a movie ", status: HTTP_STATUS_CODES.BAD_REQUEST, data: "" });
+            res.send(HTTP_STATUS_CODES.BAD_REQUEST);
         }
         else {
             await ScreenModel.updateOne({ id: screenId }, {
@@ -164,6 +168,7 @@ router.post('/addMovie', async (req, res) => {
                 movie_image: movie[0].poster_url,
                 movie_id:movie[0].id,
                 run_time: movie[0].run_time,
+                movie_id: movie[0].id,
                 cost: tkt_price,
                 seats_day_wise: timestampsForDays
             }).then((result) => {
@@ -181,4 +186,38 @@ router.post('/addMovie', async (req, res) => {
         })
     }
 })
+// router.get('/getScreenLayout/:theater_id/:screen_id/:value/:movie_id/:time', async (req, res) => {
+router.post('/getScreenLayout', async (req, res) => {
+    try {
+        // id = req.params['theater_id'];
+        console.log("at Scressns/getScreenLayout");
+        // console.log(req.params['value']);
+        // time_selected = req.params['time'];
+        // console.log(time_selected);
+        // movie_id_val = req.params['movie_id'];
+        // screen_id_val = req.params['screen_id'];
+        // return "";
+        id = req.body.theater_id;
+        screen_id_val = req.body.screen_id;
+        movie_id_val = req.body.movie_id;
+        time_selected = req.body.time;
+        const date = new Date(Number(req.body.value));
+        const filter_data = date.toISOString().split('T')[0];
+        // return "";
+        const screen = await ScreenModel.find({
+            [`seats_day_wise.${filter_data}`]: { $exists: true }, movie_id: movie_id_val, screen_id: screen_id_val
+        }).select(`seats_day_wise.${filter_data}`);
+        // return "";
+        console.log(screen[0].seats_day_wise[filter_data][String(time_selected)]);
+        res.json({
+            message: 'Screen found',
+            status: HTTP_STATUS_CODES.OK,
+            data: screen
+        })
+    }
+    catch (err) {
+        console.log(err);
+        res.send(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR);
+    }
+});
 module.exports = router;
