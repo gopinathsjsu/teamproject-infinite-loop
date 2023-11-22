@@ -185,6 +185,11 @@ export default function Contact() {
     const response = await getDataFromEndPoint(data, formURL, "POST");
     if (response.status === 200) {
       setCastAndCrew([...castandcrew, response.artist]);
+      if(formData.category === "Crew"){
+        setCrew([...crew,response.artist]);
+      }else if(formData.category === "Cast"){
+        setCast([...cast,response.artist]);
+      }
     }
     handleClose();
     console.log(response);
