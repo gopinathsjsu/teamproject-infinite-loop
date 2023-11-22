@@ -21,25 +21,30 @@ const MovieCard = ({
   movie: any;
   onImageClick: any;
 }) => {
+
   return (
-    <Card sx={{ width: 200, height: 360, m: 1, boxShadow: 3 }}>
-      <CardMedia
-        component="img"
-        height="250"
-        image={movie.movie_url}
-        alt={movie.title}
-        // onClick={() => onImageClick(movie.movieTitle)} // Click handler is now on the image
-        sx={{ cursor: "pointer" }} // Add a pointer cursor on hover
-      />
-      <CardContent>
-        <Typography gutterBottom variant="h6" component="div">
-          {movie.title}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {movie.description}
-        </Typography>
-      </CardContent>
-    </Card>
+      <Card sx={{ width: 200, height: 400, m: 1, boxShadow: 3 }}>
+        <CardMedia
+          component="img"
+          sx={{
+            width: 200, // makes image take full width of the card
+            height: 300, // fixed height
+            objectFit: 'cover', // will cover the space, maintaining aspect ratio without stretching
+            cursor: 'pointer'
+          }}
+          image={movie.banner_url}
+          alt={movie.title}
+          onClick={() => onImageClick(movie.id)} // Uncomment this line if click handler is needed
+        />
+        <CardContent>
+          <Typography gutterBottom variant="subtitle2" component="div">
+            {movie.title}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {movie.format}
+          </Typography>
+        </CardContent>
+      </Card>
   );
 };
 
@@ -89,8 +94,9 @@ const MovieSlider = () => {
     router.push("/movies/add"); // Use navigate function to change the route
   };
 
-  const handleCardClick = (movieName: string) => {
-    console.log(`Clicked on ${movieName}`);
+  const handleCardClick = (movieid: string) => {
+    console.log(`Clicked on ${movieid}`);
+    router.push(`/movies/${movieid}`)
     // Implement your own logic here, such as navigation
   };
 

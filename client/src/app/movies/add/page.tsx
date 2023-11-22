@@ -17,6 +17,7 @@ import { getDataFromEndPoint } from "@/src/lib/backend-api";
 import { Theme, useTheme } from "@mui/material";
 import theme from "../../styles/theme";
 import Autocomplete from "@mui/material/Autocomplete";
+import { useRouter } from "next/navigation";
 
 export function MultipleSelectChip() {
   const theme = useTheme();
@@ -66,8 +67,10 @@ export default function Contact() {
     "Adventure",
     "Mystery",
   ];
-  const formats = ["IMAX", "IMAX 70mm", "XD", "SD"];
+  const formats = ["IMAX 70mm", "4DX","3D", "SD"];
 
+  const router = useRouter();
+  
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
   const MenuProps = {
@@ -93,6 +96,7 @@ export default function Contact() {
   }
 
   const languageOptions = [
+    "Select a language",
     "English",
     "Spanish",
     "French",
@@ -193,7 +197,7 @@ export default function Contact() {
    
   const submitForm = async (e: any) => {
     e.preventDefault();
-   
+   console.log(formData)
     const data = new FormData();
 
     Object.entries(formData).forEach(([key, value]) => {
@@ -218,8 +222,11 @@ export default function Contact() {
      );
     console.log(selectedCrew);
      data.append("crewIds", selectedCrew.map((artist) => artist.id).join(","));
-    const formURL = "movies/add"; // Replace with your form's URL
+    const formURL = "movie/add"; // Replace with your form's URL
     const response = await getDataFromEndPoint(data, formURL, "POST");
+    if (response.status === 200){
+        router.push("/movies/all")
+    }
    
   };
 
@@ -247,7 +254,7 @@ export default function Contact() {
     >
       <Paper
         elevation={3}
-        style={{ padding: "20px", textAlign: "center", marginBottom: "30px" }}
+        style={{ padding: "2px", textAlign: "center", marginBottom: "30px" }}
       >
         <Typography
           variant="h4"
@@ -438,20 +445,7 @@ export default function Contact() {
             {/* End Date and Release Date side by side */}
             <div style={{ display: "flex", gap: "16px" }}>
               {/* Date Pickers */}
-              <div>
-                <FormControl fullWidth variant="outlined">
-                  <InputLabel htmlFor="end-date" shrink>
-                    End Date
-                  </InputLabel>
-                  <Input
-                    id="end-date"
-                    type="date"
-                    name="endDate"
-                    value={formData.endDate}
-                    onChange={handleInput}
-                  />
-                </FormControl>
-              </div>
+
 
               <div>
                 <FormControl fullWidth variant="outlined">
@@ -463,6 +457,20 @@ export default function Contact() {
                     type="date"
                     name="releaseDate"
                     value={formData.releaseDate}
+                    onChange={handleInput}
+                  />
+                </FormControl>
+              </div>
+              <div>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel htmlFor="end-date" shrink>
+                    End Date
+                  </InputLabel>
+                  <Input
+                    id="end-date"
+                    type="date"
+                    name="endDate"
+                    value={formData.endDate}
                     onChange={handleInput}
                   />
                 </FormControl>

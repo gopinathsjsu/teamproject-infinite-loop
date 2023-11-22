@@ -54,7 +54,7 @@ const App: React.FC = () => {
    useEffect(() => {
      const fetchData = async () => {
        try {
-         const response = await fetch(`http://localhost:8080/movie/RRR`);
+         const response = await fetch(`http://localhost:8080/movie/${movieName}`);
          if (!response.ok) {
            throw new Error(`Error: ${response.status}`);
          }
