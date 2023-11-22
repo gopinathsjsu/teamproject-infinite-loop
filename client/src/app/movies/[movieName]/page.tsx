@@ -47,6 +47,7 @@ const defaultMovie: Movie = {
 };
 const App: React.FC = () => {
   const { movieName } = useParams();
+  const router = useRouter();
    const [movie, setMovie] = useState<Movie>(defaultMovie);
   const [castData, setCastData] = useState<CastAndCrewMember[]>([]);
   const [crewData, setCrewData] = useState<CastAndCrewMember[]>([]);
@@ -192,6 +193,10 @@ const App: React.FC = () => {
     },
   });
 
+  function redirectToBooking(){
+    router.push(`/movies/${movieName}/buyTicket`);
+  }
+
   return (
     <>
       <div>
@@ -240,6 +245,7 @@ const App: React.FC = () => {
           }}
         >
           <Button
+            onClick={()=>{redirectToBooking()}}
             variant="contained"
             style={{
               backgroundColor: "red",

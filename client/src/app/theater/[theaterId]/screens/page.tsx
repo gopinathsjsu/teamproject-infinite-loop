@@ -1,7 +1,6 @@
 "use client"
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Box, Grid, Typography, Button, Modal, Backdrop, Fade, Stack, TextField, FormControl, FormHelperText, InputLabel, Select, MenuItem } from '@mui/material';
@@ -11,11 +10,7 @@ import SendIcon from '@mui/icons-material/Send';
 import { getDataFromEndPoint } from "@/src/lib/backend-api";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs, { Dayjs } from 'dayjs';
 import * as zod from 'zod';
-import { threadId } from "worker_threads";
 
 interface Screen {
     id: string,
@@ -71,7 +66,7 @@ export default function Screen() {
             const mappedData: Screen[] = data.map((screenItem: any) => ({
                 id: screenItem.screen_id,
                 name: screenItem.screen_name,
-                timings: screenItem.show_times,
+                timings: screenItem.show_timings,
                 maxCapacity: screenItem.seating_capacity,
                 imageUrl: screenItem.movie_image,
                 format: screenItem.screen_type,
@@ -137,7 +132,7 @@ export default function Screen() {
             const mappedData: Screen[] = data_req.map((screenItem: any) => ({
                 id: screenItem.screen_id,
                 name: screenItem.screen_name,
-                timings: screenItem.show_times,
+                timings: screenItem.show_timings,
                 maxCapacity: screenItem.seating_capacity,
                 imageUrl: screenItem.movie_image,
                 format: screenItem.screen_type,
