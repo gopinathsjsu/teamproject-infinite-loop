@@ -33,8 +33,8 @@ router.post('/add', upload.single('image'),async (req, res) => {
 
 router.get('/all', async (req, res) => {
     try {
-        const Cast = await Artist.find({type : 'Cast'}).select({ "name": 1,"profile_url":1,"id":1,  "_id": 0,"profession":1});;
-         const Crew = await Artist.find({type:'Crew'}).select({ "name": 1, "profile_url":1,"id":1,"_id": 0,"profession":1});;
+        const Cast = await Artist.find({type : 'Cast'}).select({ "name": 1,"profile_url":1,"id":1,  "_id": 0,"profession":1,"description":1});;
+         const Crew = await Artist.find({type:'Crew'}).select({ "name": 1, "profile_url":1,"id":1,"_id": 0,"profession":1,"description":1});;
         res.json({ Cast: Cast,Crew:Crew, status: HTTP_STATUS_CODES.OK });
     } catch (error) {
         console.error('Error sending artist details:', error);
