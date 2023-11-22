@@ -20,7 +20,7 @@ router.post('/add', upload.array('movieposter',2),async (req, res) => {
             genres: req.body.genre,
             format: req.body.format,
             languages: req.body.languages,
-            movie_trailer_url: req.body.movieTrailerLink,
+            trailer_url: req.body.movieTrailerLink,
             run_time:req.body.Runtime,
             rating:0,
             release_date: req.body.releaseDate,
