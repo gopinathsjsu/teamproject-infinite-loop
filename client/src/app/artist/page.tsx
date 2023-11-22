@@ -79,14 +79,6 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-interface CastAndCrewMember {
-  name: string;
-  profession: string;
-  profile_url: string;
-  // Include other properties as needed
-}
-
-
 // Function to get styles for select items
 function getStyles(
   name: any,
@@ -99,6 +91,13 @@ function getStyles(
         ? theme.typography.fontWeightRegular
         : theme.typography.fontWeightMedium,
   };
+}
+
+export interface CastAndCrewMember {
+  name: string;
+  profession: string;
+  profile_url: string;
+  // Include other properties as needed
 }
 
 export default function Contact() {
