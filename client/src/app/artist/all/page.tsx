@@ -32,10 +32,6 @@ import theme from "@/src/app/styles/theme";
 import { useState, useEffect, useContext } from "react";
 import { useRouter } from 'next/navigation'; // Import the useRouter hook
 
-
-
-
-
 const style = {
   position: "absolute",
   top: "50%",
@@ -98,18 +94,19 @@ function getStyles(
   };
 }
 
-export interface CastAndCrewMember {
+interface CastAndCrewMember {
   id: any;
   name: string;
   profession: string;
   profile_url: string;
   artist_id: string;
   about: string;
-  // Include other properties as needed
 }
 
 export default function Contact() {
   const [castandcrew, setCastAndCrew] = useState<CastAndCrewMember[]>([]);
+  const [cast, setCast] = useState<any>([]);
+  const [crew, setCrew] = useState<any>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -119,7 +116,9 @@ export default function Contact() {
           throw new Error(`Error: ${response.status}`);
         }
         const data = await response.json();
-        setCastAndCrew(data.Crew);
+        setCast(data.Cast);
+        setCrew(data.Crew);
+        // setCastAndCrew(...data.Crew);
         console.log(data);
       } catch (error) {
         console.error("Failed to fetch data:", error);
@@ -132,7 +131,8 @@ export default function Contact() {
   const router = useRouter();
 
   const handleArtistClick = (artist_id: any) => {
-    router.push(`/artist/${artist_id}`);}
+    router.push(`/artist/${artist_id}`);
+  }
 
   const [formData, setFormData] = useState({
     fullname: "",
@@ -140,7 +140,7 @@ export default function Contact() {
     gender: "",
     category: "",
     profession: [],
-    about:"",
+    about: "",
   });
 
   // Modal control
@@ -202,7 +202,7 @@ export default function Contact() {
   return (
     <div>
       <Button
-        sx={{ paddingTop: 10, paddingRight: 0, fontWeight: "bold" }}
+        sx={{ paddingTop: 2, paddingRight: 0, fontWeight: "bold" }}
         onClick={handleOpen}
       >
         Add Artist
@@ -291,51 +291,6 @@ export default function Contact() {
                     <MenuItem value="Other">Other</MenuItem>
                   </Select>
                 </FormControl>
-                {/* <FormControl sx={{ m: 1, width: 330 }}>
-                  <InputLabel id="category-select-label">Artist Category</InputLabel>
-                  <Select
-                    labelId="category-select-label"
-                    id="category-select"
-                    value={formData.category}
-                    name="category"
-                    label="Artist Category"
-                    onChange={handleInput}
-                  >
-                    <MenuItem value="Cast">Cast</MenuItem>
-                    <MenuItem value="Crew">Crew</MenuItem>
-                    <MenuItem value="Other">Other</MenuItem>
-                  </Select>
-                </FormControl>
-                <FormControl sx={{ m: 1, width: 330 }}>
-                  <InputLabel id="profession-select-label">Profession</InputLabel>
-                  <Select
-                    labelId="profession-select-label"
-                    id="profession-select"
-                    multiple
-                    name="profession"
-                    value={formData.profession}
-                    onChange={handleInput}
-                    input={<OutlinedInput id="select-multiple-chip" label="Profession" />}
-                    renderValue={(selected) => (
-                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                        {selected.map((value) => (
-                          <Chip key={value} label={value} />
-                        ))}
-                      </Box>
-                    )}
-                    MenuProps={MenuProps}
-                  >
-                  {crew_names.map((member) => (
-                  <MenuItem
-                    key={member.name}
-                    value={member.name}
-                    style={getStyles(member.name, formData.profession, theme)}
-                  >
-                    {member.name}
-                  </MenuItem>
-                ))}
-                  </Select>
-                </FormControl> */}
                 <FormControl sx={{ m: 1, width: 330 }}>
                   <InputLabel id="category-select-label">
                     Artist Category
@@ -422,29 +377,51 @@ export default function Contact() {
       </Modal>
 
       <Container maxWidth="lg" sx={{ borderRadius: 2, overflow: "hidden", mt: 2, mb: 4 }}>
-      <Typography variant="h5" component="div" sx={{ fontWeight: "bold", mb: 2 }}>
-        Cast
-      </Typography>
-      <Grid container spacing={1}>
-        {castandcrew.map((artist, index) => (
-          <Grid item key={`member-${index}`} xs={6} sm={4} md={3} lg={2}>
-            <Box sx={{ textAlign: "center", p: 1 }}>
-              <Avatar
-                alt={artist.name}
-                src={artist.profile_url}
-                sx={{ width: 120, height: 120, margin: "auto", mb: 1, cursor: 'pointer' }}
-                onClick={() => handleArtistClick(artist.id)}
-              />
-              <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-                {artist.name}
-              </Typography>
-              <Typography variant="body2">{artist.profession}</Typography>
-            </Box>
-          </Grid>
-        ))}
-      </Grid>
-    </Container>
-
+        <Typography variant="h5" component="div" sx={{ fontWeight: "bold", mb: 2 }}>
+          Cast
+        </Typography>
+        <Grid container spacing={1}>
+          {cast.map((artist:any, index:number) => (
+            <Grid item key={`member-${index}`} xs={6} sm={4} md={3} lg={2}>
+              <Box sx={{ textAlign: "center", p: 1 }}>
+                <Avatar
+                  alt={artist.name}
+                  src={artist.profile_url}
+                  sx={{ width: 120, height: 120, margin: "auto", mb: 1, cursor: 'pointer' }}
+                  onClick={() => handleArtistClick(artist.id)}
+                />
+                <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+                  {artist.name}
+                </Typography>
+                <Typography variant="body2">{artist.profession}</Typography>
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
+      <Container maxWidth="lg" sx={{ borderRadius: 2, overflow: "hidden", mt: 2, mb: 4 }}>
+        <Typography variant="h5" component="div" sx={{ fontWeight: "bold", mb: 2 }}>
+          Crew
+        </Typography>
+        <Grid container spacing={1}>
+          {crew.map((artist:any, index:number) => (
+            <Grid item key={`member-${index}`} xs={6} sm={4} md={3} lg={2}>
+              <Box sx={{ textAlign: "center", p: 1 }}>
+                <Avatar
+                  alt={artist.name}
+                  src={artist.profile_url}
+                  sx={{ width: 120, height: 120, margin: "auto", mb: 1, cursor: 'pointer' }}
+                  onClick={() => handleArtistClick(artist.id)}
+                />
+                <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+                  {artist.name}
+                </Typography>
+                <Typography variant="body2">{artist.profession}</Typography>
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
     </div>
   );
 }

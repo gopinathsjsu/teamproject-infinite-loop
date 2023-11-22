@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as zod from 'zod';
@@ -9,8 +9,11 @@ import { Box, Button, Container, CssBaseline, FormControl, FormHelperText, Grid,
 import { getDataFromEndPoint } from "@/src/lib/backend-api";
 import { Seats } from '@/src/lib/types'
 import styles from './Seats.module.scss'
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const schema = zod.object({
+    date: zod.date().min(new Date('1900-01-01'), 'Date is required').or(zod.string().nonempty('Date is required')),
     theater: zod.string().min(1, 'Theater is required'),
     screen: zod.string().min(1, 'Screen is required'),
     timing: zod.string().min(1, 'Select at least one timing'),
@@ -33,8 +36,12 @@ const screen =
 
 export default function addScreen() {
     const router = useRouter();
-    const { theaterId } = useParams();
+    const { movieName } = useParams();
+    const searchParams = useSearchParams();
+    const theaterId = searchParams.get('theaterId');
+    console.log(theaterId);
     const [editable, setEditable] = useState<boolean>(true);
+    const [dateValue, setDateValue] = useState(null);
 
     //SEATS CODE
     const [seatDetails, setSeatDetails] = useState<Seats>(screen.seats || {});
@@ -59,7 +66,18 @@ export default function addScreen() {
         setEditable(!editable);
     }
 
-    const { handleSubmit, control, formState: { errors } } = useForm({
+    function validateFileds() {
+        trigger();
+        const values = getValues();
+        if ( values.date == null || values.screen == "" || values.theater== "" || values.timing ==""){
+            return;
+        }
+        else{
+            changeEditable();
+        }
+    }
+
+    const { handleSubmit, getValues, trigger, control, formState: { errors } } = useForm({
         resolver: zodResolver(schema)
     });
 
@@ -131,39 +149,17 @@ export default function addScreen() {
     }
 
     //SEATS CODE
-    const RenderPaymentButton = () => {
-        selectedSeats = [];
-        for (let key in seatDetails) {
-            seatDetails[key].forEach((seatValue, seatIndex) => {
-                if (seatValue === 2) {
-                    selectedSeats.push(`${key}${seatIndex + 1}`)
-                }
-            })
-        }
-        if (selectedSeats.length) {
-            return (
-                // href={{ pathname: '/payment', query: { movieId: movie?.id, seatDetails: JSON.stringify(seatDetails) } }}
-                <Button variant="contained" href="#contained-buttons" className={styles.paymentButton} >
-                    Book Ticket Pay Rs.{selectedSeats.length * (screen?.ticketCost || 0)}
-                </Button>
-            )
-        } else {
-            return <></>
-        }
+    selectedSeats = [];
+    for (let key in seatDetails) {
+        seatDetails[key].forEach((seatValue, seatIndex) => {
+            if (seatValue === 2) {
+                selectedSeats.push(`${key}${seatIndex + 1}`)
+            }
+        })
     }
 
-    async function onSubmit(data: any) {
-        // router.push("/theater/" + theaterId + "/screens/");
-        data['seats'] = seatDetails;
-        data['theater_id'] = theaterId;
-        const formUrl = 'screen/addScreen';
-        console.log(formUrl);
-        try {
-            await getDataFromEndPoint(data, formUrl, 'POST');
-
-        } catch (error) {
-            console.log(error);
-        }
+    async function onSubmit() {
+        console.log(getValues());
     };
 
     return (
@@ -175,7 +171,23 @@ export default function addScreen() {
                         <Typography variant="h4">Book Ticket</Typography>
                     </Box>
                     <Grid container spacing={2}>
-                        <Grid item xs={12} md={12} lg={4}>
+                        <Grid sx={{ display: 'flex', justifyContent: 'center', mt: "16px" }} item xs={12} md={12} lg={3}>
+                            <Controller
+                                name="date"
+                                control={control}
+                                defaultValue={null}
+                                render={({ field }) => (
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DatePicker
+                                            sx={{ width: "100%" }}
+                                            label="Select Date"
+                                            {...field}
+                                        />
+                                    </LocalizationProvider>
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={12} lg={3}>
                             <Controller
                                 name="theater"
                                 control={control}
@@ -188,43 +200,43 @@ export default function addScreen() {
                                                 <MenuItem key={format} value={format}>{format}</MenuItem>
                                             ))}
                                         </Select>
-                                        <FormHelperText id="component-error-text">{getErrorMessage(errors.format)}</FormHelperText>
+                                        <FormHelperText id="component-error-text">{getErrorMessage(errors.theater)}</FormHelperText>
                                     </FormControl>
                                 )}
                             />
                         </Grid>
-                        <Grid item xs={12} md={12} lg={4}>
+                        <Grid item xs={12} md={12} lg={3}>
                             <Controller
                                 name="screen"
                                 control={control}
                                 defaultValue=""
                                 render={({ field }) => (
-                                    <FormControl disabled={!editable} fullWidth margin="normal" error={!!errors.format}>
+                                    <FormControl disabled={!editable} fullWidth margin="normal" error={!!errors.screen}>
                                         <InputLabel>Screen</InputLabel>
                                         <Select {...field} label="Screen">
                                             {['2D', '3D'].map((format) => (
                                                 <MenuItem key={format} value={format}>{format}</MenuItem>
                                             ))}
                                         </Select>
-                                        <FormHelperText id="component-error-text">{getErrorMessage(errors.format)}</FormHelperText>
+                                        <FormHelperText id="component-error-text">{getErrorMessage(errors.screen)}</FormHelperText>
                                     </FormControl>
                                 )}
                             />
                         </Grid>
-                        <Grid item xs={12} md={12} lg={4}>
+                        <Grid item xs={12} md={12} lg={3}>
                             <Controller
                                 name="timing"
                                 control={control}
                                 defaultValue=""
                                 render={({ field }) => (
-                                    <FormControl disabled={!editable} fullWidth margin="normal" error={!!errors.format}>
+                                    <FormControl disabled={!editable} fullWidth margin="normal" error={!!errors.timing}>
                                         <InputLabel>Timing</InputLabel>
                                         <Select {...field} label="Timing">
                                             {['2D', '3D'].map((format) => (
                                                 <MenuItem key={format} value={format}>{format}</MenuItem>
                                             ))}
                                         </Select>
-                                        <FormHelperText id="component-error-text">{getErrorMessage(errors.format)}</FormHelperText>
+                                        <FormHelperText id="component-error-text">{getErrorMessage(errors.timing)}</FormHelperText>
                                     </FormControl>
                                 )}
                             />
@@ -235,13 +247,17 @@ export default function addScreen() {
                             <Grid container justifyContent="center" spacing={2}>
                                 {editable ?
                                     <Box gap={2} my={4}>
-                                        <Button variant="contained" onClick={changeEditable}>Apply Changes</Button>
+                                        <Button variant="contained" onClick={validateFileds}>Apply Changes</Button>
                                     </Box>
                                     : <Box gap={2} my={4}>
                                         <Button style={{ marginRight: "5px" }} variant="outlined" onClick={changeEditable}>Change Theater</Button>
-                                        {/* <Button disabled={selectedSeats.length === 0} variant="contained" type="submit">Book Tickets Pay Rs.{selectedSeats.length * (screen?.ticketCost || 0)}</Button> */}
-                                        <RenderPaymentButton />
-                                    </Box>}
+                                        {selectedSeats.length !== 0 &&
+                                            <Button variant="contained" type="submit" onClick={()=>{onSubmit()}}>
+                                                Book Ticket Pay Rs.{selectedSeats.length * (screen?.ticketCost || 0)}
+                                            </Button>
+                                        }
+                                    </Box>
+                                }
                             </Grid>
                         </Grid>
                     </Grid>
