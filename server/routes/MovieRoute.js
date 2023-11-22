@@ -2,9 +2,11 @@ require('dotenv').config()
 const express = require('express')
 const router = express.Router();
 const Movie = require('../models/MovieModel');
+const Artist = require('../models/ArtistModel');
 const uniqid = require('uniqid');
 const { upload } = require('../Helpers/S3');
-const { HTTP_STATUS_CODES } = require('../constants')
+const { HTTP_STATUS_CODES } = require('../constants');
+const { get } = require('mongoose');
 
 router.post('/add', upload.array('movieposter',2),async (req, res) => {
      try {
@@ -54,13 +56,21 @@ router.get('/all', async (req, res) => {
     }
 })
 
+async function getMovieArtists(movie, key) {
+    const artists = movie[key];
+    const artists_details = await Artist.find({ id: { $in: artists } });
+    return artists_details;
+}
+
 router.get('/:id', async (req, res) => {
      try {
       console.log(req.params.id);
         // Save the user to the database
-         const movie = await Movie.find({ title: req.params.id });
+         const movie = await Movie.findOne({ id: req.params.id });
+         const cast = getMovieArtists(movie, 'cast');
+         const crew = getMovieArtists(movie, 'crew');
          console.log(movie);
-        res.json({ message: "Added movie successfully", status: HTTP_STATUS_CODES.OK,movie:movie });
+        res.json({ message: "Added movie successfully", status: HTTP_STATUS_CODES.OK,movie:movie,cast:cast,crew:crew });
     } catch (error) {
         console.error('Error creating user:', error);
         res.status(500).send('Internal Server Error');
