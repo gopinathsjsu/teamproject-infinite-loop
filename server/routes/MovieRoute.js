@@ -58,7 +58,7 @@ router.get('/:id', async (req, res) => {
      try {
       console.log(req.params.id);
         // Save the user to the database
-         const movie = await Movie.find({ title: req.params.id });
+         const movie = await Movie.find({ id: req.params.id });
          console.log(movie);
         res.json({ message: "Added movie successfully", status: HTTP_STATUS_CODES.OK,movie:movie });
     } catch (error) {
