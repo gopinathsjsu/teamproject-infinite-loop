@@ -177,8 +177,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             >
                 <Container maxWidth={false}>
                     {children}
-                </Container>
                 <Footer />
+                </Container>
             </Box>
         </Box>
     );

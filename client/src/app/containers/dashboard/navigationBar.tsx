@@ -78,7 +78,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 const pages = [
     { name: 'Movies', route: '/movies/all' },
     { name: 'Theaters', route: '/theater' },
-    { name: 'Arists', route: '/artist' }
+    { name: 'Arists', route: '/artist/all' }
 ];
 const settings = [
     { name: 'Profile', route: '/personal_profile' },
