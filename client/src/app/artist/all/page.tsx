@@ -291,51 +291,6 @@ export default function Contact() {
                     <MenuItem value="Other">Other</MenuItem>
                   </Select>
                 </FormControl>
-                {/* <FormControl sx={{ m: 1, width: 330 }}>
-                  <InputLabel id="category-select-label">Artist Category</InputLabel>
-                  <Select
-                    labelId="category-select-label"
-                    id="category-select"
-                    value={formData.category}
-                    name="category"
-                    label="Artist Category"
-                    onChange={handleInput}
-                  >
-                    <MenuItem value="Cast">Cast</MenuItem>
-                    <MenuItem value="Crew">Crew</MenuItem>
-                    <MenuItem value="Other">Other</MenuItem>
-                  </Select>
-                </FormControl>
-                <FormControl sx={{ m: 1, width: 330 }}>
-                  <InputLabel id="profession-select-label">Profession</InputLabel>
-                  <Select
-                    labelId="profession-select-label"
-                    id="profession-select"
-                    multiple
-                    name="profession"
-                    value={formData.profession}
-                    onChange={handleInput}
-                    input={<OutlinedInput id="select-multiple-chip" label="Profession" />}
-                    renderValue={(selected) => (
-                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                        {selected.map((value) => (
-                          <Chip key={value} label={value} />
-                        ))}
-                      </Box>
-                    )}
-                    MenuProps={MenuProps}
-                  >
-                  {crew_names.map((member) => (
-                  <MenuItem
-                    key={member.name}
-                    value={member.name}
-                    style={getStyles(member.name, formData.profession, theme)}
-                  >
-                    {member.name}
-                  </MenuItem>
-                ))}
-                  </Select>
-                </FormControl> */}
                 <FormControl sx={{ m: 1, width: 330 }}>
                   <InputLabel id="category-select-label">
                     Artist Category
