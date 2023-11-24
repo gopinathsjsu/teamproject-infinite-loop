@@ -20,7 +20,7 @@ const screenSchema = new mongoose.Schema({
     movie_id: String,
     show_timings: { type: [String], required: true },
     cost: { type: Number },
-    seating_arrangement: { type: [], required: true },
+    seating_arrangement: { type: Object },
     seats_day_wise: { type: Object },
     occupancy_status: [String],
     total_tickets_booked: { type: Number, default: 0 },

@@ -12,15 +12,11 @@ router.post('/addScreen', async (req, res) => {
     try {
         screen = req.body;
         console.log(screen);
-        const seatArray = []
+        seatArray = {}
         let count0 = 0;
         let count1 = 0;
         let count2 = 0;
-        Object.entries(screen.seats).forEach(([row, col]) => {
-            seatArray.push({
-                [row]: col
-            })
-        });
+        seatArray = {...seatArray, ...screen.seats};
         console.log('at /addScreeen');
         const theater_id = req.body.theater_id;
         // const screen_count = await ScreenModel.countDocuments({ theater_id: theater_id });
@@ -143,7 +139,7 @@ router.post('/addMovie', async (req, res) => {
             const formattedDate = currentDate.format('YYYY-MM-DD');
             timestampsForDays[formattedDate] = {};
 
-            timestampsForDays[formattedDate]['09:00 am'] = {
+            timestampsForDays[formattedDate]['9:00 am'] = {
                 SeatArray: seatArray,
                 occupancy_status: 'available',
                 tickets_bought: 0,
@@ -153,7 +149,7 @@ router.post('/addMovie', async (req, res) => {
                 occupancy_status: 'available',
                 tickets_bought: 0,
             };
-            timestampsForDays[formattedDate]['06:00 pm'] = {
+            timestampsForDays[formattedDate]['6:00 pm'] = {
                 SeatArray: seatArray,
                 occupancy_status: 'available',
                 tickets_bought: 0,
@@ -208,23 +204,29 @@ router.post('/getScreenLayout', async (req, res) => {
         time_selected = req.body.time;
         date_value = req.body.value;
         console.log(date_value);
-        const date = new Date(Number(date_value));
+        const date = new Date(date_value);
         console.log(date);
         const filter_data = date.toISOString().split('T')[0];
         // return "";
-        console.log(filter_data);
+        console.log(time_selected);
         const screen = await ScreenModel.findOne({
             [`seats_day_wise.${filter_data}`]: { $exists: true }, movie_id: movie_id_val, id: screen_id_val
-        }).select(`seats_day_wise.${filter_data}`);
+        }).select(`seats_day_wise.${filter_data} cost`);
         // return "";
         console.log(screen);
-        return "";
-        // console.log(screen[0].seats_day_wise[filter_data][String(time_selected)]);
-        screen_layout = screen[0].seats_day_wise[filter_data][String(time_selected)];
+        console.log(filter_data);
+        console.log(screen.seats_day_wise[filter_data][time_selected].SeatArray);
+        // console.log(screen[filter_data][time_selected]);
+        // return "";
+        // console.log(screen.seats_day_wise[filter_data][String(time_selected)]);
+        // screen_layout = screen[0].seats_day_wise[filter_data][String(time_selected)];
         res.json({
             message: 'Screen found',
             status: HTTP_STATUS_CODES.OK,
-            data: screen_layout
+            data: {seatArray : screen.seats_day_wise[filter_data][time_selected].SeatArray,
+                    occupancy_status : screen.seats_day_wise[filter_data][time_selected].occupancy_status,
+                    cost : screen.cost,
+                tickets_bought : screen.seats_day_wise[filter_data][time_selected].tickets_bought}
         })
     }
     catch (err) {
