@@ -106,6 +106,7 @@ router.get('/getAllTheatersScreens/:id', async (req, res) => {
                 screen_details: screenDetails
             });
         }
+
         data = {
             movieName : movie_data.title,
             releaseDate : movie_data.release_date,
