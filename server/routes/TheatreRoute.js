@@ -95,13 +95,14 @@ router.get('/getAllTheatersScreens/:id', async (req, res) => {
         const Theaters = await Theater.find({ movie_ids: { $in: [req.params['id']] } }).select({ name: 1, id: 1,_id:0 });
         console.log(Theaters);
         var response = [];
-        Theaters.forEach(async (element, key )=> {
-            response[key] = element;
-            console.log( element.id, req.params['id']);
-            const screenDetails = await ScreenModel.find({ theater_id: element.id, movie_id: req.params['id'] }).select({ name: 1, id: 1, _id: 0 });
-            console.log(screenDetails);
-            response[key].screen_details =screenDetails
-        });
+       for (const theater of Theaters) {
+            const screenDetails = await ScreenModel.find({ theater_id: theater.id, movie_id: req.params.id }).select({ name: 1, id: 1, _id: 0 });
+            response.push({
+                id: theater.id,
+                name: theater.name,
+                screen_details: screenDetails
+            });
+        }
         res.json({
             message: 'Theaters found',
             status: HTTP_STATUS_CODES.OK,
