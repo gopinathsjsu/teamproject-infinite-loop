@@ -26,7 +26,7 @@ router.post('/addScreen', async (req, res) => {
         // const screen_count = await ScreenModel.countDocuments({ theater_id: theater_id });
         // console.log(screen_count);
         const newScreen = new ScreenModel({
-            id:uniqid() ,
+            id: uniqid(),
             name: req.body.screenName,
             show_timings: req.body.timing,
             format: req.body.format,
@@ -118,8 +118,13 @@ router.post('/addMovie', async (req, res) => {
         const screenId = req.body.screen_id;
         const tkt_price = req.body.ticketPrice;
         const theater_id = req.body.theater_id;
-        const movie = await MovieModel.find({ id: movie_id })
-        const screen = await ScreenModel.find({ id: screenId })
+        const movie = await MovieModel.findOne({ id: movie_id })
+        const screen = await ScreenModel.findOne({ id: screenId })
+        movie_added_date = new Date();
+        end_date = new Date(movie.end_date);
+        const oneDay = 24 * 60 * 60 * 1000;
+        const daysDifference = Math.round(Math.abs((movie_added_date - end_date) / oneDay));
+        console.log(daysDifference);
         const theater = await TheaterModel.findOne({ id: theater_id });
         await TheaterModel.updateOne({ id: theater_id }, {
             movie_ids: [...theater.movie_ids, movie_id]
@@ -130,45 +135,45 @@ router.post('/addMovie', async (req, res) => {
         });
         console.log(screenId);
         console.log(screen);
-        seatArray = screen[0].seating_arrangement;
+        console.log(movie);
+        seatArray = screen.seating_arrangement;
         const timestampsForDays = {};
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < daysDifference; i++) {
             const currentDate = moment().add(i, 'days');
             const formattedDate = currentDate.format('YYYY-MM-DD');
             timestampsForDays[formattedDate] = {};
 
-            // Assuming you want a single timestamp for each day at 9:00 AM
             timestampsForDays[formattedDate]['09:00 am'] = {
                 SeatArray: seatArray,
                 occupancy_status: 'available',
-                tickets_bought: 0, // Replace with the actual occupancy status
+                tickets_bought: 0,
             };
             timestampsForDays[formattedDate]['1:00 pm'] = {
                 SeatArray: seatArray,
                 occupancy_status: 'available',
-                tickets_bought: 0, // Replace with the actual occupancy status
+                tickets_bought: 0,
             };
             timestampsForDays[formattedDate]['06:00 pm'] = {
                 SeatArray: seatArray,
                 occupancy_status: 'available',
-                tickets_bought: 0, // Replace with the actual occupancy status
+                tickets_bought: 0,
             };
             timestampsForDays[formattedDate]['10:00 pm'] = {
                 SeatArray: seatArray,
                 occupancy_status: 'available',
-                tickets_bought: 0, // Replace with the actual occupancy status
+                tickets_bought: 0,
             };
         }
-        if (screen[0].movie_name) {
+        if (screen.movie_name) {
             res.send(HTTP_STATUS_CODES.BAD_REQUEST);
         }
         else {
             await ScreenModel.updateOne({ id: screenId }, {
-                movie_name: movie[0].title,
-                movie_image: movie[0].poster_url,
-                movie_id:movie[0].id,
-                run_time: movie[0].run_time,
-                movie_id: movie[0].id,
+                movie_name: movie.title,
+                movie_image: movie.poster_url,
+                movie_id: movie.id,
+                run_time: movie.run_time,
+                movie_id: movie.id,
                 cost: tkt_price,
                 seats_day_wise: timestampsForDays
             }).then((result) => {
@@ -201,18 +206,25 @@ router.post('/getScreenLayout', async (req, res) => {
         screen_id_val = req.body.screen_id;
         movie_id_val = req.body.movie_id;
         time_selected = req.body.time;
-        const date = new Date(Number(req.body.value));
+        date_value = req.body.value;
+        console.log(date_value);
+        const date = new Date(Number(date_value));
+        console.log(date);
         const filter_data = date.toISOString().split('T')[0];
         // return "";
-        const screen = await ScreenModel.find({
-            [`seats_day_wise.${filter_data}`]: { $exists: true }, movie_id: movie_id_val, screen_id: screen_id_val
+        console.log(filter_data);
+        const screen = await ScreenModel.findOne({
+            [`seats_day_wise.${filter_data}`]: { $exists: true }, movie_id: movie_id_val, id: screen_id_val
         }).select(`seats_day_wise.${filter_data}`);
         // return "";
-        console.log(screen[0].seats_day_wise[filter_data][String(time_selected)]);
+        console.log(screen);
+        return "";
+        // console.log(screen[0].seats_day_wise[filter_data][String(time_selected)]);
+        screen_layout = screen[0].seats_day_wise[filter_data][String(time_selected)];
         res.json({
             message: 'Screen found',
             status: HTTP_STATUS_CODES.OK,
-            data: screen
+            data: screen_layout
         })
     }
     catch (err) {

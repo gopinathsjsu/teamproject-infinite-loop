@@ -21,6 +21,7 @@ const screenSchema = new mongoose.Schema({
     show_timings: { type: [String], required: true },
     cost: { type: Number },
     seating_arrangement: { type: [], required: true },
+    seats_day_wise: { type: Object },
     occupancy_status: [String],
     total_tickets_booked: { type: Number, default: 0 },
     created_on: { type: Date, default: Date.now },
