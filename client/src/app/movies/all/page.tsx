@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import {
@@ -20,25 +21,30 @@ const MovieCard = ({
   movie: any;
   onImageClick: any;
 }) => {
+
   return (
-    <Card sx={{ width: 200, height: 360, m: 1, boxShadow: 3 }}>
-      <CardMedia
-        component="img"
-        height="250"
-        image={movie.movie_url}
-        alt={movie.title}
-        // onClick={() => onImageClick(movie.movieTitle)} // Click handler is now on the image
-        sx={{ cursor: "pointer" }} // Add a pointer cursor on hover
-      />
-      <CardContent>
-        <Typography gutterBottom variant="h6" component="div">
-          {movie.title}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {movie.description}
-        </Typography>
-      </CardContent>
-    </Card>
+      <Card sx={{ width: 200, height: 400, m: 1, boxShadow: 3 }}>
+        <CardMedia
+          component="img"
+          sx={{
+            width: 200, // makes image take full width of the card
+            height: 300, // fixed height
+            objectFit: 'cover', // will cover the space, maintaining aspect ratio without stretching
+            cursor: 'pointer'
+          }}
+          image={movie.banner_url}
+          alt={movie.title}
+          onClick={() => onImageClick(movie.id)} // Uncomment this line if click handler is needed
+        />
+        <CardContent>
+          <Typography gutterBottom variant="subtitle2" component="div">
+            {movie.title}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {movie.format}
+          </Typography>
+        </CardContent>
+      </Card>
   );
 };
 
@@ -62,34 +68,35 @@ interface movie {
 
 
 const MovieSlider = () => {
-     const [movies, setMovie] = useState<movie[]>([]); // Initialize form data with empty strings
-     useEffect(() => {
-       const fetchData = async () => {
-         try {
-           const response = await fetch("http://localhost:8080/movie/all");
-           if (!response.ok) {
-             throw new Error(`Error: ${response.status}`);
-           }
-           const data = await response.json();
-           setMovie(data.movies);
-           console.log(data);
-         } catch (error) {
-           console.error("Failed to fetch data:", error);
-         }
-       };
+  const [movies, setMovie] = useState<movie[]>([]); // Initialize form data with empty strings
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/movie/all");
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+        const data = await response.json();
+        setMovie(data.movies);
+        console.log(data);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      }
+    };
 
-       fetchData();
-     }, []);
-     const [selectedFile, setSelectedFile] = useState(null);
-     
-//   const navigate = useNavigate(); // Call useNavigate at the top level of your component
+    fetchData();
+  }, []);
+  const [selectedFile, setSelectedFile] = useState(null);
 
-//   const handleAddMovieClick = () => {
-//     navigate("/movies/add"); // Use navigate function to change the route
-//   };
+  // const navigate = useNavigate(); // Call useNavigate at the top level of your component
+  const router = useRouter();
+  const handleAddMovieClick = () => {
+    router.push("/movies/add"); // Use navigate function to change the route
+  };
 
-  const handleCardClick = (movieName: string) => {
-    console.log(`Clicked on ${movieName}`);
+  const handleCardClick = (movieid: string) => {
+    console.log(`Clicked on ${movieid}`);
+    router.push(`/movies/${movieid}`)
     // Implement your own logic here, such as navigation
   };
 
@@ -102,7 +109,7 @@ const MovieSlider = () => {
         variant="contained"
         sx={{ paddingLeft: 2 }}
         color="error" // Use the 'error' color from the theme for a red button
-       // onClick={handleAddMovieClick}
+        onClick={handleAddMovieClick}
       >
         Add Movie
       </Button>
