@@ -35,9 +35,6 @@ export default function Footer() {
                 }}
             >
                 <Container maxWidth="sm">
-                    <Typography variant="body1" align="center">
-                        Box Office Footer
-                    </Typography>
                     <Copyright />
                 </Container>
             </Box>
