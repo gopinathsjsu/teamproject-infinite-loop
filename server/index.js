@@ -31,13 +31,13 @@ app.use(
     // You can use the default in-memory store or choose another session store here
   }));
 
-  app.use('/payment/api',paymentRoute)
-app.use('/artist', ArtistRoute)
-app.use('/theater', TheatreRoute)
-app.use('/screen', ScreenRoute)
-app.use('/movie', MovieRoute)
-app.use('/User', UserRoute)
-app.get('/home', (req, res) => {
+  app.use('/api/payment',paymentRoute)
+app.use('/api/artist', ArtistRoute)
+app.use('/api/theater', TheatreRoute)
+app.use('/api/screen', ScreenRoute)
+app.use('/api/movie', MovieRoute)
+app.use('/api/user', UserRoute)
+app.get('/api/home', (req, res) => {
   res.json({ message: 'Hello World!' })
 })
 
