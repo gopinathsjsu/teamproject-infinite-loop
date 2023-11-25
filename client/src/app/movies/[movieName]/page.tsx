@@ -128,9 +128,10 @@ const App: React.FC = () => {
   //   // ... other crew members
   // ];
 
-  const backgroundStyle = {
+  type FlexDirection = "row" | "row-reverse" | "column" | "column-reverse";
+
+  const backgroundStyle: React.CSSProperties = {
     backgroundImage: `linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0)), url(${movie.poster_url})`,
-    // backgroundImage: `linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0)), url(${poster.backgroundPoster})`,
     backgroundSize: "cover",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
@@ -138,7 +139,7 @@ const App: React.FC = () => {
     fontFamily: "Arial, sans-serif",
     padding: "2rem", // top, right, bottom, left
     display: "flex",
-    flexDirection: "column",
+    flexDirection: "column" as FlexDirection, // Correct type assignment
     justifyContent: "flex-end",
     minHeight: "75vh",
   };
