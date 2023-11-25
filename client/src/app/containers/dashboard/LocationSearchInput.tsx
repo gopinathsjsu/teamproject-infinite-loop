@@ -11,6 +11,7 @@ export default function LocationSearchInput({ sendLocation }: { sendLocation: an
   const handleSelect = async (value: any) => {
     const results = await geocodeByAddress(value);
     const latLng = await getLatLng(results[0]);
+    console.log(results);
     setAddress(value);
     sendLocation(value);
   };
@@ -19,10 +20,11 @@ export default function LocationSearchInput({ sendLocation }: { sendLocation: an
     <PlacesAutocomplete value={address} onChange={setAddress} onSelect={handleSelect}>
       {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
         <Box
-          sx={{ 
+          sx={{
             position: 'absolute' as 'absolute',
             top: '10%',
-            width:"90%"}}
+            width: "90%"
+          }}
         >
           <TextField
             {...getInputProps({
