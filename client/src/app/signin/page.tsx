@@ -18,6 +18,7 @@ import toast from 'react-hot-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoginUserSchema } from '@/src/lib/validations/user.schema';
 import { useForm } from 'react-hook-form';
+import useStore from '@/src/store'
 
 function Copyright(props: any) {
     return (
@@ -34,6 +35,7 @@ function Copyright(props: any) {
 
 export default function SignIn() {
     const [loading, setLoading] = React.useState(false);
+    const store:any = useStore();
     const { register, handleSubmit, formState: { errors } } = useForm({ resolver: zodResolver(LoginUserSchema), });
 
     const onSubmit = (data: any) => {
@@ -49,6 +51,7 @@ export default function SignIn() {
         setLoading(true);
         try {
             const user = await apiLoginUser(JSON.stringify(data));
+            store.setLoggedIn();
             return router.push("/");
         } catch (error: any) {
             if (error instanceof Error) {

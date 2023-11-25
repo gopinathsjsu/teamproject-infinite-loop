@@ -23,28 +23,28 @@ const MovieCard = ({
 }) => {
 
   return (
-      <Card sx={{ width: 200, height: 400, m: 1, boxShadow: 3 }}>
-        <CardMedia
-          component="img"
-          sx={{
-            width: 200, // makes image take full width of the card
-            height: 300, // fixed height
-            objectFit: 'cover', // will cover the space, maintaining aspect ratio without stretching
-            cursor: 'pointer'
-          }}
-          image={movie.banner_url}
-          alt={movie.title}
-          onClick={() => onImageClick(movie.id)} // Uncomment this line if click handler is needed
-        />
-        <CardContent>
-          <Typography gutterBottom variant="subtitle2" component="div">
-            {movie.title}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {movie.format}
-          </Typography>
-        </CardContent>
-      </Card>
+    <Card sx={{ width: 200, height: 400, m: 1, boxShadow: 3 }}>
+      <CardMedia
+        component="img"
+        sx={{
+          width: 200, // makes image take full width of the card
+          height: 300, // fixed height
+          objectFit: 'cover', // will cover the space, maintaining aspect ratio without stretching
+          cursor: 'pointer'
+        }}
+        image={movie.banner_url}
+        alt={movie.title}
+        onClick={() => onImageClick(movie.id)} // Uncomment this line if click handler is needed
+      />
+      <CardContent>
+        <Typography gutterBottom variant="subtitle2" component="div">
+          {movie.title}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {movie.format}
+        </Typography>
+      </CardContent>
+    </Card>
   );
 };
 

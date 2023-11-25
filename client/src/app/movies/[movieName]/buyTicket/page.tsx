@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as zod from 'zod';
@@ -35,7 +35,7 @@ export default function addScreen() {
 
     //SEATS CODE
     const [seatDetails, setSeatDetails] = useState<Seats>({});
-    let selectedSeats: string[] = [];
+    const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
 
     useEffect(() => {
         clearSelectedSeats();
@@ -101,15 +101,21 @@ export default function addScreen() {
     //SEATS CODE
     const onSeatClick = (seatValue: number, rowIndex: number, key: string) => {
         if (editable) return;
+        let tempSelectedSeats = selectedSeats;
         if (seatDetails) {
             if (seatValue === 1 || seatValue === 3) {
                 return;
             } else if (seatValue === 0) {
+                if(tempSelectedSeats.length>=8)return;
                 seatDetails[key][rowIndex] = 2;
+                tempSelectedSeats.push(`${key}${rowIndex + 1}`)
             } else {
                 seatDetails[key][rowIndex] = 0;
+                const index = tempSelectedSeats.indexOf(`${key}${rowIndex + 1}`);
+                if(index>-1) tempSelectedSeats.splice(index,1);
             }
         }
+        setSelectedSeats(tempSelectedSeats);
         setSeatDetails({ ...seatDetails });
     }
 
@@ -138,7 +144,6 @@ export default function addScreen() {
     //SEATS CODE
     const RenderSeats = () => {
         let seatArray = [];
-        console.log(seatDetails);
         for (let key in seatDetails) {
             let index = 0;
             let colValue = seatDetails[key].map((seatValue, rowIndex) => (
@@ -160,16 +165,6 @@ export default function addScreen() {
         return (
             <div className={styles.seatsLeafContainer}>{seatArray}</div>
         )
-    }
-
-    //SEATS CODE
-    selectedSeats = [];
-    for (let key in seatDetails) {
-        seatDetails[key].forEach((seatValue, seatIndex) => {
-            if (seatValue === 2) {
-                selectedSeats.push(`${key}${seatIndex + 1}`)
-            }
-        })
     }
 
     async function onSubmit() {
@@ -308,7 +303,7 @@ export default function addScreen() {
                                         <Button style={{ marginRight: "5px" }} variant="outlined" onClick={changeEditable}>Change Theater</Button>
                                         {selectedSeats.length !== 0 &&
                                             <Button variant="contained" type="submit" onClick={() => { onSubmit() }}>
-                                                Book Ticket Pay Rs.{selectedSeats.length * (cost || 0) }
+                                                Book Ticket Pay ${selectedSeats.length * (cost || 0) }
                                             </Button>
                                         }
                                     </Box>

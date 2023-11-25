@@ -3,7 +3,7 @@ import { apiGetAuthUser } from "./auth-api";
 import useStore from "../store";
 
 export default function useSession() {
-  const store = useStore();
+  const store:any = useStore();
 
   async function fetchUser() {
     try {
