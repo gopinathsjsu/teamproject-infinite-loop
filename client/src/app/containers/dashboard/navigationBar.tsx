@@ -84,7 +84,7 @@ const settings = [
     { name: 'Profile', route: '/personal_profile' },
     { name: 'Purchases', route: '/purchases' },
     { name: 'Rewards', route: '/rewards' },
-    { name: 'Logout', route: '/logout', icon:'LogoutIcon' },
+    { name: 'Logout', route: '/logout', icon: 'LogoutIcon' },
 ];
 
 const style = {
@@ -332,18 +332,18 @@ function ResponsiveAppBar() {
                 >
                     <List
                         subheader={
-                            <ListSubheader 
-                                component="div" 
+                            <ListSubheader
+                                component="div"
                                 id="nested-list-subheader"
                                 sx={{
-                                    backgroundColor: (theme) => theme.palette.primary.main, 
-                                    color: (theme) => theme.palette.primary.contrastText,   
-                                    fontWeight: 'bold',                                     
-                                    fontSize: '2rem',                                     
+                                    backgroundColor: (theme) => theme.palette.primary.main,
+                                    color: (theme) => theme.palette.primary.contrastText,
+                                    fontWeight: 'bold',
+                                    fontSize: '2rem',
                                     lineHeight: 'normal',
-                                    height:'70px',                                     
-                                    display: 'flex',                                         
-                                    alignItems: 'center',                 
+                                    height: '70px',
+                                    display: 'flex',
+                                    alignItems: 'center',
                                 }}
                             >
                                 Hello
