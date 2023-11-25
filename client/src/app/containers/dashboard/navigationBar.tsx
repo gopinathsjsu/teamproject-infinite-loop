@@ -17,10 +17,11 @@ import AdbIcon from '@mui/icons-material/Adb';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import PinDropIcon from '@mui/icons-material/PinDrop';
+import { Backdrop, Drawer, Fade, List, ListItem, ListItemText, ListSubheader, Modal, Stack } from '@mui/material';
 
 import LocationSearchInput from './LocationSearchInput'; // adjust the path as necessary
 import Script from 'next/script';
-import { Backdrop, Drawer, Fade, List, ListItem, ListItemText, ListSubheader, Modal, Stack } from '@mui/material';
+import useStore from '@/src/store';
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -84,7 +85,7 @@ const settings = [
     { name: 'Profile', route: '/personal_profile' },
     { name: 'Purchases', route: '/purchases' },
     { name: 'Rewards', route: '/rewards' },
-    { name: 'Logout', route: '/logout', icon:'LogoutIcon' },
+    { name: 'Logout', route: '/logout', icon: 'LogoutIcon' },
 ];
 
 const style = {
@@ -104,6 +105,7 @@ function ResponsiveAppBar() {
     const [drawerOpen, setDrawerOpen] = React.useState(false);
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+    const store:any = useStore();
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
@@ -129,6 +131,11 @@ function ResponsiveAppBar() {
 
 
     function redirectToPage(page: any) {
+        if(page.name == 'Logout'){
+            store.setLoggedOut();
+            router.push('/');
+            return;
+        }
         router.push(page.route);
     }
 
@@ -140,6 +147,14 @@ function ResponsiveAppBar() {
 
     const [open, setOpen] = React.useState<boolean>(false);
     const handleClose = () => setOpen(false);
+
+    function navigateToSignUp() {
+        router.push('/signup')
+    }
+
+    function navigateToSignIn() {
+        router.push('/signin')
+    }
 
     return (
         <Box>
@@ -252,41 +267,46 @@ function ResponsiveAppBar() {
                             </Search>
                             {location != null ? location : "Select Location"}
                         </Button>
-                        <Button key="signup" sx={{ my: 2, fontWeight: 700, color: 'inherit', textDecoration: 'none' }} >
-                            Sign Up
-                        </Button>
-                        <Button key="signin" sx={{ my: 2, fontWeight: 700, color: 'inherit', textDecoration: 'none' }}>
-                            Sign In
-                        </Button>
-                        <Box sx={{ flexGrow: 0 }}>
-                            <Tooltip title="Open settings">
-                                <IconButton onClick={handleDrawerOpen} sx={{ p: 0 }}>
-                                    <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-                                </IconButton>
-                            </Tooltip>
-                            <Menu
-                                sx={{ mt: '45px' }}
-                                id="menu-appbar"
-                                anchorEl={anchorElUser}
-                                anchorOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                                keepMounted
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                                open={Boolean(anchorElUser)}
-                                onClose={handleCloseUserMenu}
-                            >
-                                {settings.map((setting) => (
-                                    <MenuItem key={setting.name} onClick={handleCloseUserMenu}>
-                                        <Typography onClick={() => { redirectToPage(setting) }} textAlign="center">{setting.name}</Typography>
-                                    </MenuItem>
-                                ))}
-                            </Menu>
-                        </Box>
+                        {store.isLoggedIn ?
+                            <Box sx={{ flexGrow: 0 }}>
+                                <Tooltip title="Open settings">
+                                    <IconButton onClick={handleDrawerOpen} sx={{ p: 0 }}>
+                                        <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                                    </IconButton>
+                                </Tooltip>
+                                <Menu
+                                    sx={{ mt: '45px' }}
+                                    id="menu-appbar"
+                                    anchorEl={anchorElUser}
+                                    anchorOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    keepMounted
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    open={Boolean(anchorElUser)}
+                                    onClose={handleCloseUserMenu}
+                                >
+                                    {settings.map((setting) => (
+                                        <MenuItem key={setting.name} onClick={handleCloseUserMenu}>
+                                            <Typography onClick={() => { redirectToPage(setting) }} textAlign="center">{setting.name}</Typography>
+                                        </MenuItem>
+                                    ))}
+                                </Menu>
+                            </Box>
+                            :
+                            <Box>
+                                <Button onClick={navigateToSignUp} key="signup" sx={{ my: 2, fontWeight: 700, color: 'inherit', textDecoration: 'none' }} >
+                                    Sign Up
+                                </Button>
+                                <Button onClick={navigateToSignIn} key="signin" sx={{ my: 2, fontWeight: 700, color: 'inherit', textDecoration: 'none' }}>
+                                    Sign In
+                                </Button>
+                            </Box>
+                        }
                     </Toolbar>
                 </Container>
                 <Modal
@@ -332,18 +352,18 @@ function ResponsiveAppBar() {
                 >
                     <List
                         subheader={
-                            <ListSubheader 
-                                component="div" 
+                            <ListSubheader
+                                component="div"
                                 id="nested-list-subheader"
                                 sx={{
-                                    backgroundColor: (theme) => theme.palette.primary.main, 
-                                    color: (theme) => theme.palette.primary.contrastText,   
-                                    fontWeight: 'bold',                                     
-                                    fontSize: '2rem',                                     
+                                    backgroundColor: (theme) => theme.palette.primary.main,
+                                    color: (theme) => theme.palette.primary.contrastText,
+                                    fontWeight: 'bold',
+                                    fontSize: '2rem',
                                     lineHeight: 'normal',
-                                    height:'70px',                                     
-                                    display: 'flex',                                         
-                                    alignItems: 'center',                 
+                                    height: '70px',
+                                    display: 'flex',
+                                    alignItems: 'center',
                                 }}
                             >
                                 Hello
