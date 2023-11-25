@@ -31,6 +31,8 @@ import { getDataFromEndPoint } from "@/src/lib/backend-api";
 import theme from "@/src/app/styles/theme";
 import { useState, useEffect, useContext } from "react";
 import { useRouter } from 'next/navigation'; // Import the useRouter hook
+import useStore from "@/src/store";
+
 
 const style = {
   position: "absolute",
@@ -107,6 +109,8 @@ export default function Contact() {
   const [castandcrew, setCastAndCrew] = useState<CastAndCrewMember[]>([]);
   const [cast, setCast] = useState<any>([]);
   const [crew, setCrew] = useState<any>([]);
+  const store: any = useStore();
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -206,12 +210,14 @@ export default function Contact() {
 
   return (
     <div>
+      {store.isAdmin && (
       <Button
         sx={{ paddingTop: 2, paddingRight: 0, fontWeight: "bold" }}
         onClick={handleOpen}
       >
         Add Artist
       </Button>
+      )}
       <Modal
         open={open}
         onClose={handleClose}

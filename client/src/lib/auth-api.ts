@@ -6,12 +6,10 @@ async function handleResponse<T>(response: Response): Promise<T> {
   const contentType = response.headers.get("Content-Type") || "";
   const isJson = contentType.includes("application/json");
   const data = isJson ? await response.json() : await response.text();
-
   if (!response.ok) {
     if (isJson && data.errors !== null) {
       throw new Error(JSON.stringify(data.errors));
     }
-
     throw new Error(data.message || response.statusText);
   }
 
@@ -42,8 +40,7 @@ export async function apiLoginUser(credentials: string): Promise<string> {
     },
     body: credentials,
   });
-  console.log(response);
-  return handleResponse<UserLoginResponse>(response).then((data) => data.fullnmae);
+  return handleResponse<any>(response).then((data) => data);
 }
 
 export async function apiLogoutUser(): Promise<void> {
