@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useEffect, useCallback } from "react";
-import { useRouter, useParams, useSearchParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Box, Grid, Typography, Button, Modal, Backdrop, Fade, Stack, TextField, FormControl, FormHelperText, InputLabel, Select, MenuItem } from '@mui/material';
@@ -22,7 +22,7 @@ interface Screen {
     currentMovie: string,
     runtime: string,
     cost: string,
-
+    movieId: string
 }
 
 const style = {
@@ -45,7 +45,6 @@ const schema = zod.object({
 export default function Screen() {
     const router = useRouter();
     const { theaterId } = useParams();
-    const searchParams = useSearchParams()
     const [screenData, setScreenData] = useState<Screen[]>([]);
     const [open, setOpen] = React.useState<boolean>(false);
     const [movieData, setMovieData] = useState<any[]>([]);
@@ -58,7 +57,6 @@ export default function Screen() {
 
     useEffect(() => {
         const fetchScreenData = async () => {
-            console.log(theaterId);
             const theater_id = String(theaterId);
             const response = await getDataFromEndPoint("", 'screen/' + theater_id, 'GET');
             const data = response.data;
@@ -73,6 +71,7 @@ export default function Screen() {
                 currentMovie: screenItem.movie_name,
                 runtime: screenItem.run_time,
                 cost: screenItem.cost,
+                movieId: screenItem.movie_id,
             }));
             setScreenData(mappedData);
         };
@@ -100,25 +99,9 @@ export default function Screen() {
         router.push("/theater/" + theaterId + "/addScreen");
     }
 
-    const createQueryString = useCallback(
-        (queryParams:any) => {
-            const keyValuePairs = queryParams.map((queryParam:any) => Object.entries(queryParam));
-            const params = new URLSearchParams(searchParams)
-            keyValuePairs.forEach((element:any) => {
-                params.set(element[0],element[1]);
-            });
-            return params.toString();
-        },
-        [searchParams]
-    )
-
-    function bookTicket(screen: any) {
-        const queryParams = [
-            {theaterId: theaterId},
-            {screenId: screen.id}
-    ]
-        const query = createQueryString(queryParams);
-        console.log(query);
+    function bookTicket(screen:any) {
+        console.log(screen);
+        router.push(`/movies/${screen.movieId}/buyTicket`)
     }
 
     async function onSubmit(data: any) {
@@ -139,8 +122,10 @@ export default function Screen() {
                 currentMovie: screenItem.movie_name,
                 runtime: String(screenItem.run_time),
                 cost: screenItem.cost,
+                movieId: screenItem.movie_id
             }));
-            setScreenData(mappedData)
+            setScreenData(mappedData);
+            handleClose();
         } catch (error) {
             console.log(error);
         }
