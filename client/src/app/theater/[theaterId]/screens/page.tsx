@@ -11,6 +11,8 @@ import { getDataFromEndPoint } from "@/src/lib/backend-api";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from 'zod';
+import useStore from "@/src/store";
+
 
 interface Screen {
     id: string,
@@ -49,6 +51,7 @@ export default function Screen() {
     const [open, setOpen] = React.useState<boolean>(false);
     const [movieData, setMovieData] = useState<any[]>([]);
     const [selectedScreenId, setSelectedScreenId] = useState(null);
+    const store: any = useStore();
     const handleClose = () => setOpen(false);
 
     const { handleSubmit, control, formState: { errors } } = useForm({
@@ -142,9 +145,10 @@ export default function Screen() {
                 <Grid container spacing={2}>
                     <Grid container sx={{ mb: 2, marginTop: 10, justifyContent: 'space-between' }}>
                         <Typography variant="h4">Screens</Typography>
+                        {store.isAdmin && (
                         <Button variant="contained" startIcon={<AddCircleOutlineIcon />} onClick={addNewScreen}>
                             Add Screen
-                        </Button>
+                        </Button>)}
                     </Grid>
                     <Grid item xs={12} container>
                         <Grid container spacing={2} alignItems="center" justifyContent="left">
@@ -156,10 +160,12 @@ export default function Screen() {
                                             <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
                                                 <Typography variant="h6" component="h3" sx={{ mb: 1, fontWeight: 'medium', fontSize: '2rem' }} style={{}} color="#01579B">{screen.name}</Typography>
                                                 <Box>
-                                                    <Button startIcon={<EditIcon />} sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }} />
-                                                    <Button sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }} onClick={() => handleOpenModal(screen.id)}>
-                                                        Add Movie
-                                                    </Button>
+                                                {store.isAdmin && (
+
+                                                    <><Button startIcon={<EditIcon />} sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }} /><Button sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }} onClick={() => handleOpenModal(screen.id)}>
+                                                            Add Movie
+                                                        </Button></>
+                                                )}
                                                 </Box>
                                             </Grid>
                                             <Box sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }}>

@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import {
@@ -13,6 +13,7 @@ import {
   Button,
 } from "@mui/material";
 import Container from "@mui/material/Container";
+import useStore from "@/src/store";
 
 const MovieCard = ({
   movie,
@@ -21,7 +22,6 @@ const MovieCard = ({
   movie: any;
   onImageClick: any;
 }) => {
-
   return (
     <Card sx={{ width: 200, height: 400, m: 1, boxShadow: 3 }}>
       <CardMedia
@@ -29,8 +29,8 @@ const MovieCard = ({
         sx={{
           width: 200, // makes image take full width of the card
           height: 300, // fixed height
-          objectFit: 'cover', // will cover the space, maintaining aspect ratio without stretching
-          cursor: 'pointer'
+          objectFit: "cover", // will cover the space, maintaining aspect ratio without stretching
+          cursor: "pointer",
         }}
         image={movie.banner_url}
         alt={movie.title}
@@ -48,8 +48,6 @@ const MovieCard = ({
   );
 };
 
-
-
 interface movie {
   title: string;
   description: string;
@@ -66,9 +64,9 @@ interface movie {
   languages: string;
 }
 
-
 const MovieSlider = () => {
   const [movies, setMovie] = useState<movie[]>([]); // Initialize form data with empty strings
+  const store: any = useStore();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -96,7 +94,7 @@ const MovieSlider = () => {
 
   const handleCardClick = (movieid: string) => {
     console.log(`Clicked on ${movieid}`);
-    router.push(`/movies/${movieid}`)
+    router.push(`/movies/${movieid}`);
     // Implement your own logic here, such as navigation
   };
 
@@ -105,14 +103,17 @@ const MovieSlider = () => {
       <Typography variant="h6" sx={{ mb: 2 }}>
         Recommended Movies
       </Typography>
-      <Button
-        variant="contained"
-        sx={{ paddingLeft: 2 }}
-        color="error" // Use the 'error' color from the theme for a red button
-        onClick={handleAddMovieClick}
-      >
-        Add Movie
-      </Button>
+      {store.isAdmin && (
+        <Button
+          variant="contained"
+          sx={{ paddingLeft: 2 }}
+          color="error" // Use the 'error' color from the theme for a red button
+          onClick={handleAddMovieClick}
+        >
+          Add Movie
+        </Button>
+      )}
+
       <Grid container spacing={2} sx={{ justifyContent: "start" }}>
         {" "}
         {/* Ensure items are left-aligned */}

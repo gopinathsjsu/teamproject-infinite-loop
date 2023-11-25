@@ -50,7 +50,8 @@ export default function SignIn() {
     async function signInUser(data: any) {
         setLoading(true);
         try {
-            const user = await apiLoginUser(JSON.stringify(data));
+            const user:any = await apiLoginUser(JSON.stringify(data));
+            store.setIsAdmin(user.data.isAdmin)
             store.setLoggedIn();
             return router.push("/");
         } catch (error: any) {

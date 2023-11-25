@@ -17,6 +17,8 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
+import useStore from "@/src/store";
+
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -171,6 +173,7 @@ export default function Theater() {
     p: 4,
   };
   const [formSuccess, setFormSuccess] = useState(false);
+  const store: any = useStore();
   const [selectedFile, setSelectedFile] = useState(null);
 
   const handleInput = (e: any) => {
@@ -282,13 +285,14 @@ export default function Theater() {
             sx={{ mb: 2, marginTop: 10, justifyContent: "space-between" }}
           >
             <Typography variant="h4">Theaters</Typography>
+            {store.isAdmin && (
             <Button
               variant="contained"
               startIcon={<AddCircleOutlineIcon />}
               onClick={() => setOpen(true)}
             >
               Add Theater
-            </Button>
+            </Button>)}
           </Grid>
           <Grid item xs={12} container>
             <Grid

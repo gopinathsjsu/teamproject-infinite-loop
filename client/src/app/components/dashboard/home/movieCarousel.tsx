@@ -7,6 +7,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useRouter } from 'next/router';
 import { getDataFromEndPoint } from '@/src/lib/backend-api';
+import useStore from "@/src/store";
+
 
 interface Movie {
   id: string;
@@ -53,6 +55,8 @@ const ImageSlider = () => {
   const [movieData, setMovieData] = useState<Movie[]>([]);
   const [selectedMovies, setSelectedMovies] = useState<string[]>([]);
   const [isMounted, setIsMounted] = useState(false);
+  const store: any = useStore();
+
 
   useEffect(() => {
     const fetchMovieData = async () => {
@@ -119,9 +123,11 @@ const ImageSlider = () => {
           </div>
         ))}
       </Slider>
-      <Button variant="contained" onClick={handleOpenModal}>
-        Select Movies
-      </Button>
+      {store.isAdmin && (
+        <Button variant="contained" onClick={handleOpenModal}>
+          Select Movies
+        </Button>
+      )}
 
       <Modal open={open} onClose={handleCloseModal}>
         <Box sx={modalStyle}>
