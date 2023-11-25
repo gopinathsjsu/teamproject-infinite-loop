@@ -16,30 +16,36 @@ export default function LocationSearchInput({ sendLocation }: { sendLocation: an
   };
 
   return (
-    <PlacesAutocomplete value={address} onChange={setAddress} onSelect={handleSelect}>
+    <PlacesAutocomplete
+      value={address}
+      onChange={setAddress}
+      onSelect={handleSelect}
+    >
       {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
         <Box
-          sx={{ 
-            position: 'absolute' as 'absolute',
-            top: '10%',
-            width:"90%"}}
+          sx={{
+            position: "absolute" as "absolute",
+            top: "10%",
+            width: "90%",
+          }}
         >
           <TextField
             {...getInputProps({
-              label: 'Search Places...',
+              label: "Search Places...",
             })}
             variant="outlined"
             fullWidth
           />
           {loading && <div>Loading...</div>}
-          <List sx={{ position: 'absolute', zIndex: 1, width: '100%' }}>
+          <List sx={{ position: "absolute", zIndex: 1, width: "100%" }}>
             {suggestions.map((suggestion: any) => (
               <ListItem
                 {...getSuggestionItemProps(suggestion)}
                 sx={{
-                  backgroundColor: suggestion.active ? '#b9d2fa' : '#ffffff',
-                  cursor: 'pointer'
+                  backgroundColor: suggestion.active ? "#b9d2fa" : "#ffffff",
+                  cursor: "pointer",
                 }}
+                key={suggestion.placeId}
               >
                 {suggestion.description}
               </ListItem>
