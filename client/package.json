@@ -36,6 +36,7 @@
     "react-places-autocomplete": "^7.3.0",
     "react-router-dom": "^6.19.0",
     "react-slick": "^0.29.0",
+    "redis": "^4.6.11",
     "sass": "^1.69.5",
     "slick-carousel": "^1.8.1",
     "stripe": "^14.5.0",
