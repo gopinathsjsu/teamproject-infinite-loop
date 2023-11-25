@@ -492,12 +492,12 @@ export default function Contact() {
                   </Box>
                 )}
                 renderTags={(value, getTagProps) =>
-                  value.map((option, index) => (
+                  value.map((option:any, index) => (
                     <Box
-                      key={option.title}
-                      {...getTagProps({ index })}
-                      component="div"
-                      sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                    {...getTagProps({ index })}
+                    component="div"
+                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                    key={option.title}
                     >
                       <img
                         src={option.profile_url}
@@ -548,12 +548,12 @@ export default function Contact() {
                   </Box>
                 )}
                 renderTags={(value, getTagProps) =>
-                  value.map((option, index) => (
+                  value.map((option:any, index) => (
                     <Box
-                      key={option.title}
-                      {...getTagProps({ index })}
-                      component="div"
-                      sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                    {...getTagProps({ index })}
+                    component="div"
+                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                    key={option.title}
                     >
                       <img
                         src={option.profile_url}

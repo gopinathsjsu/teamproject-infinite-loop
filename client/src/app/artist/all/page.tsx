@@ -30,7 +30,7 @@ import { Container, Grid, Link } from "@mui/material";
 import { getDataFromEndPoint } from "@/src/lib/backend-api";
 import theme from "@/src/app/styles/theme";
 import { useState, useEffect, useContext } from "react";
-import { useRouter } from 'next/navigation'; // Import the useRouter hook
+import { useRouter } from "next/navigation"; // Import the useRouter hook
 
 const style = {
   position: "absolute",
@@ -111,7 +111,7 @@ export default function Contact() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8080/artist/all");
+        const response = await fetch("http://localhost:8080/api/artist/all");
         if (!response.ok) {
           throw new Error(`Error: ${response.status}`);
         }
@@ -132,7 +132,7 @@ export default function Contact() {
 
   const handleArtistClick = (artist_id: any) => {
     router.push(`/artist/${artist_id}`);
-  }
+  };
 
   const [formData, setFormData] = useState({
     fullname: "",
@@ -224,7 +224,7 @@ export default function Contact() {
             <form
               onSubmit={submitForm}
               encType="multipart/form-data"
-            // action="/artist/add"
+              // action="/artist/add"
             >
               <Stack direction="column" spacing={2}>
                 <Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -278,7 +278,6 @@ export default function Contact() {
                     onChange={(newValue: string | null) =>
                       setFormData({ ...formData, dateOfBirth: newValue ?? "" })
                     }
-                    renderInput={(params: any) => <TextField {...params} />}
                   />
                 </LocalizationProvider>
                 <FormControl sx={{ m: 1, width: 330 }}>
@@ -381,18 +380,31 @@ export default function Contact() {
         </Fade>
       </Modal>
 
-      <Container maxWidth="lg" sx={{ borderRadius: 2, overflow: "hidden", mt: 2, mb: 4 }}>
-        <Typography variant="h5" component="div" sx={{ fontWeight: "bold", mb: 2 }}>
+      <Container
+        maxWidth="lg"
+        sx={{ borderRadius: 2, overflow: "hidden", mt: 2, mb: 4 }}
+      >
+        <Typography
+          variant="h5"
+          component="div"
+          sx={{ fontWeight: "bold", mb: 2 }}
+        >
           Cast
         </Typography>
         <Grid container spacing={1}>
-          {cast.map((artist:any, index:number) => (
+          {cast.map((artist: any, index: number) => (
             <Grid item key={`member-${index}`} xs={6} sm={4} md={3} lg={2}>
               <Box sx={{ textAlign: "center", p: 1 }}>
                 <Avatar
                   alt={artist.name}
                   src={artist.profile_url}
-                  sx={{ width: 120, height: 120, margin: "auto", mb: 1, cursor: 'pointer' }}
+                  sx={{
+                    width: 120,
+                    height: 120,
+                    margin: "auto",
+                    mb: 1,
+                    cursor: "pointer",
+                  }}
                   onClick={() => handleArtistClick(artist.id)}
                 />
                 <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
@@ -404,18 +416,31 @@ export default function Contact() {
           ))}
         </Grid>
       </Container>
-      <Container maxWidth="lg" sx={{ borderRadius: 2, overflow: "hidden", mt: 2, mb: 4 }}>
-        <Typography variant="h5" component="div" sx={{ fontWeight: "bold", mb: 2 }}>
+      <Container
+        maxWidth="lg"
+        sx={{ borderRadius: 2, overflow: "hidden", mt: 2, mb: 4 }}
+      >
+        <Typography
+          variant="h5"
+          component="div"
+          sx={{ fontWeight: "bold", mb: 2 }}
+        >
           Crew
         </Typography>
         <Grid container spacing={1}>
-          {crew.map((artist:any, index:number) => (
+          {crew.map((artist: any, index: number) => (
             <Grid item key={`member-${index}`} xs={6} sm={4} md={3} lg={2}>
               <Box sx={{ textAlign: "center", p: 1 }}>
                 <Avatar
                   alt={artist.name}
                   src={artist.profile_url}
-                  sx={{ width: 120, height: 120, margin: "auto", mb: 1, cursor: 'pointer' }}
+                  sx={{
+                    width: 120,
+                    height: 120,
+                    margin: "auto",
+                    mb: 1,
+                    cursor: "pointer",
+                  }}
                   onClick={() => handleArtistClick(artist.id)}
                 />
                 <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
