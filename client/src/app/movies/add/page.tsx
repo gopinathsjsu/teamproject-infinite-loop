@@ -19,20 +19,7 @@ import theme from "../../styles/theme";
 import Autocomplete from "@mui/material/Autocomplete";
 import { useRouter } from "next/navigation";
 
-export function MultipleSelectChip() {
-  const theme = useTheme();
-  const [personName, setPersonName] = React.useState<string[]>([]);
 
-  const handleChange = (event: SelectChangeEvent<typeof personName>) => {
-    const {
-      target: { value },
-    } = event;
-    setPersonName(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
-    );
-  };
-}
 
 const top100Films = [
   { title: 'The Shawshank Redemption', year: 1994 , image:'https://upload.wikimedia.org/wikipedia/en/8/81/ShawshankRedemptionMoviePoster.jpg'},
