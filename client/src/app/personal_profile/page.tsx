@@ -1,9 +1,11 @@
 'use client'
 import React, { ChangeEvent, useEffect, useState } from "react";
 import InnerPageContainer from "../components/dashboard/common/InnerPageContainer";
-import { styled } from '@mui/material/styles';
+import { styled, } from '@mui/material/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import type { CastAndCrewMember } from '../artist/page';
+import type { CastAndCrewMember } from '../artist/all/page';
+import { Avatar, Stack } from '@mui/material';
+
 
 import {
   Button,
@@ -156,25 +158,39 @@ return (
       >
         <Paper elevation={3} sx={{ padding: 3, marginBottom: 3 }}>
           <Grid container spacing={3}>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="h5" gutterBottom>
-                User Image
-              </Typography>
-              <Box sx={{ display: 'flex', justifyContent: 'left' }}>
-              <Button
-                sx={{
-                  width: 200,
-                  marginLeft: 0, // Ensure no left margin
-                }}
-                component="label"
-                variant="contained"
-                startIcon={<CloudUploadIcon />}
-              >
-                Upload file
-                <VisuallyHiddenInput type="file" />
-              </Button>
-              </Box>
-            </Grid>
+          <Grid item xs={12} sm={6}>
+      <Typography variant="h5" gutterBottom>
+        User Image
+      </Typography>
+      <Stack direction="column" spacing={2}>
+        <Box sx={{ display: "flex", justifyContent: "left" }}>
+          <Avatar
+            sx={{ width: 100, height: 100 }}
+            src={
+              selectedFile
+                ? URL.createObjectURL(selectedFile)
+                : "/broken-image.jpg"
+            }
+          />
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "left" }}>
+          <Button
+            sx={{ width: 200 }}
+            component="label"
+            variant="contained"
+            startIcon={<CloudUploadIcon />}
+          >
+            Upload file
+            <input
+              type="file"
+              hidden
+              name="file"
+              onChange={handleFileChange}
+            />
+          </Button>
+        </Box>
+      </Stack>
+    </Grid>
             <Grid item xs={12} sm={6}>
               <Typography variant="body1" gutterBottom>
                 {formData.email}
@@ -233,17 +249,20 @@ return (
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  label="Birth Date"
-                  name="birthDate"
-                  type="date"
-                  value={formData.birthDate}
-                  onChange={handleInput}
-                  fullWidth
-                  variant="outlined"
-                  disabled={!isEditable}
-                />
-              </Grid>
+      <TextField
+        label="Birth Date"
+        name="birthDate"
+        type="date"
+        value={formData.birthDate}
+        onChange={handleInput}
+        fullWidth
+        variant="outlined"
+        disabled={!isEditable}
+        InputLabelProps={{
+          shrink: true, // This ensures the label is always shrunk
+        }}
+      />
+    </Grid>
               <Grid item xs={12}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Identity</InputLabel>
