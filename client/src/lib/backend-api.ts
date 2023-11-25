@@ -1,6 +1,6 @@
 import { GetEndpointResponse } from "./types";
 
-const SERVER_ENDPOINT = "http://localhost:8080";
+const SERVER_ENDPOINT = process.env.NODE_ENV === "production" ?  "api/" : "http://localhost:8080";
 
 async function handleResponse<T>(response: Response): Promise<T> {
     const contentType = response.headers.get("Content-Type") || "";

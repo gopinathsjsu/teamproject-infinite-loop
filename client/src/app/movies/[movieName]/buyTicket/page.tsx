@@ -34,7 +34,7 @@ const screen =
     }
 }
 
-export default function addScreen() {
+export default function AddScreen() {
     const router = useRouter();
     const { movieName } = useParams();
     const searchParams = useSearchParams();
