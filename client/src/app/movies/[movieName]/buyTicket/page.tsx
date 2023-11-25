@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as zod from 'zod';
@@ -9,38 +9,48 @@ import { Box, Button, Container, CssBaseline, FormControl, FormHelperText, Grid,
 import { getDataFromEndPoint } from "@/src/lib/backend-api";
 import { Seats } from '@/src/lib/types'
 import styles from './Seats.module.scss'
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import Dayjs from 'dayjs';
+
 
 const schema = zod.object({
+    date: zod.date().min(new Date('1900-01-01'), 'Date is required').or(zod.string().nonempty('Date is required')),
     theater: zod.string().min(1, 'Theater is required'),
     screen: zod.string().min(1, 'Screen is required'),
     timing: zod.string().min(1, 'Select at least one timing'),
 });
 
-const screen =
-{
-    id: 5,
-    ticketCost: 200,
-    seats: {
-        A: [0, 0, 0, 0, 0, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        B: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        C: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        D: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        E: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        F: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        G: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    }
-}
-
 export default function addScreen() {
     const router = useRouter();
-    const { theaterId } = useParams();
+    const { movieName } = useParams();
     const [editable, setEditable] = useState<boolean>(true);
+    const [theaters, setTheaters] = useState<any[]>([]);
+    const [screens, setScreens] = useState<any[]>([]);
+    const [timings, setTimings] = useState<any[]>([]);
+    const [cost, setCost] = useState();
+    const [title, setTitle] = useState();
+    const [releaseDate, setReleaseDate] = useState();
+    const [endDate, setEndDate] = useState();
 
     //SEATS CODE
-    const [seatDetails, setSeatDetails] = useState<Seats>(screen.seats || {});
+    const [seatDetails, setSeatDetails] = useState<Seats>({});
     let selectedSeats: string[] = [];
 
-    useEffect(() => { clearSelectedSeats(); }, [])
+    useEffect(() => {
+        clearSelectedSeats();
+        const fetchData = async () => {
+            const response: any = await fetch(`http://localhost:8080/theater/getAllTheatersScreens/${movieName}`);
+            if (response.status === 200) {
+                const res = await response.json();
+                setTitle(res.data.movieName);
+                setTheaters(res.data.theaters);
+                setEndDate(res.data.endDate);
+                setReleaseDate(res.data.releaseDate);
+            }
+        }
+        fetchData();
+    }, [])
 
     //SEATS CODE
     const clearSelectedSeats = () => {
@@ -59,7 +69,28 @@ export default function addScreen() {
         setEditable(!editable);
     }
 
-    const { handleSubmit, control, formState: { errors } } = useForm({
+    async function validateFileds() {
+        trigger();
+        const values = getValues();
+        if (values.date == null || values.screen == "" || values.theater == "" || values.timing == "") {
+            return;
+        }
+        else {
+            const data ={
+                theater_id: values.theater,
+                screen_id: values.screen,
+                movie_id: movieName,
+                time: values.timing,
+                value: values.date
+            }
+            const response = await getDataFromEndPoint(data,'screen/getScreenLayout','POST');
+            setSeatDetails({...response.data.seatArray});
+            setCost(response.data.cost);
+            changeEditable();
+        }
+    }
+
+    const { handleSubmit, getValues, trigger, control, formState: { errors } } = useForm({
         resolver: zodResolver(schema)
     });
 
@@ -107,6 +138,7 @@ export default function addScreen() {
     //SEATS CODE
     const RenderSeats = () => {
         let seatArray = [];
+        console.log(seatDetails);
         for (let key in seatDetails) {
             let index = 0;
             let colValue = seatDetails[key].map((seatValue, rowIndex) => (
@@ -131,40 +163,34 @@ export default function addScreen() {
     }
 
     //SEATS CODE
-    const RenderPaymentButton = () => {
-        selectedSeats = [];
-        for (let key in seatDetails) {
-            seatDetails[key].forEach((seatValue, seatIndex) => {
-                if (seatValue === 2) {
-                    selectedSeats.push(`${key}${seatIndex + 1}`)
-                }
-            })
-        }
-        if (selectedSeats.length) {
-            return (
-                // href={{ pathname: '/payment', query: { movieId: movie?.id, seatDetails: JSON.stringify(seatDetails) } }}
-                <Button variant="contained" href="#contained-buttons" className={styles.paymentButton} >
-                    Book Ticket Pay Rs.{selectedSeats.length * (screen?.ticketCost || 0)}
-                </Button>
-            )
-        } else {
-            return <></>
-        }
+    selectedSeats = [];
+    for (let key in seatDetails) {
+        seatDetails[key].forEach((seatValue, seatIndex) => {
+            if (seatValue === 2) {
+                selectedSeats.push(`${key}${seatIndex + 1}`)
+            }
+        })
     }
 
-    async function onSubmit(data: any) {
-        // router.push("/theater/" + theaterId + "/screens/");
-        data['seats'] = seatDetails;
-        data['theater_id'] = theaterId;
-        const formUrl = 'screen/addScreen';
-        console.log(formUrl);
-        try {
-            await getDataFromEndPoint(data, formUrl, 'POST');
-
-        } catch (error) {
-            console.log(error);
-        }
+    async function onSubmit() {
+        console.log(getValues());
     };
+
+    function theaterChange(event: any) {
+        theaters.forEach((theater)=>{
+            if(theater.id == event.target.value){
+                setScreens(theater.screen_details);
+            }
+        });
+    }
+
+    function screenChange(event: any) {
+        screens.forEach((screen)=>{
+            if(screen.id == event.target.value){
+                setTimings(screen.show_timings);
+            }
+        });
+    }
 
     return (
         <React.Fragment>
@@ -172,59 +198,100 @@ export default function addScreen() {
             <Container maxWidth={false} style={{ marginLeft: "0px", marginRight: "0px", marginTop: "6%" }}>
                 <form action='/screen/addScreen' onSubmit={handleSubmit(onSubmit)}>
                     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                        <Typography variant="h4">Book Ticket</Typography>
+                        <Typography variant="h4">Book Ticket -  {title}</Typography>
                     </Box>
                     <Grid container spacing={2}>
-                        <Grid item xs={12} md={12} lg={4}>
+                        <Grid sx={{ display: 'flex', justifyContent: 'center', mt: "16px" }} item xs={12} md={12} lg={3}>
+                            <Controller
+                                name="date"
+                                control={control}
+                                defaultValue={null}
+                                render={({ field }) => (
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DatePicker
+                                            disabled={!editable}
+                                            minDate={Dayjs(releaseDate)}
+                                            maxDate={Dayjs(endDate)}
+                                            sx={{ width: "100%" }}
+                                            label="Select Date"
+                                            {...field}
+                                        />
+                                    </LocalizationProvider>
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={12} lg={3}>
                             <Controller
                                 name="theater"
                                 control={control}
-                                defaultValue=""
+                                defaultValue={null}
                                 render={({ field }) => (
                                     <FormControl disabled={!editable} fullWidth margin="normal" error={!!errors.theater}>
                                         <InputLabel>Theater</InputLabel>
-                                        <Select {...field} label="Theater">
-                                            {['2D', '3D'].map((format) => (
-                                                <MenuItem key={format} value={format}>{format}</MenuItem>
+                                        <Select
+                                            {...field}
+                                            label="Theater"
+                                            onChange={(event) => {
+                                                field.onChange(event);
+                                                theaterChange(event);
+                                            }}
+                                            value={field.value || ''} 
+                                        >
+                                            {theaters.map((theater) => (
+                                                <MenuItem key={theater.id} value={theater.id}>{theater.name}</MenuItem>
                                             ))}
                                         </Select>
-                                        <FormHelperText id="component-error-text">{getErrorMessage(errors.format)}</FormHelperText>
+                                        <FormHelperText id="component-error-text">
+                                            {getErrorMessage(errors.theater)}
+                                        </FormHelperText>
                                     </FormControl>
                                 )}
                             />
+
                         </Grid>
-                        <Grid item xs={12} md={12} lg={4}>
+                        <Grid item xs={12} md={12} lg={3}>
                             <Controller
                                 name="screen"
                                 control={control}
-                                defaultValue=""
+                                defaultValue={null}
                                 render={({ field }) => (
-                                    <FormControl disabled={!editable} fullWidth margin="normal" error={!!errors.format}>
+                                    <FormControl disabled={!editable} fullWidth margin="normal" error={!!errors.screen}>
                                         <InputLabel>Screen</InputLabel>
-                                        <Select {...field} label="Screen">
-                                            {['2D', '3D'].map((format) => (
-                                                <MenuItem key={format} value={format}>{format}</MenuItem>
+                                        <Select
+                                            {...field}
+                                            label="Screen"
+                                            onChange={(event) => {
+                                                field.onChange(event); 
+                                                screenChange(event); 
+                                            }}
+                                            value={field.value || ''} 
+                                        >
+                                            {screens.map((screen) => (
+                                                <MenuItem key={screen.id} value={screen.id}>{screen.name}</MenuItem>
                                             ))}
                                         </Select>
-                                        <FormHelperText id="component-error-text">{getErrorMessage(errors.format)}</FormHelperText>
+                                        <FormHelperText id="component-error-text">
+                                            {getErrorMessage(errors.screen)}
+                                        </FormHelperText>
                                     </FormControl>
                                 )}
                             />
+
                         </Grid>
-                        <Grid item xs={12} md={12} lg={4}>
+                        <Grid item xs={12} md={12} lg={3}>
                             <Controller
                                 name="timing"
                                 control={control}
                                 defaultValue=""
                                 render={({ field }) => (
-                                    <FormControl disabled={!editable} fullWidth margin="normal" error={!!errors.format}>
+                                    <FormControl disabled={!editable} fullWidth margin="normal" error={!!errors.timing}>
                                         <InputLabel>Timing</InputLabel>
                                         <Select {...field} label="Timing">
-                                            {['2D', '3D'].map((format) => (
-                                                <MenuItem key={format} value={format}>{format}</MenuItem>
+                                            {timings.map((time) => (
+                                                <MenuItem key={time} value={time}>{time}</MenuItem>
                                             ))}
                                         </Select>
-                                        <FormHelperText id="component-error-text">{getErrorMessage(errors.format)}</FormHelperText>
+                                        <FormHelperText id="component-error-text">{getErrorMessage(errors.timing)}</FormHelperText>
                                     </FormControl>
                                 )}
                             />
@@ -235,20 +302,27 @@ export default function addScreen() {
                             <Grid container justifyContent="center" spacing={2}>
                                 {editable ?
                                     <Box gap={2} my={4}>
-                                        <Button variant="contained" onClick={changeEditable}>Apply Changes</Button>
+                                        <Button variant="contained" onClick={validateFileds}>Apply Changes</Button>
                                     </Box>
                                     : <Box gap={2} my={4}>
                                         <Button style={{ marginRight: "5px" }} variant="outlined" onClick={changeEditable}>Change Theater</Button>
-                                        {/* <Button disabled={selectedSeats.length === 0} variant="contained" type="submit">Book Tickets Pay Rs.{selectedSeats.length * (screen?.ticketCost || 0)}</Button> */}
-                                        <RenderPaymentButton />
-                                    </Box>}
+                                        {selectedSeats.length !== 0 &&
+                                            <Button variant="contained" type="submit" onClick={() => { onSubmit() }}>
+                                                Book Ticket Pay Rs.{selectedSeats.length * (cost || 0) }
+                                            </Button>
+                                        }
+                                    </Box>
+                                }
                             </Grid>
                         </Grid>
                     </Grid>
                 </form>
                 <>
                     <div className={styles.seatsContainer}>
-                        {seatDetails && <RenderSeats />}
+                        {seatDetails 
+                            ? <RenderSeats />
+                            : <div> Select Theater and Apply Changes to Select Layout </div>
+                        }
                         <div className={styles.cont_screen}>
                             <div className={styles.screen}></div>
                         </div>

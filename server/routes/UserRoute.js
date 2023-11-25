@@ -8,8 +8,12 @@ const { createToken } = require('../Helpers/JwtAuth');
 const { upload } = require('../Helpers/S3');
 const {sendMessage} = require('../Helpers/WhatsappAPI');
 const uniqid = require('uniqid');
+const { RedisHelperAdd, RedisHelperGet, RedisHelperDelete } = require('../Helpers/RedisHelper');
 const saltRounds = 10;
 router.get('/addUser', (req, res) => {
+    // RedisHelperAdd(req, res, "hello", { "token": "hello" })
+    const data = RedisHelperDelete(req, res, "hello");
+    console.log(data);
     res.send('Hello, world!');
 });
 
@@ -18,20 +22,20 @@ router.post('/signup', async (req, res) => {
         console.log(req.body);
         const password = await bcrypt.hash(req.body.password, saltRounds);
         const newUser = new User({
-            user_id:uniqid(),
+            user_id: uniqid(),
             fullname: req.body.name,
             email: req.body.email,
             password: password,
-            firstname:'',
+            firstname: '',
             lastname: '',
-            dob:'',
-            gender:'',
-            mobile:'',
-            genres:[],
-            profile_url:'',
-            favourite_artists:[],
-            is_admin:false,
-            is_prime:false,
+            dob: '',
+            gender: '',
+            mobile: '',
+            genres: [],
+            profile_url: '',
+            favourite_artists: [],
+            is_admin: false,
+            is_prime: false,
         });
 
         // Save the user to the database
@@ -100,8 +104,8 @@ router.post('/updateProfile', upload.single('file'), async (req, res) => {
         user.gender = req.body.identity
         user.mobile = req.body.phone
         user.genres = [];
-        if(req.file)
-        user.profile_url = req.file.location 
+        if (req.file)
+            user.profile_url = req.file.location
         user.favourite_artists = [];
         await user.save();
         res.json({ message: "User details updated successfully", status: HTTP_STATUS_CODES.OK });
@@ -116,9 +120,9 @@ router.post('/uploadFile', upload.single('file1'), (req, res) => {
     const uploadedFile = req.file;
     console.log(uploadedFile);
     const imageUrls = uploadedFile.map((file) => {
-    return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}`;
-  });
-  res.json({ imageUrls });
+        return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}`;
+    });
+    res.json({ imageUrls });
 });
 
 router.get('/sendMessage', async (req, res) => {

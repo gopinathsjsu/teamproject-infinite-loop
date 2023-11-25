@@ -21,7 +21,7 @@ export interface Artist {
   name: string ;
   id: string;
   dateOfBirth: string;
-  about: string;
+  description: string;
   profile_url: string;
   profession: string;
    // Assuming this property exists
@@ -87,17 +87,17 @@ export default function ArtistDetails() {
             <Typography variant="h3" component="h2" sx={{ fontWeight: 'bold', mb: 2 }}>
               {artistData.name}
             </Typography>
-            <Typography variant="subtitle1" color="textSecondary" sx={{ mb: 2 }}>
-              Date of Birth: {artistData.dob}
+            <Typography variant="h5" color="textSecondary" sx={{ mb: 2 }}>
+              {artistData.profession}
             </Typography>
-            <Typography variant="subtitle1" color="textSecondary" sx={{ mb: 2 }}>
-              Profession: {artistData.profession}
+            <Typography variant="h6" color="textSecondary" sx={{ mb: 2 }}>
+              Date of Birth: {artistData.dob.split('T')[0]}
             </Typography>
             {/* <Typography variant="subtitle1" color="textSecondary" sx={{ mb: 2 }}>
               Profile_url: {artistData.profile_url}
             </Typography> */}
             <Typography variant="body1" sx={{ mb: 2 }}>
-              About: {artistData.about}
+             {artistData.description}
             </Typography>
             {/* Add additional sections as needed */}
           </Paper>

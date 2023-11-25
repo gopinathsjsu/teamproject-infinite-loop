@@ -6,6 +6,7 @@ const { HTTP_STATUS_CODES } = require('../constants')
 const { status, ScreenModel } = require('../models/ScreenModel');
 const Theater = require('../models/TheaterModel');
 const uniqueId = require('uniqid');
+const Movie = require('../models/MovieModel');
 router.post('/add', upload.single('file'), async (req, res) => {
     try {
         console.log('at /addTheater');
@@ -91,21 +92,31 @@ router.get('/getTheaterDetail/:id', async (req, res) => {
 
 router.get('/getAllTheatersScreens/:id', async (req, res) => {
     try {
-        console.log(req.params['id']);
+       console.log(req.params['id']);
         const Theaters = await Theater.find({ movie_ids: { $in: [req.params['id']] } }).select({ name: 1, id: 1,_id:0 });
-        console.log(Theaters);
+        const movie_data = await Movie.findOne({id : req.params['id']})
+       console.log(movie_data);
         var response = [];
-        Theaters.forEach(async (element, key )=> {
-            response[key] = element;
-            console.log( element.id, req.params['id']);
-            const screenDetails = await ScreenModel.find({ theater_id: element.id, movie_id: req.params['id'] }).select({ name: 1, id: 1, _id: 0 });
+        for (const theater of Theaters) {
+            const screenDetails = await ScreenModel.find({ theater_id: theater.id, movie_id: req.params.id }).select({ name: 1, id: 1,show_timings: 1, _id: 0 });
             console.log(screenDetails);
-            response[key].screen_details =screenDetails
-        });
+            response.push({
+                id: theater.id,
+                name: theater.name,
+                screen_details: screenDetails
+            });
+        }
+
+        data = {
+            movieName : movie_data.title,
+            releaseDate : movie_data.release_date,
+            endDate : movie_data.end_date,
+            theaters : response
+        }
         res.json({
             message: 'Theaters found',
             status: HTTP_STATUS_CODES.OK,
-            data: response
+            data: data
         })
     }
     catch (err) {

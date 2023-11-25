@@ -11,6 +11,7 @@ import {
   styled,
   IconButton,
   makeStyles,
+  Link,
 } from "@mui/material";
 
 interface CastAndCrewMember {
@@ -47,34 +48,31 @@ const defaultMovie: Movie = {
 };
 const App: React.FC = () => {
   const { movieName } = useParams();
-   const [movie, setMovie] = useState<Movie>(defaultMovie);
+  const router = useRouter();
+  const [movie, setMovie] = useState<Movie>(defaultMovie);
   const [castData, setCastData] = useState<CastAndCrewMember[]>([]);
   const [crewData, setCrewData] = useState<CastAndCrewMember[]>([]);
-   useEffect(() => {
-     const fetchData = async () => {
-       try {
-         const response = await fetch(`http://localhost:8080/movie/RRR`);
-         if (!response.ok) {
-           throw new Error(`Error: ${response.status}`);
-         }
-         const data = await response.json();
-         setMovie(data.movie[0]);
-         console.log(data);
-          const response1 = await fetch("http://localhost:8080/artist/all");
-          if (!response1.ok) {
-            throw new Error(`Error: ${response.status}`);
-          }
-          const data1 = await response.json();
-         setCastData(data1.Cast);
-         setCrewData(data1.Crew);
-          console.log(data);
-       } catch (error) {
-         console.error("Failed to fetch data:", error);
-       }
-     };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/movie/${movieName}`
+        );
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+        const data = await response.json();
+        setMovie(data.movie);
+        setCastData(data.cast);
+        setCrewData(data.crew);
+        console.log(data);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      }
+    };
 
-     fetchData();
-   }, []);
+    fetchData();
+  }, []);
   // const movie = {
   //   title: "Jigarthanda Double X",
   //   languages: ["Tamil", "Telugu", "Hindi", "Kannada"],
@@ -87,49 +85,48 @@ const App: React.FC = () => {
   //     "https://assets-in.bmscdn.com/iedb/movies/images/mobile/listing/xxlarge/jigarthanda-double-x-et00359702-1699446701.jpg", // Add your background poster path here
   //   trailerLink: "https://www.youtube.com/watch?v=uaqz9v6HdKs", // Add your YouTube video id here
   // };
-  const dates = ["Tue 14", "Wed 15", "Thu 16", "Fri 17", "Sat 18"];
-
+  // const dates = ["Tue 14", "Wed 15", "Thu 16", "Fri 17", "Sat 18"];
 
   // Sample data for theater times
-  const cinemas = [
-    {
-      name: "Sandhya Theatre RGB Laser Atmos -Madivala",
-      times: [
-        { showtime: "04:00 PM", format: "2D", availability: "available" },
-        { showtime: "10:00 PM", format: "2D", availability: "fast-filling" },
-      ],
-    },
-    {
-      name: "Sri Srinivasa Chitramandira, SG Palya",
-      times: [
-        { showtime: "07:00 PM", format: "2D", availability: "almost-full" },
-        { showtime: "10:00 PM", format: "2D", availability: "available" },
-      ],
-    },
-    // ... add more cinema data as needed
-  ];
+  // const cinemas = [
+  //   {
+  //     name: "Sandhya Theatre RGB Laser Atmos -Madivala",
+  //     times: [
+  //       { showtime: "04:00 PM", format: "2D", availability: "available" },
+  //       { showtime: "10:00 PM", format: "2D", availability: "fast-filling" },
+  //     ],
+  //   },
+  //   {
+  //     name: "Sri Srinivasa Chitramandira, SG Palya",
+  //     times: [
+  //       { showtime: "07:00 PM", format: "2D", availability: "almost-full" },
+  //       { showtime: "10:00 PM", format: "2D", availability: "available" },
+  //     ],
+  //   },
+  //   // ... add more cinema data as needed
+  // ];
 
-  const cast = [
-    {
-      name: "Aishwariya",
-      role: "",
-      imageurl:
-        "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D",
-    },
-    {
-      name: "Mahesh Babu",
-      role: "",
-      imageurl:
-        "https://upload.wikimedia.org/wikipedia/commons/9/9a/Mahesh_Babu_in_Spyder_%28cropped%29.jpg",
-    },
-    // ... other cast members
-  ];
+  // const cast = [
+  //   {
+  //     name: "Aishwariya",
+  //     role: "",
+  //     imageurl:
+  //       "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D",
+  //   },
+  //   {
+  //     name: "Mahesh Babu",
+  //     role: "",
+  //     imageurl:
+  //       "https://upload.wikimedia.org/wikipedia/commons/9/9a/Mahesh_Babu_in_Spyder_%28cropped%29.jpg",
+  //   },
+  //   // ... other cast members
+  // ];
 
-  const crew = [
-    { name: "Raghu", role: "Director", imageurl: "" },
-    { name: "Vamshi", role: "Producer", imageurl: "" },
-    // ... other crew members
-  ];
+  // const crew = [
+  //   { name: "Raghu", role: "Director", imageurl: "" },
+  //   { name: "Vamshi", role: "Producer", imageurl: "" },
+  //   // ... other crew members
+  // ];
 
   const backgroundStyle = {
     backgroundImage: `linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0)), url(${movie.poster_url})`,
@@ -183,14 +180,22 @@ const App: React.FC = () => {
     },
   });
 
-  const CinemaButton = styled(Button)({
-    textTransform: "none",
-    margin: "0.25rem",
-    "&:hover": {
-      backgroundColor: "#f50057", // Example hover color, adjust as needed
-      color: "#fff",
-    },
-  });
+  // const CinemaButton = styled(Button)({
+  //   textTransform: "none",
+  //   margin: "0.25rem",
+  //   "&:hover": {
+  //     backgroundColor: "#f50057", // Example hover color, adjust as needed
+  //     color: "#fff",
+  //   },
+  // });
+
+  function redirectToArtist(artist: any) {
+    router.push(`/artist/${artist.id}`)
+  }
+
+  function redirectToBooking() {
+    router.push(`/movies/${movieName}/buyTicket`);
+  }
 
   return (
     <>
@@ -240,6 +245,9 @@ const App: React.FC = () => {
           }}
         >
           <Button
+            onClick={() => {
+              redirectToBooking();
+            }}
             variant="contained"
             style={{
               backgroundColor: "red",
@@ -315,20 +323,22 @@ const App: React.FC = () => {
           <Grid container spacing={1}>
             {" "}
             {/* Reduced spacing between grid items */}
-            {castData.map((actor, index) => (
+            {castData.map((cast, index) => (
               <Grid item key={`cast-${index}`} xs={6} sm={4} md={3} lg={2}>
                 {" "}
                 {/* Adjusted grid sizes for less space */}
                 <Box sx={{ textAlign: "center" }}>
-                  <Avatar
-                    alt={actor.name}
-                    src={actor.profile_url}
-                    sx={{ width: 90, height: 90, margin: "auto", mb: 1 }}
-                  />
-                  <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-                    {actor.name}
-                  </Typography>
-                  <Typography variant="body2">{actor.profession}</Typography>
+                  <Link onClick={() => redirectToArtist(cast)} variant="body2">
+                    <Avatar
+                      alt={cast.name}
+                      src={cast.profile_url}
+                      sx={{ width: 90, height: 90, margin: "auto", mb: 1 }}
+                    />
+                    <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+                      {cast.name}
+                    </Typography>
+                    <Typography variant="body2">{cast.profession}</Typography>
+                  </Link>
                 </Box>
               </Grid>
             ))}
@@ -354,15 +364,19 @@ const App: React.FC = () => {
                 {" "}
                 {/* Adjusted grid sizes for less space */}
                 <Box sx={{ textAlign: "center" }}>
-                  <Avatar
-                    alt={crewMember.name}
-                    src={crewMember.profile_url}
-                    sx={{ width: 90, height: 90, margin: "auto", mb: 1 }}
-                  />
-                  <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                    {crewMember.profession}
-                  </Typography>
-                  <Typography variant="subtitle2">{crewMember.name}</Typography>
+                  <Link onClick={() => redirectToArtist(crewMember)} variant="body2">
+                    <Avatar
+                      alt={crewMember.name}
+                      src={crewMember.profile_url}
+                      sx={{ width: 90, height: 90, margin: "auto", mb: 1 }}
+                    />
+                    <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                      {crewMember.profession}
+                    </Typography>
+                    <Typography variant="subtitle2">
+                      {crewMember.name}
+                    </Typography>
+                  </Link>
                 </Box>
               </Grid>
             ))}

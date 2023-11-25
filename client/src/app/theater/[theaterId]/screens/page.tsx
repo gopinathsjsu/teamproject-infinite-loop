@@ -1,7 +1,6 @@
 "use client"
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Box, Grid, Typography, Button, Modal, Backdrop, Fade, Stack, TextField, FormControl, FormHelperText, InputLabel, Select, MenuItem } from '@mui/material';
@@ -11,11 +10,7 @@ import SendIcon from '@mui/icons-material/Send';
 import { getDataFromEndPoint } from "@/src/lib/backend-api";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs, { Dayjs } from 'dayjs';
 import * as zod from 'zod';
-import { threadId } from "worker_threads";
 
 interface Screen {
     id: string,
@@ -44,7 +39,7 @@ const style = {
 
 const schema = zod.object({
     movie: zod.string().min(1, 'Movie is required'),
-    ticketPrice: zod.number().min(1, 'ticket price is required')
+    ticketPrice: zod.string().min(1, 'ticket price is required')
 });
 
 export default function Screen() {
@@ -69,12 +64,12 @@ export default function Screen() {
             const data = response.data;
             console.log(data);
             const mappedData: Screen[] = data.map((screenItem: any) => ({
-                id: screenItem.screen_id,
-                name: screenItem.screen_name,
-                timings: screenItem.show_times,
+                id: screenItem.id,
+                name: screenItem.name,
+                timings: screenItem.show_timings,
                 maxCapacity: screenItem.seating_capacity,
                 imageUrl: screenItem.movie_image,
-                format: screenItem.screen_type,
+                format: screenItem.format,
                 currentMovie: screenItem.movie_name,
                 runtime: screenItem.run_time,
                 cost: screenItem.cost,
@@ -135,9 +130,9 @@ export default function Screen() {
             const response = await getDataFromEndPoint("", 'screen/' + theaterId, 'GET');
             const data_req = response.data;
             const mappedData: Screen[] = data_req.map((screenItem: any) => ({
-                id: screenItem.screen_id,
+                id: screenItem.id,
                 name: screenItem.screen_name,
-                timings: screenItem.show_times,
+                timings: screenItem.show_timings,
                 maxCapacity: screenItem.seating_capacity,
                 imageUrl: screenItem.movie_image,
                 format: screenItem.screen_type,
@@ -151,6 +146,7 @@ export default function Screen() {
         }
     };
     const handleOpenModal = (screen_id: any) => {
+        console.log(screen_id);
         setSelectedScreenId(screen_id); // Set the selected screen id
         setOpen(!open); // Open the modal
     };

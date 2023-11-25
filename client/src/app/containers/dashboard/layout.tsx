@@ -163,6 +163,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </Drawer>
             } */}
             < ResponsiveAppBar />
+            {/* flexGrow: 1,
+                    height: '100vh',
+                    overflow: 'auto', */}
             <Box
                 component="main"
                 sx={{
@@ -170,12 +173,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                         theme.palette.mode === 'light'
                             ? theme.palette.grey[100]
                             : theme.palette.grey[900],
-                    flexGrow: 1,
-                    height: '100vh',
-                    overflow: 'auto',
+
+                    display: 'flex',
+                    flexDirection: 'column',
+                    minHeight: '100vh'
                 }}
             >
-                <Container maxWidth={false}>
+                <Container maxWidth={false} component="main" sx={{ flex: 1 }}>
                     {children}
                 </Container>
                 <Footer />
