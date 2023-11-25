@@ -76,15 +76,15 @@ export default function addScreen() {
             return;
         }
         else {
-            const data ={
+            const data = {
                 theater_id: values.theater,
                 screen_id: values.screen,
                 movie_id: movieName,
                 time: values.timing,
                 value: values.date
             }
-            const response = await getDataFromEndPoint(data,'screen/getScreenLayout','POST');
-            setSeatDetails({...response.data.seatArray});
+            const response = await getDataFromEndPoint(data, 'screen/getScreenLayout', 'POST');
+            setSeatDetails({ ...response.data.seatArray });
             setCost(response.data.cost);
             changeEditable();
         }
@@ -99,6 +99,20 @@ export default function addScreen() {
     };
 
     //SEATS CODE
+    const getSeatWithOffset = (key: any, rowIndex: number, seatValue: number) => {
+        let offset = 0;
+        let returnValue = '';
+        seatDetails[key].forEach((value, index) => {
+            if (value === seatValue && index === rowIndex) {
+                returnValue = `${key}${index + 1 - offset}`;
+            } else if (value === 3) {
+                offset++;
+            }
+        });
+        return returnValue;
+    };
+
+    //SEATS CODE
     const onSeatClick = (seatValue: number, rowIndex: number, key: string) => {
         if (editable) return;
         let tempSelectedSeats = selectedSeats;
@@ -106,13 +120,15 @@ export default function addScreen() {
             if (seatValue === 1 || seatValue === 3) {
                 return;
             } else if (seatValue === 0) {
-                if(tempSelectedSeats.length>=8)return;
+                if (selectedSeats.length >= 8) return;
                 seatDetails[key][rowIndex] = 2;
-                tempSelectedSeats.push(`${key}${rowIndex + 1}`)
+                const seatValue = getSeatWithOffset(key, rowIndex, 2);
+                tempSelectedSeats.push(seatValue);
             } else {
                 seatDetails[key][rowIndex] = 0;
-                const index = tempSelectedSeats.indexOf(`${key}${rowIndex + 1}`);
-                if(index>-1) tempSelectedSeats.splice(index,1);
+                const seatValue = getSeatWithOffset(key, rowIndex, 0);
+                const index = tempSelectedSeats.indexOf(seatValue);
+                if (index > -1) tempSelectedSeats.splice(index, 1);
             }
         }
         setSelectedSeats(tempSelectedSeats);
@@ -168,20 +184,27 @@ export default function addScreen() {
     }
 
     async function onSubmit() {
-        console.log(getValues());
+        let data = getValues();
+        console.log(data.date);
+        data['screenLayout'] = seatDetails;
+        data['seatSelected'] = selectedSeats;
+        data['movie_id'] = movieName;
+        const post_data = await getDataFromEndPoint(data, 'payment/buyTickets', 'POST');
+        console.log(post_data);
+        console.log(data);
     };
 
     function theaterChange(event: any) {
-        theaters.forEach((theater)=>{
-            if(theater.id == event.target.value){
+        theaters.forEach((theater) => {
+            if (theater.id == event.target.value) {
                 setScreens(theater.screen_details);
             }
         });
     }
 
     function screenChange(event: any) {
-        screens.forEach((screen)=>{
-            if(screen.id == event.target.value){
+        screens.forEach((screen) => {
+            if (screen.id == event.target.value) {
                 setTimings(screen.show_timings);
             }
         });
@@ -230,7 +253,7 @@ export default function addScreen() {
                                                 field.onChange(event);
                                                 theaterChange(event);
                                             }}
-                                            value={field.value || ''} 
+                                            value={field.value || ''}
                                         >
                                             {theaters.map((theater) => (
                                                 <MenuItem key={theater.id} value={theater.id}>{theater.name}</MenuItem>
@@ -256,10 +279,10 @@ export default function addScreen() {
                                             {...field}
                                             label="Screen"
                                             onChange={(event) => {
-                                                field.onChange(event); 
-                                                screenChange(event); 
+                                                field.onChange(event);
+                                                screenChange(event);
                                             }}
-                                            value={field.value || ''} 
+                                            value={field.value || ''}
                                         >
                                             {screens.map((screen) => (
                                                 <MenuItem key={screen.id} value={screen.id}>{screen.name}</MenuItem>
@@ -303,7 +326,7 @@ export default function addScreen() {
                                         <Button style={{ marginRight: "5px" }} variant="outlined" onClick={changeEditable}>Change Theater</Button>
                                         {selectedSeats.length !== 0 &&
                                             <Button variant="contained" type="submit" onClick={() => { onSubmit() }}>
-                                                Book Ticket Pay ${selectedSeats.length * (cost || 0) }
+                                                Book Ticket Pay ${selectedSeats.length * (cost || 0)}
                                             </Button>
                                         }
                                     </Box>
@@ -314,7 +337,7 @@ export default function addScreen() {
                 </form>
                 <>
                     <div className={styles.seatsContainer}>
-                        {seatDetails 
+                        {seatDetails
                             ? <RenderSeats />
                             : <div> Select Theater and Apply Changes to Select Layout </div>
                         }
