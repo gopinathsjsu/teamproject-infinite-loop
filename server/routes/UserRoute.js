@@ -9,10 +9,15 @@ const { upload } = require('../Helpers/S3');
 const { sendMessage } = require('../Helpers/WhatsappAPI');
 const uniqid = require('uniqid');
 const { RedisHelperAdd, RedisHelperGet, RedisHelperDelete } = require('../Helpers/RedisHelper');
+const { sendSignUpEmail } = require('../Helpers/sendGridHelper');
 const saltRounds = 10;
 router.get('/addUser', (req, res) => {
     // RedisHelperAdd(req, res, "hello", { "token": "hello" })
-    const data = RedisHelperDelete(req, res, "hello");
+    const data = {
+        email: 'mahendrachittupolu@gmail.com',
+        name: 'Mahendra'
+    };
+    sendSignUpEmail(data);
     console.log(data);
     res.send('Hello, world!');
 });
@@ -72,6 +77,7 @@ router.post('/signup', upload.single('file'), async (req, res) => {
 
         try {
             // await newUser.save();
+
             res.status(HTTP_STATUS_CODES.OK).send("user registered successfully");
         }
         catch (err) {

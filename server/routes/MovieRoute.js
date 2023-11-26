@@ -43,6 +43,43 @@ router.post('/add', upload.array('movieposter', 2), async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 })
+router.post('/updateMovie', upload.array('movieposter', 2), async (req, res) => {
+    if (req.file) {
+        poster_url = req.files[0].location;
+        banner_url = req.files[1].location;
+    }
+    const update = {
+        title: req.body.movieName,
+        cast: req.body.cast,
+        description: req.body.AboutTheMovie,
+        genres: req.body.genre,
+        format: req.body.format,
+        languages: req.body.languages,
+        trailer_url: req.body.movieTrailerLink,
+        run_time: req.body.Runtime,
+        rating: 0,
+        release_date: req.body.releaseDate,
+        end_date: req.body.endDate,
+        cast: req.body.castIds.split(','),
+        crew: req.body.crewIds.split(','),
+        certificate: req.body.certificate,
+        ticket_price: 0,
+        tickets_sold: 0,
+        ...(req.file && { poster_url }),
+        ...(req.file && { banner_url }),
+        popularity: 0,
+    };
+
+    // Save the user to the database
+    await Movie.updateOne({ id: req.body.id }, update).then((result) => {
+        console.log(result);
+        res.send(HTTP_STATUS_CODES.OK).send("updated successfully");
+    }).catch((err) => {
+        console.log(err);
+        res.send(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).send("Internal server error");
+    })
+
+})
 
 router.get('/all', async (req, res) => {
     try {
