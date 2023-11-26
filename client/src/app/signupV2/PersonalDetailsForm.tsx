@@ -2,9 +2,13 @@ import * as React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as zod from 'zod';
-import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -20,11 +24,13 @@ const schema = zod.object({
   dateOfBirth: zod.date(),
   password: zod.string().min(6, { message: "Password must be at least 6 characters" }),
   confirmPassword: zod.string(),
-  }).refine(data => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
+  gender: zod.string().min(1, { message: "Gender is required" }),
+}).refine(data => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
 });
 
-export default function PersonalDetailsForm({ data, onNext }:{data:any, onNext:any}) {
+export default function PersonalDetailsForm({ data, onNext }: { data: any, onNext: any }) {
   const [selectedFile, setSelectedFile] = React.useState(null);
   const { register, control, formState: { errors }, getValues, trigger, setValue } = useForm({
     resolver: zodResolver(schema)
@@ -37,18 +43,18 @@ export default function PersonalDetailsForm({ data, onNext }:{data:any, onNext:a
       setValue('phoneNumber', data.phoneNumber);
       setValue('dateOfBirth', data.dateOfBirth);
       setValue('password', data.password);
+      setValue('gender', data.gender);
       setValue('confirmPassword', data.confirmPassword);
       setSelectedFile(data.selectedFile);
     }
-  }, [data]); 
+  }, [data]);
 
-  const onSubmit = () => {
-    trigger();
+  const onSubmit = async () => {
+    await trigger();
     if (Object.keys(errors).length == 0) {
-      console.log(getValues());
       let data = getValues();
       data['selectedFile'] = selectedFile;
-      onNext(data,'stepOneData');
+      onNext(data, 'stepOneData');
     }
   };
 
@@ -130,7 +136,7 @@ export default function PersonalDetailsForm({ data, onNext }:{data:any, onNext:a
               variant="standard"
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={3}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <Controller
                 name="dateOfBirth"
@@ -143,6 +149,35 @@ export default function PersonalDetailsForm({ data, onNext }:{data:any, onNext:a
                 )}
               />
             </LocalizationProvider>
+          </Grid>
+          <Grid item xs={3}>
+            <FormControl fullWidth>
+              <InputLabel id="gender-label">Gender</InputLabel>
+              <Controller
+                name="gender"
+                control={control}
+                defaultValue=""
+                render={({ field }) => {
+                  console.log('Gender Controller Re-rendered');
+                  return (
+                    <Select
+                      {...field}
+                      labelId="gender-label"
+                      label="Gender"
+                      variant="standard"
+                      error={Boolean(errors.gender)}
+                    >
+                      <MenuItem value="male">Male</MenuItem>
+                      <MenuItem value="female">Female</MenuItem>
+                      <MenuItem value="other">Other</MenuItem>
+                    </Select>
+                  );
+                }}
+              />
+              <Typography variant="inherit" color="textSecondary">
+                {getErrorMessage(errors.gender)}
+              </Typography>
+            </FormControl>
           </Grid>
           <Grid item xs={6}>
             <TextField

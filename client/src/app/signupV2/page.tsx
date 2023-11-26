@@ -16,6 +16,8 @@ import PersonalDetailsForm from './PersonalDetailsForm';
 import AddressForm from './AddressForm';
 import AdditionalDetailsForm from './AdditionalDetailsForm';
 import Script from 'next/script';
+import { getDataFromEndPoint } from '@/src/lib/backend-api';
+import { useRouter } from 'next/navigation';
 
 function Copyright() {
     return (
@@ -34,6 +36,7 @@ const steps = ['Personal Details', 'Address', 'Additional Information'];
 
 export default function Checkout() {
     const [activeStep, setActiveStep] = React.useState(0);
+    const router = useRouter();
 
     const [data, setData] = React.useState({
         stepOneData: {},
@@ -54,8 +57,27 @@ export default function Checkout() {
         }
     }
 
-    function submitSignIn(){
-        console.log(data);
+    async function submitSignIn(){
+        const reqData = new FormData();
+        Object.entries(data).forEach(([stepDataKey,stepData])=>{
+            Object.entries(stepData).forEach(([key,value])=>{
+                if(key=='selectedFile'){
+                    reqData.append('file',value as string | Blob);
+                }else{
+                    if(Array.isArray(value)){
+                        reqData.append(key,(value as string[]).join(", "));
+                    }else{
+                        reqData.append(key, value as string);
+                    }
+                }
+            })
+        });
+
+        const response = await getDataFromEndPoint(reqData, 'user/signup' ,'POST');
+        if(response.status == 200){
+            console.log('success');
+            router.push('/signin');
+        }
     }
 
     const handleNext = (stepData:any,stepIndex:string) => {
