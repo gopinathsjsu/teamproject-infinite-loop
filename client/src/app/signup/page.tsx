@@ -1,27 +1,26 @@
 'use client'
 import * as React from 'react';
-import { useForm } from 'react-hook-form';
-import { useRouter } from "next/navigation";
-
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
+import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { apiRegisterUser } from '@/src/lib/auth-api';
-import { handleApiError } from '@/src/lib/helpers';
-import toast from 'react-hot-toast';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { RegisterUserSchema } from '@/src/lib/validations/user.schema';
+import Toolbar from '@mui/material/Toolbar';
+import Paper from '@mui/material/Paper';
+import Stepper from '@mui/material/Stepper';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import PersonalDetailsForm from './PersonalDetailsForm';
+import AddressForm from './AddressForm';
+import AdditionalDetailsForm from './AdditionalDetailsForm';
+import Script from 'next/script';
+import { getDataFromEndPoint } from '@/src/lib/backend-api';
+import { useRouter } from 'next/navigation';
 
-function Copyright(props: any) {
+function Copyright() {
     return (
-        <Typography variant="body2" color="text.secondary" align="center" {...props}>
+        <Typography variant="body2" color="text.secondary" align="center">
             {'Copyright © '}
             <Link color="inherit" href="https://mui.com/">
                 Box Office
@@ -32,119 +31,133 @@ function Copyright(props: any) {
     );
 }
 
-export default function SignUp() {
+const steps = ['Personal Details', 'Address', 'Additional Information'];
 
-    const [loading, setLoading] = React.useState(false);
-    const { register, handleSubmit, formState: { errors } } = useForm({resolver: zodResolver(RegisterUserSchema),});
-    const onSubmit = (data: any) => {
-        registerUser(data);
-    }
+export default function Checkout() {
+    const [activeStep, setActiveStep] = React.useState(0);
     const router = useRouter();
 
-    const getErrorMessage = (error: any) => {
-        return error && typeof error.message === 'string' ? error.message : '';
+    const [data, setData] = React.useState({
+        stepOneData: {},
+        stepTwoData: {},
+        stepThreeData: {},
+    });
+
+    function getStepContent(step: number) {
+        switch (step) {
+            case 0:
+                return <PersonalDetailsForm data={data.stepOneData} onNext={handleNext} />;
+            case 1:
+                return <AddressForm data={data.stepTwoData} onNext={handleNext} onBack={handleBack}/>;
+            case 2:
+                return <AdditionalDetailsForm data={data.stepThreeData} onNext={handleNext} onBack={handleBack}/>;
+            default:
+                throw new Error('Unknown step');
+        }
+    }
+
+    async function submitSignIn(){
+        const reqData = new FormData();
+        Object.entries(data).forEach(([stepDataKey,stepData])=>{
+            Object.entries(stepData).forEach(([key,value])=>{
+                if(key=='selectedFile'){
+                    reqData.append('file',value as string | Blob);
+                }else{
+                    if(Array.isArray(value)){
+                        reqData.append(key,(value as string[]).join(", "));
+                    }else{
+                        reqData.append(key, value as string);
+                    }
+                }
+            })
+        });
+
+        const response = await getDataFromEndPoint(reqData, 'user/signup' ,'POST');
+        if(response.status == 200){
+            console.log('success');
+            router.push('/signin');
+        }
+    }
+
+    const handleNext = (stepData:any,stepIndex:string) => {
+        setData((prevData) => ({ ...prevData, [stepIndex]: stepData }));
+        if(activeStep == steps.length-1){
+            submitSignIn();
+            return;
+        }
+        setActiveStep(activeStep + 1);
     };
 
-    async function registerUser(data: any){        
-        setLoading(true);
-        try {
-            const user = await apiRegisterUser(JSON.stringify(data));
-            return router.push("/signin");
-        } catch (error: any) {
-            if (error instanceof Error) {
-                handleApiError(error);
-            } else {
-                toast.error(error.message);
-                console.log("Error message:", error.message);
-            }
-        } finally {
-            setLoading(false);
-        }
+    const handleBack = (stepData:any,stepIndex:string) => {
+        setData((prevData) => ({ ...prevData, [stepIndex]: stepData }));
+        setActiveStep(activeStep - 1);
     };
 
     return (
-        <Container component="main" maxWidth="xs">
+        <React.Fragment>
+            <Script
+                src={`https://maps.googleapis.com/maps/api/js?key=AIzaSyAH_4KikoUaqV41Fq09gBEsXzADYU1xM8w&libraries=places`}
+                strategy="beforeInteractive"
+            />
             <CssBaseline />
-            <Box
+            <AppBar
+                position="absolute"
+                color="default"
+                elevation={0}
                 sx={{
-                    marginTop: 8,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
+                    position: 'relative',
+                    borderBottom: (t) => `1px solid ${t.palette.divider}`,
                 }}
             >
-                <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                    <LockOutlinedIcon />
-                </Avatar>
-                <Typography component="h1" variant="h5">
-                    Sign up
-                </Typography>
-                <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <TextField
-                                {...register('name')}
-                                fullWidth
-                                id="name"
-                                label="Full Name"
-                                autoFocus
-                                error={!!errors.name}
-                                helperText={getErrorMessage(errors.name)}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                {...register('email')}
-                                fullWidth
-                                id="email"
-                                label="Email Address"
-                                autoComplete="email"
-                                error={!!errors.email}
-                                helperText={getErrorMessage(errors.email)}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                {...register('password')}
-                                fullWidth
-                                type="password"
-                                id="password"
-                                label="Password"
-                                autoComplete="new-password"
-                                error={!!errors.password}
-                                helperText={getErrorMessage(errors.password)}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                {...register('confirmPassword')}
-                                fullWidth
-                                type="password"
-                                id="confirmPassword"
-                                label="Confirm Password"
-                                error={!!errors.confirmPassword}
-                                helperText={getErrorMessage(errors.confirmPassword)}
-                            />
-                        </Grid>
-                    </Grid>
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        sx={{ mt: 3, mb: 2 }}
-                    >
-                        {!loading ? <span> Sign Up</span> : <span>Loading...</span>}
-                    </Button>
-                    <Grid container justifyContent="flex-end">
-                        <Grid item>
-                            <Link href="/signin" variant="body2">
-                                Already have an account? Sign in
-                            </Link>
-                        </Grid>
-                    </Grid>
-                </Box>
-            </Box>
-            <Copyright sx={{ mt: 5 }} />
-        </Container>
+                <Toolbar>
+                    <Typography variant="h6" color="inherit" noWrap>
+                        Box Office
+                    </Typography>
+                </Toolbar>
+            </AppBar>
+            <Container component="main" maxWidth="lg" sx={{ mb: 4 }}>
+                <Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
+                    <Typography component="h1" variant="h4" align="center">
+                        Sign Up
+                    </Typography>
+                    <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5 }}>
+                        {steps.map((label) => (
+                            <Step key={label}>
+                                <StepLabel>{label}</StepLabel>
+                            </Step>
+                        ))}
+                    </Stepper>
+                    {activeStep === steps.length ? (
+                        <React.Fragment>
+                            <Typography variant="h5" gutterBottom>
+                                Success!!
+                            </Typography>
+                            <Typography variant="subtitle1">
+                                LogIn to enjoy movies
+                            </Typography>
+                        </React.Fragment>
+                    ) : (
+                        <React.Fragment>
+                            {getStepContent(activeStep)}
+                            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                {/* {activeStep !== 0 && (
+                                    <Button onClick={handleBack} sx={{ mt: 3, ml: 1 }}>
+                                        Back
+                                    </Button>
+                                )} */}
+                                {/* <Button
+                                    variant="contained"
+                                    onClick={handleNext}
+                                    sx={{ mt: 3, ml: 1 }}
+                                >
+                                    {activeStep === steps.length - 1 ? 'Sign In' : 'Next'}
+                                </Button> */}
+                            </Box>
+                        </React.Fragment>
+                    )}
+                </Paper>
+                <Copyright />
+            </Container>
+        </React.Fragment>
     );
 }

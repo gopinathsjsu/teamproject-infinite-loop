@@ -130,8 +130,9 @@ router.get('/getAllTheatersScreens/:id', async (req, res) => {
     }
 });
 router.post('/updateTheater', upload.single('file'), async (req, res) => {
-    const post_data = req.body.data;
-    image_url = req.file.location;
+    const post_data = JSON.parse(req.body.data);
+    console.log('at /updateTheater');
+    console.log(post_data);    
     if (req.file) {
         image_url = req.file.location;
     }
@@ -143,7 +144,6 @@ router.post('/updateTheater', upload.single('file'), async (req, res) => {
         theater_url: post_data.location_url,
         ...(req.file && { image_url }),
         theater_constructed_date: post_data.theatre_constructed_date,
-        theater_id: uniqueId,
         movie_ids: [],
         address: post_data.address,
         state: post_data.state,
@@ -152,6 +152,7 @@ router.post('/updateTheater', upload.single('file'), async (req, res) => {
         mail: post_data.email
     }).then((result) => {
         console.log(result);
+        res.status(HTTP_STATUS_CODES.OK).send("updated successfully");
     }).catch((error) => {
         console.error(error);
     })

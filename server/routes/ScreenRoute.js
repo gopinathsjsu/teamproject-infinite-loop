@@ -251,6 +251,7 @@ router.post('/updateScreen', async (req, res) => {
     }
     await ScreenModel.updateOne({ id: req.body.id }, update).then((result) => {
         console.log(result);
+        res.status(HTTP_STATUS_CODES.OK).send("updated successfully");
     }).catch((error) => {
         console.error(error)
     })

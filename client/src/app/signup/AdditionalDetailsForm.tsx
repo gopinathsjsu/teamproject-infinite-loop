@@ -1,5 +1,5 @@
 // components/AdditionalDetailsForm.js
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -16,37 +16,94 @@ import {
 
 const schema = z.object({
   genres: z.array(z.string()).nonempty('Select atleast one genre'),
-  favoriteArtists: z.array(z.string()).nonempty('Select atleast one artist'),
+  favoriteCast: z.array(z.string()).nonempty('Select atleast one artist'),
   favoriteCrew: z.array(z.string()).nonempty('Select atleast one crew'),
   preferredLanguages: z.array(z.string()).nonempty('Select atleast one language'),
 });
 
-const AdditionalDetailsForm = ({ data, onNext, onBack }: { data: any, onNext: any, onBack:any }) => {
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    trigger,
-    getValues,
-    setValue
-  } = useForm({
+const genres = [
+  "Action",
+  "Drama",
+  "Comedy",
+  "Science Fiction",
+  "Horror",
+  "Romance",
+  "Fantasy",
+  "Thriller",
+  "Adventure",
+  "Mystery",
+];
+
+const languages = [
+  "English",
+  "Spanish",
+  "French",
+  "German",
+  "Mandarin Chinese",
+  "Hindi",
+  "Japanese",
+  "Korean",
+  "Italian",
+  "Russian",
+  "Portuguese",
+  "Arabic",
+  "Turkish",
+  "Persian",
+  "Swedish",
+  "Danish",
+  "Norwegian",
+  "Finnish",
+  "Dutch",
+  "Greek",
+  "Polish",
+  "Hungarian",
+  "Czech",
+  "Thai",
+  "Hebrew",
+  "Tamil",
+  "Telugu",
+  "Bengali",
+];
+
+const AdditionalDetailsForm = ({ data, onNext, onBack }: { data: any, onNext: any, onBack: any }) => {
+  const { control, formState: { errors }, trigger, getValues, setValue } = useForm({
     resolver: zodResolver(schema),
   });
+  const [castData, setCastData] = useState<any>([]);
+  const [crewData, setCrewData] = useState<any>([]);
 
   React.useEffect(() => {
     if (Object.keys(data).length !== 0) {
       setValue('genres', data.genres);
-      setValue('favoriteArtists', data.favoriteArtists);
+      setValue('favoriteCast', data.favoriteCast);
       setValue('favoriteCrew', data.favoriteCrew);
       setValue('preferredLanguages', data.preferredLanguages);
     }
-  }, [data]);
+
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/artist/all");
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+        const data = await response.json();
+        setCrewData(data.Crew);
+        setCastData(data.Cast);
+        console.log(data);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      }
+    };
+
+    fetchData();
+
+  }, []);
 
   const getErrorMessage = (error: any) => {
     return error && typeof error.message === 'string' ? error.message : '';
   };
 
-  const prevStep = () =>{
+  const prevStep = () => {
     let data = getValues();
     onBack(data, 'stepThreeData');
   }
@@ -82,9 +139,11 @@ const AdditionalDetailsForm = ({ data, onNext, onBack }: { data: any, onNext: an
                 error={!!errors.genres}
                 label="Genres"
               >
-                <MenuItem value="pop">Pop</MenuItem>
-                <MenuItem value="rock">Rock</MenuItem>
-                <MenuItem value="hipHop">Hip Hop</MenuItem>
+                {genres.map((genre) => (
+                  <MenuItem key={genre} value={genre}>
+                    {genre}
+                  </MenuItem>
+                ))}
               </Select>
               <FormHelperText error={!!errors.genres}>{getErrorMessage(errors.genres)}</FormHelperText>
             </div>
@@ -93,9 +152,9 @@ const AdditionalDetailsForm = ({ data, onNext, onBack }: { data: any, onNext: an
       </FormControl>
 
       <FormControl fullWidth margin="normal">
-        <InputLabel htmlFor="favoriteArtists">Favorite Artists</InputLabel>
+        <InputLabel htmlFor="favoriteCast">Favorite Cast</InputLabel>
         <Controller
-          name="favoriteArtists"
+          name="favoriteCast"
           control={control}
           defaultValue={[]}
           render={({ field }) => (
@@ -105,15 +164,17 @@ const AdditionalDetailsForm = ({ data, onNext, onBack }: { data: any, onNext: an
                 value={field.value}
                 fullWidth
                 onChange={(e) => field.onChange(e.target.value)}
-                error={!!errors.favoriteArtists}
-                label="Favorite Artists"
+                error={!!errors.favoriteCast}
+                label="Favorite Casr"
               >
-                <MenuItem value="artist1">Artist 1</MenuItem>
-                <MenuItem value="artist2">Artist 2</MenuItem>
-                {/* Add more artists as needed */}
+                {castData.map((cast:any) => (
+                  <MenuItem key={cast.id} value={cast.id}>
+                    {cast.name}
+                  </MenuItem>
+                ))}
               </Select>
-              <FormHelperText error={!!errors.favoriteArtists}>
-                {getErrorMessage(errors.favoriteArtists)}
+              <FormHelperText error={!!errors.favoriteCast}>
+                {getErrorMessage(errors.favoriteCast)}
               </FormHelperText>
             </div>
           )}
@@ -136,9 +197,11 @@ const AdditionalDetailsForm = ({ data, onNext, onBack }: { data: any, onNext: an
                 error={!!errors.favoriteCrew}
                 label="Favorite Crew"
               >
-                <MenuItem value="artist1">Artist 1</MenuItem>
-                <MenuItem value="artist2">Artist 2</MenuItem>
-                {/* Add more artists as needed */}
+               {crewData.map((crew:any) => (
+                  <MenuItem key={crew.id} value={crew.id}>
+                    {crew.name}
+                  </MenuItem>
+                ))}
               </Select>
               <FormHelperText error={!!errors.favoriteCrew}>
                 {getErrorMessage(errors.favoriteCrew)}
@@ -164,9 +227,11 @@ const AdditionalDetailsForm = ({ data, onNext, onBack }: { data: any, onNext: an
                 error={!!errors.preferredLanguages}
                 label="Preferred Languages"
               >
-                <MenuItem value="english">English</MenuItem>
-                <MenuItem value="spanish">Spanish</MenuItem>
-                {/* Add more languages as needed */}
+                {languages.map((language) => (
+                  <MenuItem key={language} value={language}>
+                    {language}
+                  </MenuItem>
+                ))}
               </Select>
               <FormHelperText error={!!errors.preferredLanguages}>
                 {getErrorMessage(errors.preferredLanguages)}

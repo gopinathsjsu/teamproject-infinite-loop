@@ -72,6 +72,9 @@ export default function Screen() {
                 runtime: screenItem.run_time,
                 cost: screenItem.cost,
                 movieId: screenItem.movie_id,
+                columns: screenItem.columns,
+                seatDetails: screenItem.seating_arrangement,
+                rows: screenItem.rows
             }));
             setScreenData(mappedData);
         };
@@ -104,6 +107,11 @@ export default function Screen() {
         router.push(`/movies/${screen.movieId}/buyTicket`)
     }
 
+    function editScreen(screen: any){
+        localStorage.setItem('screenDetails', JSON.stringify(screen));
+        router.push(`/theater/${theaterId}/editScreen`);
+    }
+
     async function onSubmit(data: any) {
         data['theater_id'] = theaterId;
         data['screen_id'] = selectedScreenId;
@@ -132,8 +140,8 @@ export default function Screen() {
     };
     const handleOpenModal = (screen_id: any) => {
         console.log(screen_id);
-        setSelectedScreenId(screen_id); // Set the selected screen id
-        setOpen(!open); // Open the modal
+        setSelectedScreenId(screen_id);
+        setOpen(!open); 
     };
     return (
         <React.Fragment>
@@ -156,9 +164,9 @@ export default function Screen() {
                                             <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
                                                 <Typography variant="h6" component="h3" sx={{ mb: 1, fontWeight: 'medium', fontSize: '2rem' }} style={{}} color="#01579B">{screen.name}</Typography>
                                                 <Box>
-                                                    <Button startIcon={<EditIcon />} sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }} />
-                                                    <Button sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }} onClick={() => handleOpenModal(screen.id)}>
-                                                        Add Movie
+                                                    <Button startIcon={<EditIcon />} sx={{ mb: 1, fontSize: '1rem' }} onClick={()=>(editScreen(screen))}/>
+                                                    <Button sx={{ mb: 1, fontSize: '1rem' }} onClick={() => handleOpenModal(screen.id)}>
+                                                        Add/Change Movie
                                                     </Button>
                                                 </Box>
                                             </Grid>

@@ -3,16 +3,9 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import {
-  Box,
-  Card,
-  CardMedia,
-  CardContent,
-  Typography,
-  Grid,
-  Button,
-} from "@mui/material";
+import { Box, Card, CardMedia, CardContent, Typography, Grid, Button, } from "@mui/material";
 import Container from "@mui/material/Container";
+import EditIcon from '@mui/icons-material/Edit';
 
 const MovieCard = ({
   movie,
@@ -37,9 +30,12 @@ const MovieCard = ({
         onClick={() => onImageClick(movie.id)} // Uncomment this line if click handler is needed
       />
       <CardContent>
-        <Typography gutterBottom variant="subtitle2" component="div">
-          {movie.title}
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Typography gutterBottom variant="subtitle2" component="div">
+            {movie.title}
+          </Typography>
+          <Button startIcon={<EditIcon />} />
+        </Box>
         <Typography variant="body2" color="text.secondary">
           {movie.format}
         </Typography>
@@ -102,17 +98,18 @@ const MovieSlider = () => {
 
   return (
     <Container maxWidth={false} sx={{ my: 5 }}>
-      <Typography variant="h6" sx={{ mb: 2 }}>
-        Recommended Movies
-      </Typography>
-      <Button
-        variant="contained"
-        sx={{ paddingLeft: 2 }}
-        color="error" // Use the 'error' color from the theme for a red button
-        onClick={handleAddMovieClick}
-      >
-        Add Movie
-      </Button>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Typography variant="h6" sx={{ mb: 2 }}>
+          Recommended Movies
+        </Typography>
+        <Button
+          variant="contained"
+          sx={{ paddingLeft: 2, mb: 2 }}
+          onClick={handleAddMovieClick}
+        >
+          Add Movie
+        </Button>
+      </Box>
       <Grid container spacing={2} sx={{ justifyContent: "start" }}>
         {" "}
         {/* Ensure items are left-aligned */}

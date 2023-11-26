@@ -35,8 +35,8 @@ export function MultipleSelectChip() {
 }
 
 const top100Films = [
-  { title: 'The Shawshank Redemption', year: 1994 , image:'https://upload.wikimedia.org/wikipedia/en/8/81/ShawshankRedemptionMoviePoster.jpg'},
-  { title: 'The Godfather', year: 1972 , image:'https://upload.wikimedia.org/wikipedia/en/1/1c/Godfather_ver1.jpg'},
+  { title: 'The Shawshank Redemption', year: 1994, image: 'https://upload.wikimedia.org/wikipedia/en/8/81/ShawshankRedemptionMoviePoster.jpg' },
+  { title: 'The Godfather', year: 1972, image: 'https://upload.wikimedia.org/wikipedia/en/1/1c/Godfather_ver1.jpg' },
 ];
 
 export default function Contact() {
@@ -67,10 +67,10 @@ export default function Contact() {
     "Adventure",
     "Mystery",
   ];
-  const formats = ["IMAX 70mm", "4DX","3D", "SD"];
+  const formats = ["IMAX 70mm", "4DX", "3D", "SD"];
 
   const router = useRouter();
-  
+
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
   const MenuProps = {
@@ -158,46 +158,46 @@ export default function Contact() {
       genre: value as string[], // Ensure the value is treated as string[]
     }));
   };
- const [cast, setCast] = useState<CastMember[]>([]);
- const [crew, setCrew] = useState<CrewMember[]>([]);
+  const [cast, setCast] = useState<CastMember[]>([]);
+  const [crew, setCrew] = useState<CrewMember[]>([]);
   const [selectedCast, setSelectedCast] = useState<CastMember[]>([]);
   const [selectedCrew, setSelectedCrew] = useState<CrewMember[]>([]);
- useEffect(() => {
-   const fetchData = async () => {
-     try {
-       const response = await fetch("http://localhost:8080/artist/all");
-       if (!response.ok) {
-         throw new Error(`Error: ${response.status}`);
-       }
-       const data = await response.json();
-       setCrew(data.Crew);
-       setCast(data.Cast);
-       console.log(data);
-     } catch (error) {
-       console.error("Failed to fetch data:", error);
-     }
-   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/artist/all");
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+        const data = await response.json();
+        setCrew(data.Crew);
+        setCast(data.Cast);
+        console.log(data);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      }
+    };
 
-   fetchData();
- }, []);
+    fetchData();
+  }, []);
   const toggleEdit = () => {
     setIsEditable(!isEditable);
   };
-  interface CastMember { 
+  interface CastMember {
     id: string;
-  name: string;
-  profile_url: string;
+    name: string;
+    profile_url: string;
   }
 
   interface CrewMember {
-     id: string;
-     name: string;
-     profile_url: string;
-   }
-   
+    id: string;
+    name: string;
+    profile_url: string;
+  }
+
   const submitForm = async (e: any) => {
     e.preventDefault();
-   console.log(formData)
+    console.log(formData)
     const data = new FormData();
 
     Object.entries(formData).forEach(([key, value]) => {
@@ -216,18 +216,18 @@ export default function Contact() {
         data.append(`movieposter`, file);
       });
     }
-     data.append(
-       "castIds",
-       selectedCast.map((artist) => artist.id).join(",")
-     );
+    data.append(
+      "castIds",
+      selectedCast.map((artist) => artist.id).join(",")
+    );
     console.log(selectedCrew);
-     data.append("crewIds", selectedCrew.map((artist) => artist.id).join(","));
+    data.append("crewIds", selectedCrew.map((artist) => artist.id).join(","));
     const formURL = "movie/add"; // Replace with your form's URL
     const response = await getDataFromEndPoint(data, formURL, "POST");
-    if (response.status === 200){
-        router.push("/movies/all")
+    if (response.status === 200) {
+      router.push("/movies/all")
     }
-   
+
   };
 
   const handleFormatChange = (event: SelectChangeEvent<string[]>) => {
@@ -241,7 +241,7 @@ export default function Contact() {
     }));
   };
 
- 
+
 
   return (
     <div
@@ -272,7 +272,7 @@ export default function Contact() {
             textShadow: "2px 2px 4px rgba(0, 0, 0, 0.2)", // Subtle shadow
           }}
         >
-          Add Movies
+          Add Movie
         </Typography>
       </Paper>
       <form method="POST" onSubmit={submitForm}>
@@ -507,10 +507,10 @@ export default function Contact() {
                 renderTags={(value, getTagProps) =>
                   value.map((option, index) => (
                     <Box
-                      key={option.title}
                       {...getTagProps({ index })}
                       component="div"
                       sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      key={option.title}
                     >
                       <img
                         src={option.profile_url}
@@ -563,10 +563,10 @@ export default function Contact() {
                 renderTags={(value, getTagProps) =>
                   value.map((option, index) => (
                     <Box
-                      key={option.title}
                       {...getTagProps({ index })}
                       component="div"
                       sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      key={option.title}
                     >
                       <img
                         src={option.profile_url}
