@@ -17,38 +17,73 @@ router.get('/addUser', (req, res) => {
     res.send('Hello, world!');
 });
 
-router.post('/signup', async (req, res) => {
-    try {
-        console.log(req.body);
-        const password = await bcrypt.hash(req.body.password, saltRounds);
-        isAdmin = false;
-        if (req.body.name == 'admin' && req.body.email == 'boxoffice3108@gmail.com') {
-            isAdmin = true;
-        }
+router.post('/signup', upload.single('file'), async (req, res) => {
+    console.log(req.body);
+    const email = req.body.email;
+    const name = req.body.name;
+    const phoneNumber = req.body.phoneNumber;
+    const password_value = req.body.password;
+    const confirmPassword = req.body.confirmPassword
+    const dob = req.body.dateOfBirth;
+    const gender = req.body.gender;
+    const address2 = req.body.address2;
+    const city = req.body.city;
+    const state = req.body.state;
+    const country = req.body.country;
+    const zipCode = req.body.zipCode;
+    const address1 = req.body.address1;
+    const genres = req.body.genres;
+    const cast = req.body.favoriteArtists;
+    const crew = req.body.favoriteCrew;
+    const preferredLanguages = req.body.preferredLanguages
+    profile_url = req.file.location;
+
+    const password = await bcrypt.hash(password_value, saltRounds);
+    isAdmin = false;
+    if (req.body.name == 'admin' && req.body.email == 'boxoffice3108@gmail.com') {
+        isAdmin = true;
+    }
+    if (password_value == confirmPassword) {
         const newUser = new User({
             user_id: uniqid(),
-            fullname: req.body.name,
-            email: req.body.email,
+            fullname: name,
+            email: email,
             password: password,
             firstname: '',
             lastname: '',
-            dob: '',
-            gender: '',
-            mobile: '',
-            genres: [],
-            profile_url: '',
-            favourite_artists: [],
+            dob: dob,
+            gender: gender,
+            mobile: phoneNumber,
+            genres: genres,
+            profile_url: profile_url,
+            favourite_artists: cast,
+            favourite_crew: crew,
+            preferred_languages: preferredLanguages,
+            address1: address1,
+            address2: address2,
+            city: city,
+            state: state,
+            country: country,
+            zipcode: zipCode,
             is_admin: isAdmin,
             is_prime: false,
         });
-        // console.log(newUser);
+        console.log(newUser);
         // Save the user to the database
-        await newUser.save();
-        res.json({ message: "User registered successfully", status: HTTP_STATUS_CODES.OK });
-    } catch (error) {
-        console.error('Error creating user:', error);
-        res.status(500).send('Internal Server Error');
+
+        try {
+            await newUser.save();
+            res.status(HTTP_STATUS_CODES.OK).send("user registered successfully");
+        }
+        catch (err) {
+            console.error(err);
+            res.status(HTTP_STATUS_CODES.BAD_REQUEST).send("internal server error");
+        }
     }
+    else {
+        res.status(HTTP_STATUS_CODES.BAD_REQUEST).send("passwords Not Matching");
+    }
+
 })
 
 router.post("/login", async (req, res) => {

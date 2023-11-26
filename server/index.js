@@ -11,12 +11,26 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const paymentRoute = require('../server/routes/PaymentRoute');
+const winston = require('winston');
 const port = 8080
 const corsOptions = {
   origin: 'http://localhost:3000',
   credentials: true,
 };
-
+const logger = winston.createLogger({
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: 'server.log' }),
+  ],
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+});
+app.use((req, res, next) => {
+  logger.info(`Accessed route: ${req.method}  ${req.url}`);
+  next();
+});
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: false
@@ -36,7 +50,7 @@ app.use('/artist', ArtistRoute)
 app.use('/theater', TheatreRoute)
 app.use('/screen', ScreenRoute)
 app.use('/movie', MovieRoute)
-app.use('/User', UserRoute)
+app.use('/user', UserRoute)
 app.get('/home', (req, res) => {
   res.json({ message: 'Hello World!' })
 })
