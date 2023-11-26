@@ -13,9 +13,6 @@ router.post('/addScreen', async (req, res) => {
         screen = req.body;
         console.log(screen);
         seatArray = {}
-        let count0 = 0;
-        let count1 = 0;
-        let count2 = 0;
         seatArray = { ...seatArray, ...screen.seats };
         console.log('at /addScreeen');
         const theater_id = req.body.theater_id;
@@ -235,5 +232,27 @@ router.post('/getScreenLayout', async (req, res) => {
         console.log(err);
         res.send(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR);
     }
+});
+router.post('/updateScreen', async (req, res) => {
+    screen = req.body;
+    console.log(screen);
+    seatArray = {}
+    seatArray = { ...seatArray, ...screen.seats };
+    const update = {
+        name: req.body.screenName,
+        show_timings: req.body.timing,
+        format: req.body.format,
+        rows: req.body.rows,
+        columns: req.body.col,
+        seating_capacity: req.body.rows * req.body.col,
+        cost: req.body.cost,
+        seating_arrangement: seatArray,
+        theater_id: req.body.theater_id,
+    }
+    await ScreenModel.updateOne({ id: req.body.id }, update).then((result) => {
+        console.log(result);
+    }).catch((error) => {
+        console.error(error)
+    })
 });
 module.exports = router;

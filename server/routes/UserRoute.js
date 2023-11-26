@@ -20,7 +20,7 @@ router.get('/addUser', (req, res) => {
 router.post('/signup', upload.single('file'), async (req, res) => {
     console.log(req.body);
     const email = req.body.email;
-    const name = req.body.name;
+    const name = req.body.fullName;
     const phoneNumber = req.body.phoneNumber;
     const password_value = req.body.password;
     const confirmPassword = req.body.confirmPassword
@@ -36,7 +36,6 @@ router.post('/signup', upload.single('file'), async (req, res) => {
     const cast = req.body.favoriteArtists;
     const crew = req.body.favoriteCrew;
     const preferredLanguages = req.body.preferredLanguages
-    profile_url = req.file.location;
 
     const password = await bcrypt.hash(password_value, saltRounds);
     isAdmin = false;
@@ -72,7 +71,7 @@ router.post('/signup', upload.single('file'), async (req, res) => {
         // Save the user to the database
 
         try {
-            await newUser.save();
+            // await newUser.save();
             res.status(HTTP_STATUS_CODES.OK).send("user registered successfully");
         }
         catch (err) {

@@ -24,7 +24,8 @@ router.post('/add', upload.single('file'), async (req, res) => {
             theater_url: post_data.location_url,
             image_url: image_url,
             theater_constructed_date: post_data.theatre_constructed_date,
-            theater_id:uniqueId ,
+            theater_id: uniqueId,
+            state: post_data.state,
             movie_ids: [],
             address: post_data.address,
             mobile: post_data.phno,
@@ -92,13 +93,13 @@ router.get('/getTheaterDetail/:id', async (req, res) => {
 
 router.get('/getAllTheatersScreens/:id', async (req, res) => {
     try {
-       console.log(req.params['id']);
-        const Theaters = await Theater.find({ movie_ids: { $in: [req.params['id']] } }).select({ name: 1, id: 1,_id:0 });
-        const movie_data = await Movie.findOne({id : req.params['id']})
-       console.log(movie_data);
+        console.log(req.params['id']);
+        const Theaters = await Theater.find({ movie_ids: { $in: [req.params['id']] } }).select({ name: 1, id: 1, _id: 0 });
+        const movie_data = await Movie.findOne({ id: req.params['id'] })
+        console.log(movie_data);
         var response = [];
         for (const theater of Theaters) {
-            const screenDetails = await ScreenModel.find({ theater_id: theater.id, movie_id: req.params.id }).select({ name: 1, id: 1,show_timings: 1, _id: 0 });
+            const screenDetails = await ScreenModel.find({ theater_id: theater.id, movie_id: req.params.id }).select({ name: 1, id: 1, show_timings: 1, _id: 0 });
             console.log(screenDetails);
             response.push({
                 id: theater.id,
@@ -108,10 +109,10 @@ router.get('/getAllTheatersScreens/:id', async (req, res) => {
         }
 
         data = {
-            movieName : movie_data.title,
-            releaseDate : movie_data.release_date,
-            endDate : movie_data.end_date,
-            theaters : response
+            movieName: movie_data.title,
+            releaseDate: movie_data.release_date,
+            endDate: movie_data.end_date,
+            theaters: response
         }
         res.json({
             message: 'Theaters found',
@@ -127,5 +128,32 @@ router.get('/getAllTheatersScreens/:id', async (req, res) => {
             data: JSON.stringify("")
         })
     }
+});
+router.post('/updateTheater', upload.single('file'), async (req, res) => {
+    const post_data = req.body.data;
+    image_url = req.file.location;
+    if (req.file) {
+        image_url = req.file.location;
+    }
+    await Theater.updateOne({ id: post_data.id }, {
+        name: post_data.theater_name,
+        description: post_data.description,
+        location: post_data.state,
+        zipcode: post_data.zipcode,
+        theater_url: post_data.location_url,
+        ...(req.file && { image_url }),
+        theater_constructed_date: post_data.theatre_constructed_date,
+        theater_id: uniqueId,
+        movie_ids: [],
+        address: post_data.address,
+        state: post_data.state,
+        mobile: post_data.phno,
+        city: post_data.city,
+        mail: post_data.email
+    }).then((result) => {
+        console.log(result);
+    }).catch((error) => {
+        console.error(error);
+    })
 });
 module.exports = router; 
