@@ -19,7 +19,7 @@ const corsOptions = {
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
-    extended: false
+  extended: false
 }));
 app.use(express.json());
 app.use(cors(corsOptions));
@@ -31,7 +31,7 @@ app.use(
     // You can use the default in-memory store or choose another session store here
   }));
 
-  app.use('/payment/api',paymentRoute)
+app.use('/payment', paymentRoute)
 app.use('/artist', ArtistRoute)
 app.use('/theater', TheatreRoute)
 app.use('/screen', ScreenRoute)

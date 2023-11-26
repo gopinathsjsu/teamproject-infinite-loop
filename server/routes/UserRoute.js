@@ -6,7 +6,7 @@ const User = require('../models/UserModel');
 const { HTTP_STATUS_CODES } = require('../constants')
 const { createToken } = require('../Helpers/JwtAuth');
 const { upload } = require('../Helpers/S3');
-const {sendMessage} = require('../Helpers/WhatsappAPI');
+const { sendMessage } = require('../Helpers/WhatsappAPI');
 const uniqid = require('uniqid');
 const { RedisHelperAdd, RedisHelperGet, RedisHelperDelete } = require('../Helpers/RedisHelper');
 const saltRounds = 10;
@@ -21,6 +21,10 @@ router.post('/signup', async (req, res) => {
     try {
         console.log(req.body);
         const password = await bcrypt.hash(req.body.password, saltRounds);
+        isAdmin = false;
+        if (req.body.name == 'admin' && req.body.email == 'boxoffice3108@gmail.com') {
+            isAdmin = true;
+        }
         const newUser = new User({
             user_id: uniqid(),
             fullname: req.body.name,
@@ -34,10 +38,10 @@ router.post('/signup', async (req, res) => {
             genres: [],
             profile_url: '',
             favourite_artists: [],
-            is_admin: false,
+            is_admin: isAdmin,
             is_prime: false,
         });
-
+        // console.log(newUser);
         // Save the user to the database
         await newUser.save();
         res.json({ message: "User registered successfully", status: HTTP_STATUS_CODES.OK });
@@ -51,8 +55,8 @@ router.post("/login", async (req, res) => {
     try {
         email = req.body.email;
         password = req.body.password;
-        const users = await User.find({ email: email });
-        console.log(users[0]);
+        const users = await User.findOne({ email: email });
+        console.log(users);
         // users_obj = JSON.parse(users);
         // console.log(users_obj.password);
         if (users.length === 0) {
@@ -62,22 +66,22 @@ router.post("/login", async (req, res) => {
             })
         }
         else {
-            data = { email: req.body.email, fullname: users[0].fullname }
+            data = { email: req.body.email, fullname: users.fullname, isAdmin: users.is_admin }
             createToken(req, res, email, password);
             console.log(res.getHeaders()['set-cookie']);
-            password_match = await bcrypt.compare(password, users[0].password)
+            password_match = await bcrypt.compare(password, users.password)
             if (password_match) {
                 res.json({
                     message: 'user found',
                     status: HTTP_STATUS_CODES.OK,
-                    data: JSON.stringify(data)
+                    data: data
                 })
             }
             else {
                 res.json({
                     message: 'password incorrect',
                     status: HTTP_STATUS_CODES.NOT_FOUND,
-                    data: JSON.stringify(data)
+                    data: data
                 })
             }
 
@@ -126,7 +130,7 @@ router.post('/uploadFile', upload.single('file1'), (req, res) => {
 });
 
 router.get('/sendMessage', async (req, res) => {
-   // console.log(req.body);
+    // console.log(req.body);
     sendMessage(req, res);
     // res.json({ message: "User details updated successfully", status: HTTP_STATUS_CODES.OK });
 });

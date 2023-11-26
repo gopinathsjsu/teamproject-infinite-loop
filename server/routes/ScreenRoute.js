@@ -16,7 +16,7 @@ router.post('/addScreen', async (req, res) => {
         let count0 = 0;
         let count1 = 0;
         let count2 = 0;
-        seatArray = {...seatArray, ...screen.seats};
+        seatArray = { ...seatArray, ...screen.seats };
         console.log('at /addScreeen');
         const theater_id = req.body.theater_id;
         // const screen_count = await ScreenModel.countDocuments({ theater_id: theater_id });
@@ -223,10 +223,12 @@ router.post('/getScreenLayout', async (req, res) => {
         res.json({
             message: 'Screen found',
             status: HTTP_STATUS_CODES.OK,
-            data: {seatArray : screen.seats_day_wise[filter_data][time_selected].SeatArray,
-                    occupancy_status : screen.seats_day_wise[filter_data][time_selected].occupancy_status,
-                    cost : screen.cost,
-                tickets_bought : screen.seats_day_wise[filter_data][time_selected].tickets_bought}
+            data: {
+                seatArray: screen.seats_day_wise[filter_data][time_selected].SeatArray,
+                occupancy_status: screen.seats_day_wise[filter_data][time_selected].occupancy_status,
+                cost: screen.cost,
+                tickets_bought: screen.seats_day_wise[filter_data][time_selected].tickets_bought
+            }
         })
     }
     catch (err) {
