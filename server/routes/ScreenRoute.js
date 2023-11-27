@@ -256,4 +256,14 @@ router.post('/updateScreen', async (req, res) => {
         console.error(error)
     })
 });
+router.post('/deleteScreen', async (req, res) => {
+    id = req.body.id;
+    await ScreenModel.deleteOne({ id: id }).then((result) => {
+        console.log(result);
+        res.status(HTTP_STATUS_CODES.OK).send("deleted Successfully");
+    }).catch((err) => {
+        console.log(err);
+        res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).send("Internal server Error");
+    })
+});
 module.exports = router;

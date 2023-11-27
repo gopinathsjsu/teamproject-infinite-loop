@@ -132,7 +132,7 @@ router.get('/getAllTheatersScreens/:id', async (req, res) => {
 router.post('/updateTheater', upload.single('file'), async (req, res) => {
     const post_data = JSON.parse(req.body.data);
     console.log('at /updateTheater');
-    console.log(post_data);    
+    console.log(post_data);
     if (req.file) {
         image_url = req.file.location;
     }
@@ -155,6 +155,16 @@ router.post('/updateTheater', upload.single('file'), async (req, res) => {
         res.status(HTTP_STATUS_CODES.OK).send("updated successfully");
     }).catch((error) => {
         console.error(error);
+    })
+});
+router.post('/deleteTheater', async (req, res) => {
+    id = req.body.id;
+    await Theater.deleteOne({ id: id }).then((result) => {
+        console.log(result);
+        res.status(HTTP_STATUS_CODES.OK).send("deleted Successfully");
+    }).catch((err) => {
+        console.log(err);
+        res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).send("Internal server Error");
     })
 });
 module.exports = router; 

@@ -10,15 +10,17 @@ const { sendMessage } = require('../Helpers/WhatsappAPI');
 const uniqid = require('uniqid');
 const { RedisHelperAdd, RedisHelperGet, RedisHelperDelete } = require('../Helpers/RedisHelper');
 const { sendSignUpEmail } = require('../Helpers/sendGridHelper');
+const { generateAndPingQRCode } = require('../Helpers/qrCodeGenerator');
 const saltRounds = 10;
 router.get('/addUser', (req, res) => {
     // RedisHelperAdd(req, res, "hello", { "token": "hello" })
-    const data = {
-        email: 'mahendrachittupolu@gmail.com',
-        name: 'Mahendra'
-    };
-    sendSignUpEmail(data);
-    console.log(data);
+    // const data = {
+    //     email: 'mahendrachittupolu@gmail.com',
+    //     name: 'Mahendra'
+    // };
+    // sendSignUpEmail(data);
+    // console.log(data)
+    generateAndPingQRCode('123456789', "Test");
     res.send('Hello, world!');
 });
 

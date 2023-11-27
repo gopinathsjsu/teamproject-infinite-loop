@@ -4,7 +4,7 @@ const { status, ScreenModel } = require('../models/ScreenModel');
 const handler = require('../Helpers/stripeAPI');
 const { HTTP_STATUS_CODES } = require('../constants');
 
-router.post('/checkout_sessions', handler);
+// router.post('/checkout_sessions', handler);
 
 
 router.post('/buyTickets', async (req, res) => {

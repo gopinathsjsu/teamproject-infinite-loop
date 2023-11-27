@@ -80,7 +80,16 @@ router.post('/updateMovie', upload.array('movieposter', 2), async (req, res) => 
     })
 
 })
-
+router.post('/deleteMovie', async (req, res) => {
+    id = req.body.id;
+    await Movie.deleteOne({ id: id }).then((result) => {
+        console.log(result);
+        res.status(HTTP_STATUS_CODES.OK).send("deleted Successfully");
+    }).catch((err) => {
+        console.log(err);
+        res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).send("Internal server Error");
+    })
+});
 router.get('/all', async (req, res) => {
     try {
 
