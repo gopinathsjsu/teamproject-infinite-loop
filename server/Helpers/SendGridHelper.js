@@ -37,7 +37,7 @@ exports.sendSignUpEmail = (data) => {
         subject: 'Welcome to Our Box Office',
         templateId: 'd-62c8184216d444c99ec8cea55421638d', // Replace with your SendGrid template ID
         dynamic_template_data: {
-            subject: 'Welcome to Our Platform',
+            subject: 'Welcome to Box-Office',
             name: name,
             // Add any other dynamic data you want to include in the email
         },
