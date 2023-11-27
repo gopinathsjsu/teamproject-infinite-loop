@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { status, ScreenModel } = require('../models/ScreenModel');
-const handler = require('../Helpers/stripeAPI');
+const {handler}  = require('../Helpers/stripeAPI');
 const { HTTP_STATUS_CODES } = require('../constants');
 
 // router.post('/checkout_sessions', handler);

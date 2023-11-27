@@ -9,6 +9,7 @@ const { upload } = require('../Helpers/S3');
 const { sendMessage } = require('../Helpers/WhatsappAPI');
 const uniqid = require('uniqid');
 const { RedisHelperAdd, RedisHelperGet, RedisHelperDelete } = require('../Helpers/RedisHelper');
+const {createCustomer} = require('../Helpers/stripeAPI');
 const { sendSignUpEmail } = require('../Helpers/sendGridHelper');
 const { generateAndPingQRCode } = require('../Helpers/qrCodeGenerator');
 const saltRounds = 10;
@@ -61,6 +62,7 @@ router.post('/signup', upload.single('file'), async (req, res) => {
             gender: gender,
             mobile: phoneNumber,
             genres: genres,
+            stripe_customer_id: '',
             profile_url: profile_url,
             favourite_artists: cast,
             favourite_crew: crew,
@@ -74,11 +76,13 @@ router.post('/signup', upload.single('file'), async (req, res) => {
             is_admin: isAdmin,
             is_prime: false,
         });
+        const customerID = await createCustomer(newUser.user_id, name, email, phoneNumber);
+        newUser.stripe_customer_id = customerID;
         console.log(newUser);
         // Save the user to the database
 
         try {
-            // await newUser.save();
+             await newUser.save();
 
             res.status(HTTP_STATUS_CODES.OK).send("user registered successfully");
         }
