@@ -1,9 +1,6 @@
 "use client";
 
 import * as React from "react";
-import dayjs from "dayjs";
-import { Dayjs } from "dayjs";
-import Backdrop from "@mui/material/Backdrop";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
@@ -13,23 +10,24 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import SendIcon from "@mui/icons-material/Send";
 import TextField from "@mui/material/TextField";
+import dayjs from 'dayjs'; // Ensure you have dayjs imported
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { Theme, useTheme } from "@mui/material/styles";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
+import Select from "@mui/material/Select";
 import Chip from "@mui/material/Chip";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
-import { Container, Grid, Link } from "@mui/material";
+import { Container, Grid } from "@mui/material";
 import { getDataFromEndPoint } from "@/src/lib/backend-api";
 import theme from "@/src/app/styles/theme";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useRouter } from 'next/navigation'; // Import the useRouter hook
 
 const style = {
@@ -104,9 +102,37 @@ interface CastAndCrewMember {
 }
 
 export default function Contact() {
-  const [castandcrew, setCastAndCrew] = useState<CastAndCrewMember[]>([]);
   const [cast, setCast] = useState<any>([]);
   const [crew, setCrew] = useState<any>([]);
+  const [formSuccess, setFormSuccess] = useState(false);
+  const [formSuccessMessage, setFormSuccessMessage] = useState("");
+  const [open, setOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imageUrl, setImageUrl] = useState('/broken-image.jpg');
+  const [enableEdit, setEnableEdit] = useState<boolean>(false);
+  const [editData, setEditData] = useState<any>({});
+  const handleOpen = () => setOpen(true);
+
+
+  const handleClose = () => {
+    setOpen(false);
+    if (enableEdit) {
+      setEnableEdit(false);
+      setImageUrl('/broken-image.jpg');
+      setEditData({});
+    }
+  }
+
+  const router = useRouter();
+
+  const [formData, setFormData] = useState<any>({
+    fullname: "",
+    dateOfBirth: "",
+    gender: "",
+    category: "",
+    profession: [],
+    about: "",
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -118,7 +144,6 @@ export default function Contact() {
         const data = await response.json();
         setCast(data.Cast);
         setCrew(data.Crew);
-        // setCastAndCrew(...data.Crew);
         console.log(data);
       } catch (error) {
         console.error("Failed to fetch data:", error);
@@ -128,28 +153,10 @@ export default function Contact() {
     fetchData();
   }, []);
 
-  const router = useRouter();
 
   const handleArtistClick = (artist_id: any) => {
     router.push(`/artist/${artist_id}`);
   }
-
-  const [formData, setFormData] = useState({
-    fullname: "",
-    dateOfBirth: "",
-    gender: "",
-    category: "",
-    profession: [],
-    about: "",
-  });
-
-  // Modal control
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-  // File upload handling
-  const [selectedFile, setSelectedFile] = useState(null);
 
   const handleFileChange = (e: any) => {
     const files = e.target.files;
@@ -159,50 +166,103 @@ export default function Contact() {
     }
   };
 
-  // Form submission
-  const [formSuccess, setFormSuccess] = useState(false);
-  const [formSuccessMessage, setFormSuccessMessage] = useState("");
-
   const submitForm = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     const data = new FormData();
-
     if (selectedFile) {
       data.append("image", selectedFile);
     }
-
     Object.entries(formData).forEach(([key, value]) => {
       if (key === "profession") {
-        // Join the array values into a single string with comma separation
         data.append(key, (value as string[]).join(", "));
       } else {
-        // Append non-array and other array values normally
         data.append(key, value as string | Blob);
       }
     });
 
-    const formURL = "artist/add"; // Replace with your form's URL
-    const response = await getDataFromEndPoint(data, formURL, "POST");
-    if (response.status === 200) {
-      setCastAndCrew([...castandcrew, response.artist]);
-      if(formData.category === "Crew"){
-        setCrew([...crew,response.artist]);
-      }else if(formData.category === "Cast"){
-        setCast([...cast,response.artist]);
+    if (!enableEdit) {
+      const formURL = "artist/add";
+      const response = await getDataFromEndPoint(data, formURL, "POST");
+      if (response.status === 200) {
+        if (formData.category === "Crew") {
+          setCrew([...crew, response.artist]);
+        } else if (formData.category === "Cast") {
+          setCast([...cast, response.artist]);
+        }
+      }
+    }
+    else {
+      const formURL = "artist/updateArtist";
+      data.append('id', editData.id);
+      const response = await getDataFromEndPoint(data, formURL, "POST");
+      if (response != null) {
+        const response = await fetch("http://localhost:8080/artist/all");
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+        const data = await response.json();
+        setCast(data.Cast);
+        setCrew(data.Crew);
       }
     }
     handleClose();
-    console.log(response);
   };
 
-  // Form input change handling
   const handleInput = (e: { target: { name: any; value: any } }) => {
     const { name, value } = e.target;
-    setFormData((prevState) => ({
+    setFormData((prevState: any) => ({
       ...prevState,
       [name]: value,
     }));
   };
+
+  const editCast = async (cast: any) => {
+    setEnableEdit(true);
+    try {
+      const response = await fetch(`http://localhost:8080/artist/${cast.id}`);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+      const data = await response.json();
+      setEditData(data.artist);
+      setFormData(() => ({
+        fullname: data.artist.name,
+        dateOfBirth: dayjs(data.artist.dob),
+        gender: data.artist.gender,
+        category: "Cast",
+        profession: [data.artist.profession],
+        about: data.artist.description,
+      }));
+      setImageUrl(data.artist.profile_url);
+      setOpen(true);
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+    }
+  }
+
+  const editCrew = async (crew: any) => {
+    setEnableEdit(true);
+    try {
+      const response = await fetch(`http://localhost:8080/artist/${crew.id}`);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+      const data = await response.json();
+      setEditData(data.artist);
+      setFormData(() => ({
+        fullname: data.artist.name,
+        dateOfBirth: dayjs(data.artist.dob),
+        gender: data.artist.gender,
+        category: "Crew",
+        profession: [data.artist.profession],
+        about: data.artist.description,
+      }));
+      setImageUrl(data.artist.profile_url);
+      setOpen(true);
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+    }
+  }
 
   return (
     <div>
@@ -233,7 +293,7 @@ export default function Contact() {
                     src={
                       selectedFile
                         ? URL.createObjectURL(selectedFile)
-                        : "/broken-image.jpg"
+                        : imageUrl
                     }
                   />
                 </Box>
@@ -278,7 +338,6 @@ export default function Contact() {
                     onChange={(newValue: string | null) =>
                       setFormData({ ...formData, dateOfBirth: newValue ?? "" })
                     }
-                    renderInput={(params: any) => <TextField {...params} />}
                   />
                 </LocalizationProvider>
                 <FormControl sx={{ m: 1, width: 330 }}>
@@ -332,7 +391,7 @@ export default function Contact() {
                     }
                     renderValue={(selected) => (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                        {selected.map((value) => (
+                        {selected.map((value: any) => (
                           <Chip key={value} label={value} />
                         ))}
                       </Box>
@@ -386,8 +445,12 @@ export default function Contact() {
           Cast
         </Typography>
         <Grid container spacing={1}>
-          {cast.map((artist:any, index:number) => (
+          {cast.map((artist: any, index: number) => (
             <Grid item key={`member-${index}`} xs={6} sm={4} md={3} lg={2}>
+              <Box sx={{ position: 'relative', justifyContent: "space-between", display: "flex", top: 30 }}>
+                <Button startIcon={<EditIcon />} onClick={() => { editCast(artist) }} />
+                <Button startIcon={<DeleteIcon />} />
+              </Box>
               <Box sx={{ textAlign: "center", p: 1 }}>
                 <Avatar
                   alt={artist.name}
@@ -409,8 +472,12 @@ export default function Contact() {
           Crew
         </Typography>
         <Grid container spacing={1}>
-          {crew.map((artist:any, index:number) => (
+          {crew.map((artist: any, index: number) => (
             <Grid item key={`member-${index}`} xs={6} sm={4} md={3} lg={2}>
+              <Box sx={{ position: 'relative', justifyContent: "space-between", display: "flex", top: 30 }}>
+                <Button startIcon={<EditIcon />} onClick={() => { editCrew(artist) }} />
+                <Button startIcon={<DeleteIcon />} sx={{ p: 0, mb: 1 }} />
+              </Box>
               <Box sx={{ textAlign: "center", p: 1 }}>
                 <Avatar
                   alt={artist.name}
@@ -428,5 +495,5 @@ export default function Contact() {
         </Grid>
       </Container>
     </div>
-  );
-}
+  )
+};

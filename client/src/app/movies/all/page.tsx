@@ -14,6 +14,10 @@ const MovieCard = ({
   movie: any;
   onImageClick: any;
 }) => {
+  const router = useRouter();
+  const editMovie = (movieId:string)=>{
+    router.push(`/movies/${movieId}/edit`);
+  }
 
   return (
     <Card sx={{ width: 200, height: 400, m: 1, boxShadow: 3 }}>
@@ -34,7 +38,7 @@ const MovieCard = ({
           <Typography gutterBottom variant="subtitle2" component="div">
             {movie.title}
           </Typography>
-          <Button startIcon={<EditIcon />} />
+          <Button startIcon={<EditIcon />} onClick={()=>{editMovie(movie.id)}} />
         </Box>
         <Typography variant="body2" color="text.secondary">
           {movie.format}

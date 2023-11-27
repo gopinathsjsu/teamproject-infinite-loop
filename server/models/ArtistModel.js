@@ -9,6 +9,7 @@ const artistSchema = new mongoose.Schema({
     location: {type: String},
     description: { type: String },
     type: {type:String},
+    gender:  {type : String},
     profession: {type: String, required:true},
     profile_url: {type: String},
     created_on : {type: Date , default: Date.now},
