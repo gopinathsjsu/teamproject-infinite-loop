@@ -15,14 +15,15 @@ router.post('/buyTickets', async (req, res) => {
     const timing = req.body.timing
     const screen_id = req.body.screen;
     const screen_layout = req.body.screenLayout;
-    const update = {
+    const seat_selected = req.body.seatSelected;
+    const movie_id = req.body.movie_id;
+    const no_of_seats_booked = seat_selected.length;
+    await ScreenModel.findOneAndUpdate({ id: screen_id }, {
+        $inc: { [`seats_day_wise.${filter_date}.${timing}.tickets_bought`]: no_of_seats_booked },
         $set: {
             [`seats_day_wise.${filter_date}.${timing}.SeatArray`]: screen_layout
         }
-    };
-    console.log(update);
-    console.log(screen_layout);
-    await ScreenModel.updateOne({ id: screen_id }, update).then((result) => {
+    }).then((result) => {
         console.log(result);
         res.json({
             message: "updated Successfully",
@@ -31,6 +32,5 @@ router.post('/buyTickets', async (req, res) => {
     }).catch((error) => {
         console.error(error);
     })
-
 });
 module.exports = router;
