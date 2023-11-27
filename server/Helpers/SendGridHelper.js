@@ -1,32 +1,6 @@
 const sgMail = require('@sendgrid/mail')
 require('dotenv').config();
 api_key = process.env.SENDGRID_API_KEY;
-const hello = "Welcome Sravan!! Explore"
-// const msg = {
-//     to: 'sravangorati2001@gmail.com', // Change to your recipient
-//     from: 'boxoffice3108@gmail.com', // Change to your verified sender
-//     subject: 'Welcome to BoxOffice',
-//     text: 'Here is your membership details',
-//     html: `<strong>${hello}</strong>`,
-// }
-// sgMail
-//     .send(msg)
-//     .then((data) => {
-//         console.log(data)
-//     })
-//     .catch((error) => {
-//         console.error(error)
-//     })
-exports.SendEmailSendgrid = (req, res, data) => {
-    const msg = {
-        to: 'mahendrachittupolu@gmail.com', // Change to your recipient
-        from: 'boxoffice3108@gmail.com', // Change to your verified sender
-        subject: 'Welcome to BoxOffice',
-        text: 'Here is your membership details',
-        html: `<strong>${hello}</strong>`,
-    }
-}
-
 exports.sendSignUpEmail = (data) => {
     const { email, name } = data;
     console.log(api_key);
