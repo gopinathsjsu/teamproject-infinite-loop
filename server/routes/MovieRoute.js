@@ -73,10 +73,10 @@ router.post('/updateMovie', upload.array('movieposter', 2), async (req, res) => 
     // Save the user to the database
     await Movie.updateOne({ id: req.body.id }, update).then((result) => {
         console.log(result);
-        res.send(HTTP_STATUS_CODES.OK).send("updated successfully");
+        res.status(HTTP_STATUS_CODES.OK).send("updated successfully");
     }).catch((err) => {
         console.log(err);
-        res.send(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).send("Internal server error");
+        res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).send("Internal server error");
     })
 
 })
