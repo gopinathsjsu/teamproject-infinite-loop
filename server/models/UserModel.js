@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
   is_prime: { type: Boolean },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  stripe_customer_id: { type: String },
   rewards: { type: String },
   address1: { type: String },
   address2: { type: String },

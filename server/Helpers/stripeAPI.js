@@ -1,5 +1,52 @@
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
+async function createCustomer(userID, name, email, phone) {
+  try {
+    const customer = await stripe.customers.create({
+      name: name,
+      email: email,
+      phone: phone,
+      metadata: {
+        userID: userID,
+      },
+    });
+    // save the customer id in the database
+    const customerID = customer.id;
+    const result = await updateUserDetails(userID, {StripeCustomerID: customerID});
+    if (result) {
+      console.log('Customer created successfully in the stripe API');
+      return customerID;
+    }
+    return null;
+  } catch (err) {
+    console.error('Error occured while creating the customer: ', err.message);
+    throw err;
+  }
+}
+
+async function createPaymentMethod(userID, paymentType, paymentToken, billingDetails, customerID = '') { 
+    try {
+        const paymentInfo = {
+            type: paymentType,
+            billing_details: billingDetails,
+            metadata: {
+                userID: userID,
+            },
+        };
+        if (paymentType == 'card') {
+            paymentInfo.card = { token: paymentToken };
+        }
+        const paymentMethod = await stripe.paymentMethods.create(paymentInfo);
+        if (customerID) {
+            await stripe.paymentMethods.attach(paymentMethod.id, { customer: customerID });
+        }
+        return paymentMethod;
+    } catch (err) {
+        console.error('Error occured while creating the payment method: ', err.message);
+        throw err;
+    }
+}
 const format_prices = {
                 'SD':'price_1OF75gA475w0fpJu0MjJFDos',
                 'XD': 'price_1OF74uA475w0fpJunNNYIGyH',
@@ -40,4 +87,4 @@ async function handler(req, res) {
     }
 }
 
-module.exports = handler;
+module.exports = { handler, createCustomer, createPaymentMethod};
