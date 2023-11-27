@@ -1,6 +1,7 @@
 const sgMail = require('@sendgrid/mail')
 require('dotenv').config();
 api_key = process.env.SENDGRID_API_KEY;
+
 exports.sendSignUpEmail = (data) => {
     const { email, name } = data;
     console.log(api_key);
