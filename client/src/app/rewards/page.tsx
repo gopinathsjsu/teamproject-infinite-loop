@@ -168,7 +168,7 @@ const RewardsPage = () => {
 
   return (
     <Box sx={{ flexGrow: 1, padding: 3 }}>
-      <Parallax image="your_parallax_image_url.jpg" height="300px" />
+      <Parallax image="your_parallax_image_url.jpg" height="500px" />
 
       <Grid container spacing={2}>
         <Grid item xs={4}>

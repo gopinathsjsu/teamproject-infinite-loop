@@ -18,6 +18,8 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
+import useStore from '@/src/store';
+
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -170,7 +172,7 @@ export default function Theater() {
     width: 1,
     accept: "image/*",
   });
-
+  const store:any = useStore();
   const router = useRouter();
   const [theaterData, setTheaterData] = useState<Theater[]>([]);
   const [formSuccess, setFormSuccess] = useState(false);
@@ -317,6 +319,7 @@ export default function Theater() {
       <Grid container sx={{ mt: 5 }} spacing={2}>
         <Grid container sx={{ justifyContent: "space-between" }} >
           <Typography variant="h4">Theaters</Typography>
+          {store.isLoggedIn &&
           <Button
             variant="contained"
             startIcon={<AddCircleOutlineIcon />}
@@ -324,6 +327,7 @@ export default function Theater() {
           >
             Add Theater
           </Button>
+          }
         </Grid>
         <Grid item xs={12} container>
           <Grid
@@ -355,8 +359,12 @@ export default function Theater() {
                           {theater.name}
                         </Typography>
                       </Link>
-                      <Button startIcon={<EditIcon />} onClick={() => { editTheater(theater) }} />
+                      {store.isLoggedIn &&
+                      <Button startIcon={<EditIcon />} onClick={() => { editTheater(theater) }} />  
+                      } 
+                      {store.isLoggedIn &&
                       <Button startIcon={<DeleteIcon />} onClick={() => { deleteTheater(theater.id) }} />
+                      }
                       <Box>
                         <Button sx={{ fontSize: "1rem", }} onClick={() => addScreen(theater.id)} >
                           Show Screens

@@ -12,6 +12,8 @@ import { getDataFromEndPoint } from "@/src/lib/backend-api";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from 'zod';
+import useStore from '@/src/store';
+
 
 interface Screen {
     id: string,
@@ -45,6 +47,7 @@ const schema = zod.object({
 
 export default function Screen() {
     const router = useRouter();
+    const store:any = useStore();
     const { theaterId } = useParams();
     const [screenData, setScreenData] = useState<Screen[]>([]);
     const [open, setOpen] = React.useState<boolean>(false);
@@ -180,9 +183,11 @@ export default function Screen() {
                 <Grid container spacing={2}>
                     <Grid container sx={{ mb: 2, marginTop: 10, justifyContent: 'space-between' }}>
                         <Typography variant="h4">Screens</Typography>
+                        {store.isLoggedIn &&
                         <Button variant="contained" startIcon={<AddCircleOutlineIcon />} onClick={addNewScreen}>
                             Add Screen
                         </Button>
+                        }
                     </Grid>
                     <Grid item xs={12} container>
                         <Grid container spacing={2} alignItems="center" justifyContent="left">
@@ -194,13 +199,19 @@ export default function Screen() {
                                             <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
                                                 <Typography variant="h6" component="h3" sx={{ mb: 1, fontWeight: 'medium', fontSize: '2rem' }} style={{}} color="#01579B">{screen.name}</Typography>
                                                 <Box>
+                                                {store.isLoggedIn &&
                                                     <Button startIcon={<EditIcon />} sx={{ mb: 1, fontSize: '1rem' }} onClick={() => (editScreen(screen))} />
+                                                }
+                                                    {store.isLoggedIn &&
                                                     <Button startIcon={<DeleteIcon />} sx={{ mb: 1, fontSize: '1rem' }} onClick={() => (deleteScreen(screen))} />
+                                                }
                                                 </Box>
                                             </Grid>
+                                            {store.isLoggedIn &&
                                             <Button sx={{ mb: 1, fontSize: '1rem' }} onClick={() => handleOpenModal(screen.id)}>
                                                 Add/Change Movie
                                             </Button>
+                                            }
                                             <Box sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }}>
                                                 {`Current Movie: `}{screen.currentMovie}
                                             </Box>

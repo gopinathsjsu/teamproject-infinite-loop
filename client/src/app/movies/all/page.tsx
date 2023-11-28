@@ -8,6 +8,7 @@ import Container from "@mui/material/Container";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { getDataFromEndPoint } from "@/src/lib/backend-api";
+import useStore from '@/src/store';
 
 
 const MovieCard = ({
@@ -18,6 +19,7 @@ const MovieCard = ({
   onImageClick: any;
 }) => {
   const router = useRouter();
+  const store:any = useStore();
   const editMovie = (movieId: string) => {
     router.push(`/movies/${movieId}/edit`);
   }
@@ -30,6 +32,7 @@ const MovieCard = ({
       router.refresh();
     }
   }
+
 
   return (
     <Card sx={{ width: 200, height: 400, m: 1, boxShadow: 3 }}>
@@ -52,8 +55,12 @@ const MovieCard = ({
         <Typography variant="body2" color="text.secondary">
           {movie.format}
         </Typography>
+        {store.isLoggedIn &&
         <Button startIcon={<EditIcon />} onClick={() => { editMovie(movie.id) }} />
+        }
+                {store.isLoggedIn &&
         <Button startIcon={<DeleteIcon />} onClick={() => { deleteMovie(movie.id) }} />
+                }
       </CardContent>
     </Card>
   );
@@ -101,6 +108,7 @@ const MovieSlider = () => {
 
   // const navigate = useNavigate(); // Call useNavigate at the top level of your component
   const router = useRouter();
+  const store:any = useStore();
   const handleAddMovieClick = () => {
     router.push("/movies/add"); // Use navigate function to change the route
   };
@@ -117,6 +125,7 @@ const MovieSlider = () => {
         <Typography variant="h6" sx={{ mb: 2 }}>
           Recommended Movies
         </Typography>
+        {store.isLoggedIn &&
         <Button
           variant="contained"
           sx={{ paddingLeft: 2, mb: 2 }}
@@ -124,6 +133,7 @@ const MovieSlider = () => {
         >
           Add Movie
         </Button>
+        }
       </Box>
       <Grid container spacing={2} sx={{ justifyContent: "start" }}>
         {" "}
