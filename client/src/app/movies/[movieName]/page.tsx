@@ -315,7 +315,7 @@ const App: React.FC = () => {
           <Typography
             variant="h5"
             component="div"
-            paddingTop="20px"
+            paddingTop="50px"
             sx={{ fontWeight: "bold", mb: 2 }}
           >
             Cast
