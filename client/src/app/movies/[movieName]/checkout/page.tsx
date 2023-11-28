@@ -25,7 +25,7 @@ export default function PreviewPage() {
 
   return (
     <form
-      action="http://localhost:8080/payment/api/checkout_sessions"
+      action="http://localhost:8080/payment/checkout_sessions"
       method="POST"
     >
       <section>

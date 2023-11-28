@@ -85,7 +85,7 @@ const settings = [
     { name: 'Profile', route: '/personal_profile' },
     { name: 'Purchases', route: '/purchases' },
     { name: 'Rewards', route: '/rewards' },
-    { name: 'Manage Membership', route: 'https://billing.stripe.com/p/login/test_cN23e27JRdQPeMEbII' },
+{ name: 'Manage Membership', route: 'https://billing.stripe.com/p/login/test_cN23e27JRdQPeMEbII' },
     { name: 'Logout', route: '/logout', icon: 'LogoutIcon' },
 ];
 
@@ -101,16 +101,16 @@ const style = {
 };
 
 function ResponsiveAppBar() {
-    
+
     const router = useRouter();
-    const [imageUrl, setImageUrl] = React.useState('/static/images/avatar/2.jpg');
+const [imageUrl, setImageUrl] = React.useState('/static/images/avatar/2.jpg');
     const [location, setLocation] = React.useState(null);
     const [drawerOpen, setDrawerOpen] = React.useState(false);
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const store:any = useStore();
-    
-    React.useEffect(() => {
+
+React.useEffect(() => {
         const user = store.user;
         if(user != null){
             setImageUrl(user.profile_url);

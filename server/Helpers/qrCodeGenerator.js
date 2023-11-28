@@ -1,21 +1,17 @@
 const QRCode = require('qrcode');
+const { uploadToS3, getUrl } = require('./S3');
 
 const generateAndPingQRCode = async (transactionId, urlToPing) => {
-    const url = `https://www.youtube.com/`;
-
-    QRCode.toFile('./qrcode.png', url, async (err) => {
+    const url = '/verifyTicket/' + transactionId;
+    const filepath = './qrcode.png';
+    QRCode.toFile(filepath, url, async (err) => {
         if (err) throw err;
 
         console.log('QR Code saved as qrcode.png');
-
-        // Make an HTTP request when the QR code is scanned
-        try {
-            // const response = await axios.get(urlToPing);
-            console.log('URL Pinged:', response.data);
-        } catch (error) {
-            console.error('Error Pinging URL:', error.message);
-        }
     });
+    link = await uploadToS3(filepath, "123");
+    url_aws = await getUrl(link.key)
+    return url_aws;
 };
 
 // Replace '123456789' with the actual transaction ID and 'YOUR_URL_TO_PING' with the actual URL to ping

@@ -22,6 +22,8 @@ import Footer from './footer';
 import ResponsiveAppBar from './navigationBar';
 import { mainListItems, secondaryListItems } from './listItems';
 import { Button } from '@mui/material';
+import { useEffect, useState } from 'react';
+import LoadingAnimation from './loading/page';
 
 function Copyright(props: any) {
     return (
@@ -41,6 +43,8 @@ const drawerWidth: number = 240;
 interface AppBarProps extends MuiAppBarProps {
     open?: boolean;
 }
+
+
 
 const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'open',
@@ -92,6 +96,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     const toggleDrawer = () => {
         setOpen(!open);
     };
+
+        const [isLoading, setIsLoading] = useState(true);
+      
+        useEffect(() => {
+          // Replace this with your actual loading logic
+          const timer = setTimeout(() => {
+            setIsLoading(false);
+          }, 500); // Simulate loading for 2 seconds
+      
+          return () => clearTimeout(timer);
+        }, []);
+      
+        if (isLoading) {
+          return <LoadingAnimation />; // Show loading animation while loading
+        }
 
     return (
         <Box>
@@ -166,24 +185,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {/* flexGrow: 1,
                     height: '100vh',
                     overflow: 'auto', */}
-            <Box
+                <Box
                 component="main"
                 sx={{
                     backgroundColor: (theme) =>
-                        theme.palette.mode === 'light'
-                            ? theme.palette.grey[100]
-                            : theme.palette.grey[900],
-
+                    theme.palette.mode === 'light'
+                        ? theme.palette.grey[100]
+                        : theme.palette.grey[900],
                     display: 'flex',
                     flexDirection: 'column',
-                    minHeight: '100vh'
+                    minHeight: '100vh',
                 }}
-            >
+                >
                 <Container maxWidth={false} component="main" sx={{ flex: 1 }}>
                     {children}
                 </Container>
                 <Footer />
-            </Box>
+                </Box>
         </Box>
     );
 }

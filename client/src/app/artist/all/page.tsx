@@ -29,6 +29,8 @@ import { useState, useEffect } from "react";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useRouter } from 'next/navigation'; // Import the useRouter hook
+import useStore from '@/src/store';
+
 
 const style = {
   position: "absolute",
@@ -107,6 +109,7 @@ export default function Contact() {
   const [formSuccess, setFormSuccess] = useState(false);
   const [formSuccessMessage, setFormSuccessMessage] = useState("");
   const [open, setOpen] = useState(false);
+  const store:any = useStore();
   const [selectedFile, setSelectedFile] = useState(null);
   const [imageUrl, setImageUrl] = useState('/broken-image.jpg');
   const [enableEdit, setEnableEdit] = useState<boolean>(false);
@@ -281,12 +284,14 @@ export default function Contact() {
 
   return (
     <div>
+      {store.isLoggedIn &&
       <Button
         sx={{ paddingTop: 2, paddingRight: 0, fontWeight: "bold" }}
         onClick={handleOpen}
       >
         Add Artist
       </Button>
+      }
       <Modal
         open={open}
         onClose={handleClose}
@@ -463,8 +468,12 @@ export default function Contact() {
           {cast.map((artist: any, index: number) => (
             <Grid item key={`member-${index}`} xs={6} sm={4} md={3} lg={2}>
               <Box sx={{ position: 'relative', justifyContent: "space-between", display: "flex", top: 30 }}>
+              {store.isLoggedIn &&
                 <Button startIcon={<EditIcon />} onClick={() => { editCast(artist) }} />
+              }
+              {store.isLoggedIn &&
                 <Button startIcon={<DeleteIcon />} onClick={()=> {deleteArtist(artist)}}/>
+              }
               </Box>
               <Box sx={{ textAlign: "center", p: 1 }}>
                 <Avatar
@@ -490,8 +499,12 @@ export default function Contact() {
           {crew.map((artist: any, index: number) => (
             <Grid item key={`member-${index}`} xs={6} sm={4} md={3} lg={2}>
               <Box sx={{ position: 'relative', justifyContent: "space-between", display: "flex", top: 30 }}>
+              {store.isLoggedIn &&
                 <Button startIcon={<EditIcon />} onClick={() => { editCrew(artist) }} />
+              }
+              {store.isLoggedIn &&
                 <Button startIcon={<DeleteIcon />} onClick={() => { deleteArtist(artist) }} />
+              }
               </Box>
               <Box sx={{ textAlign: "center", p: 1 }}>
                 <Avatar
