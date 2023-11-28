@@ -54,20 +54,20 @@ exports.uploadFile = uploadFile
 
 function getUrl(key) {
 
-    Aws.config = new Aws.Config({
+    AWS.config = new AWS.Config({
         accessKeyId,
         secretAccessKey,
         region,
         signatureVersion
     })
-    const s3 = new Aws.S3();
+    const s3 = new AWS.S3();
 
     const url = s3.getSignedUrl('getObject', {
         Bucket: bucketName,
         Key: key,
         Expires: 30 * 60
     })
-    return '';
+    return url;
 }
 exports.getUrl = getUrl;
 // downloads a file from s3
@@ -80,3 +80,16 @@ function getFileStream(fileKey) {
     return s3.getObject(downloadParams).createReadStream()
 }
 exports.getFileStream = getFileStream
+const uploadToS3 = async (filePath, id) => {
+    const s3 = new AWS.S3();
+
+    const params = {
+        Bucket: bucketName,
+        Key: 'box-office-team-infinite-loop/qrcode' + id + '.png',
+        Body: fs.createReadStream(filePath),
+        ContentType: 'image/png', // Adjust the content type accordingly
+    };
+    console.log("here");
+    return s3.upload(params).promise();
+};
+exports.uploadToS3 = uploadToS3;

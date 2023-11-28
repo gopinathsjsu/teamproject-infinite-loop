@@ -9,20 +9,32 @@ const { upload } = require('../Helpers/S3');
 const { sendMessage } = require('../Helpers/WhatsappAPI');
 const uniqid = require('uniqid');
 const { RedisHelperAdd, RedisHelperGet, RedisHelperDelete } = require('../Helpers/RedisHelper');
-const {createCustomer} = require('../Helpers/stripeAPI');
-const { sendSignUpEmail } = require('../Helpers/sendGridHelper');
+const { createCustomer } = require('../Helpers/stripeAPI');
+const { sendSignUpEmail, sendTicketEmail } = require('../Helpers/sendGridHelper');
 const { generateAndPingQRCode } = require('../Helpers/qrCodeGenerator');
 const saltRounds = 10;
-router.get('/addUser', (req, res) => {
+router.get('/addUser', async (req, res) => {
     // RedisHelperAdd(req, res, "hello", { "token": "hello" })
+    // const data = await RedisHelperGet("hello");
+    // console.log('_______');
+    // console.log(data);
+    // res.json({
+    //    /     data: JSON.parse(data)
+    // })
     // const data = {
     //     email: 'mahendrachittupolu@gmail.com',
-    //     name: 'Mahendra'
+    //     name: 'Mahendra',
+    //     movieName: 'Animal',
+    //     showTime: '9:00 Am',
+    //     seatNos: 'A1 B1 C1 D1',
+    //     theaterName: "sandhya",
+    //     qrlink: "https://cdn.britannica.com/17/155017-050-9AC96FC8/Example-QR-code.jpg"
     // };
-    // sendSignUpEmail(data);
-    // console.log(data)
+    // // sendSignUpEmail(data);
+    // // console.log(data)
     generateAndPingQRCode('123456789', "Test");
-    res.send('Hello, world!');
+    // sendTicketEmail(data);
+    // res.send('Hello, world!');
 });
 
 router.post('/signup', upload.single('file'), async (req, res) => {
@@ -83,7 +95,7 @@ router.post('/signup', upload.single('file'), async (req, res) => {
         // Save the user to the database
 
         try {
-             await newUser.save();
+            await newUser.save();
 
             res.status(HTTP_STATUS_CODES.OK).send("user registered successfully");
         }
