@@ -273,7 +273,7 @@ export default function addScreen() {
     console.log(data);
     const post_data = await getDataFromEndPoint(
       data,
-      "payment/buyTickets",
+      "payment/checkout_sessions",
       "POST"
     );
   }
@@ -301,7 +301,11 @@ export default function addScreen() {
         maxWidth={false}
         style={{ marginLeft: "0px", marginRight: "0px", marginTop: "6%" }}
       >
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form
+          action="http://localhost:8080/payment/checkout_sessions"
+          method="POST"
+          // onSubmit={handleSubmit(onSubmit)}
+        >
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <Typography variant="h4">Book Ticket - {title}</Typography>
           </Box>

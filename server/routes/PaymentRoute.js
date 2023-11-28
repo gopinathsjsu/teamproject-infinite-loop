@@ -8,8 +8,12 @@ require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 function verifyValidSeatBooking(req, res, next) {
+    console.log("at payment checkout session");
+    console.log(req.body);
     const key = req.body.key;
     const data = RedisHelperGet(key);
+    console.log("data:::::");
+    console.log(data);
     const newSeatBooking = req.body.seatSelected;
     if (data) { 
        if(data.seatBooking.some(item => newSeatBooking.includes(item))) {
@@ -27,7 +31,8 @@ function verifyValidSeatBooking(req, res, next) {
     }
 
 }
-router.post('/checkout_sessions', async (req, res) => { 
+router.post('/checkout_sessions',verifyValidSeatBooking, async (req, res) => { 
+    
     if (req.method === 'POST') {
          const lineItems = [{
                     price_data: {
@@ -49,7 +54,7 @@ router.post('/checkout_sessions', async (req, res) => {
             const session = await stripe.checkout.sessions.create({
                 line_items: lineItems,
                 mode: 'payment',
-                success_url: `http://localhost:8080/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+                success_url: `http://localhost:8080/payment/success?session_id={CHECKOUT_SESSION_ID}&key=${req.body.key}`,
                 cancel_url: `${req.headers.origin}/?canceled=true`,
                 automatic_tax: { enabled: true },
             });
@@ -73,6 +78,8 @@ router.get('/success', async (req, res) => {
 
         const session = await stripe.checkout.sessions.retrieve(session_id);
         console.log(session);
+        console.log("at payment success");
+        const data = RedisHelperGet(req.query.key);
         res.send("Payment successful and database updated");
     } catch (err) {
         res.status(500).send(err.message);
