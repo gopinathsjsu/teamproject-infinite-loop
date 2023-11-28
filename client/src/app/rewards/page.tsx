@@ -3,6 +3,8 @@ import React from 'react';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Button, Paper, Grid, Card, CardContent, LinearProgress } from '@mui/material';
 import { styled } from '@mui/system';
 import CheckIcon from '@mui/icons-material/Check';
+import Parallax from './parallax/page';
+
 
 // Styled components with theme
 const BenefitsContainer = styled(Box)(({ theme }) => ({
@@ -160,6 +162,8 @@ const RewardsPage = () => {
 
   return (
     <Box sx={{ flexGrow: 1, padding: 3 }}>
+      <Parallax image="your_parallax_image_url.jpg" height="300px" />
+
       <Grid container spacing={2}>
         <Grid item xs={4}>
           <StyledCard>
