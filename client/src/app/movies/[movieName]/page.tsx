@@ -153,10 +153,10 @@ const App: React.FC = () => {
   };
 
   const videoOpts = {
-    height: "450px", // Set the height of the video player
+    height: "140%", // Set the height of the video player
     width: "900px", // Set the width of the video player
     border: "none", // No border
-    borderRadius: "20px", // Rounded corners
+    // borderRadius: "20px", // Rounded corners
     overflow: "hidden", // Prevents the content from spilling outside the border-radius
   };
 
@@ -217,7 +217,11 @@ const App: React.FC = () => {
               gutterBottom
               style={{ fontSize: "30px" }}
             >
-              {movie.release_date}
+              {new Date(movie.release_date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
             </Typography>
             <Typography
               variant="subtitle1"
@@ -244,21 +248,24 @@ const App: React.FC = () => {
             right: "40px",
           }}
         >
-          <Button
-            onClick={() => {
-              redirectToBooking();
-            }}
-            variant="contained"
-            style={{
-              backgroundColor: "red",
-              color: "white",
-              fontWeight: "bold",
-              width: "150px", // Adjust the width as needed
-              height: "50px",
-            }}
-          >
-            Buy Tickets
-          </Button>
+        <Button
+          onClick={redirectToBooking}
+          variant="contained"
+          style={{
+            position: 'fixed', // Stick the button to the viewport
+            bottom: '20px', // Distance from the bottom of the viewport
+            right: '20px', // Distance from the right of the viewport
+            backgroundColor: "red",
+            color: "white",
+            fontWeight: "bold",
+            width: "150px",
+            height: "50px",
+            zIndex: 1000, // Ensure it's above other elements
+          }}
+        >
+          Buy Tickets
+        </Button>
+
         </div>
 
         <Grid item xs={12} sm={6}>
@@ -295,15 +302,15 @@ const App: React.FC = () => {
               </Typography>
 
               <div style={videoContainerStyle}>
-                <iframe
-                  title="Movie Trailer"
-                  src={movie.trailer_url} // Replace with your video link
-                  style={videoOpts}
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                ></iframe>
-              </div>
+              <iframe
+                title="Movie Trailer"
+                src={movie.trailer_url}
+                style={videoOpts}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
             </div>
           </Container>
         </Grid>
