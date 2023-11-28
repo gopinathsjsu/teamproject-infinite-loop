@@ -28,10 +28,8 @@ function verifyValidSeatBooking(req, res, next) {
 
 }
 router.post('/checkout_sessions', async (req, res) => { 
-     if (req.method === 'POST') {
-        try {
-            const session = await stripe.checkout.sessions.create({
-                line_items: [{
+    if (req.method === 'POST') {
+         const lineItems = [{
                     price_data: {
                         currency: 'usd', // Set the currency
                         product_data: {
@@ -46,7 +44,10 @@ router.post('/checkout_sessions', async (req, res) => {
                         quantity: 1,
             
                 }
-                ],
+                ]
+        try {
+            const session = await stripe.checkout.sessions.create({
+                line_items: lineItems,
                 mode: 'payment',
                 success_url: `http://localhost:8080/payment/success?session_id={CHECKOUT_SESSION_ID}`,
                 cancel_url: `${req.headers.origin}/?canceled=true`,
