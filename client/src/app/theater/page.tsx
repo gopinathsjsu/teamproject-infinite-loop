@@ -6,6 +6,7 @@ import Container from "@mui/material/Container";
 import CssBaseline from "@mui/material/CssBaseline";
 import { Box, Grid, Typography, Button, Link, Stack, TextField } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from '@mui/icons-material/Delete';
 import Modal from "@mui/material/Modal";
 import Backdrop from "@mui/material/Backdrop";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -275,28 +276,21 @@ export default function Theater() {
       data.append("data", JSON.stringify(e));
       const get_data = await getDataFromEndPoint(data, formURL, "POST");
       if (get_data.status === 200) {
-        const data_req = [get_data.data];
-        const mappedData: Theater[] = data_req.map((theaterItem: any) => ({
-          name: theaterItem.name,
-          description: theaterItem.description,
-          locationUrl: theaterItem.theater_url,
-          address: theaterItem.state,
-          city: theaterItem.city,
-          state: theaterItem.state,
-          zipcode: theaterItem.zipcode,
-          screenDetails: theaterItem.screen_ids,
-          imageUrl: theaterItem.image_url,
-          nScreens: theaterItem.screen_ids.length,
-          email: theaterItem.mail,
-          phoneNumber: theaterItem.mobile,
-          id: theaterItem.id,
-        }));
-        setTheaterData([...theaterData, ...mappedData]);
+        getTheaters();
       }
       setOpen(false);
       setIsFile(false);
     }
   };
+
+  async function deleteTheater(theaterId:any) {
+    const formURL = "theater/deleteTheater";
+    const data = {"id" : theaterId};  
+    const resp = await getDataFromEndPoint(data, formURL, "POST");
+    if(resp != null){
+      getTheaters();
+    }
+  }
 
   function editTheater(theater: any) {
     setValue('theater_name', theater.name);
@@ -362,6 +356,7 @@ export default function Theater() {
                         </Typography>
                       </Link>
                       <Button startIcon={<EditIcon />} onClick={() => { editTheater(theater) }} />
+                      <Button startIcon={<DeleteIcon />} onClick={() => { deleteTheater(theater.id) }} />
                       <Box>
                         <Button sx={{ fontSize: "1rem", }} onClick={() => addScreen(theater.id)} >
                           Show Screens

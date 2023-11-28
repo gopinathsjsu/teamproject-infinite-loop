@@ -5,6 +5,7 @@ import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Box, Grid, Typography, Button, Modal, Backdrop, Fade, Stack, TextField, FormControl, FormHelperText, InputLabel, Select, MenuItem } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import SendIcon from '@mui/icons-material/Send';
 import { getDataFromEndPoint } from "@/src/lib/backend-api";
@@ -102,14 +103,43 @@ export default function Screen() {
         router.push("/theater/" + theaterId + "/addScreen");
     }
 
-    function bookTicket(screen:any) {
+    function bookTicket(screen: any) {
         console.log(screen);
         router.push(`/movies/${screen.movieId}/buyTicket`)
     }
 
-    function editScreen(screen: any){
+    function editScreen(screen: any) {
         localStorage.setItem('screenDetails', JSON.stringify(screen));
         router.push(`/theater/${theaterId}/editScreen`);
+    }
+
+    async function deleteScreen(screen: any) {
+        if (screen.currentMovie === null || screen.currentMovie === "") {
+            return;
+        }
+        const formUrl = 'screen/deleteScreen';
+        const data = { "id": screen.id };
+        const resp = await getDataFromEndPoint(data, formUrl, 'POST');
+        if (resp != null) {
+            const response = await getDataFromEndPoint("", `screen/${theaterId}`, 'GET');
+            const data = response.data;
+            const mappedData: Screen[] = data.map((screenItem: any) => ({
+                id: screenItem.id,
+                name: screenItem.name,
+                timings: screenItem.show_timings,
+                maxCapacity: screenItem.seating_capacity,
+                imageUrl: screenItem.movie_image,
+                format: screenItem.format,
+                currentMovie: screenItem.movie_name,
+                runtime: screenItem.run_time,
+                cost: screenItem.cost,
+                movieId: screenItem.movie_id,
+                columns: screenItem.columns,
+                seatDetails: screenItem.seating_arrangement,
+                rows: screenItem.rows
+            }));
+            setScreenData(mappedData);
+        }
     }
 
     async function onSubmit(data: any) {
@@ -141,7 +171,7 @@ export default function Screen() {
     const handleOpenModal = (screen_id: any) => {
         console.log(screen_id);
         setSelectedScreenId(screen_id);
-        setOpen(!open); 
+        setOpen(!open);
     };
     return (
         <React.Fragment>
@@ -164,12 +194,13 @@ export default function Screen() {
                                             <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
                                                 <Typography variant="h6" component="h3" sx={{ mb: 1, fontWeight: 'medium', fontSize: '2rem' }} style={{}} color="#01579B">{screen.name}</Typography>
                                                 <Box>
-                                                    <Button startIcon={<EditIcon />} sx={{ mb: 1, fontSize: '1rem' }} onClick={()=>(editScreen(screen))}/>
-                                                    <Button sx={{ mb: 1, fontSize: '1rem' }} onClick={() => handleOpenModal(screen.id)}>
-                                                        Add/Change Movie
-                                                    </Button>
+                                                    <Button startIcon={<EditIcon />} sx={{ mb: 1, fontSize: '1rem' }} onClick={() => (editScreen(screen))} />
+                                                    <Button startIcon={<DeleteIcon />} sx={{ mb: 1, fontSize: '1rem' }} onClick={() => (deleteScreen(screen))} />
                                                 </Box>
                                             </Grid>
+                                            <Button sx={{ mb: 1, fontSize: '1rem' }} onClick={() => handleOpenModal(screen.id)}>
+                                                Add/Change Movie
+                                            </Button>
                                             <Box sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }}>
                                                 {`Current Movie: `}{screen.currentMovie}
                                             </Box>

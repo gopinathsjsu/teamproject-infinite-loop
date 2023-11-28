@@ -216,6 +216,21 @@ export default function Contact() {
     }));
   };
 
+  const deleteArtist = async (artist:any) => {
+    const formURL = "artist/deleteArtist";
+    const data = { "id": artist.id };
+    const response = await getDataFromEndPoint(data, formURL, "POST");
+    if (response != null) {
+      const response = await fetch("http://localhost:8080/artist/all");
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+      const data = await response.json();
+      setCast(data.Cast);
+      setCrew(data.Crew);
+    }
+  }
+
   const editCast = async (cast: any) => {
     setEnableEdit(true);
     try {
@@ -449,7 +464,7 @@ export default function Contact() {
             <Grid item key={`member-${index}`} xs={6} sm={4} md={3} lg={2}>
               <Box sx={{ position: 'relative', justifyContent: "space-between", display: "flex", top: 30 }}>
                 <Button startIcon={<EditIcon />} onClick={() => { editCast(artist) }} />
-                <Button startIcon={<DeleteIcon />} />
+                <Button startIcon={<DeleteIcon />} onClick={()=> {deleteArtist(artist)}}/>
               </Box>
               <Box sx={{ textAlign: "center", p: 1 }}>
                 <Avatar
@@ -476,7 +491,7 @@ export default function Contact() {
             <Grid item key={`member-${index}`} xs={6} sm={4} md={3} lg={2}>
               <Box sx={{ position: 'relative', justifyContent: "space-between", display: "flex", top: 30 }}>
                 <Button startIcon={<EditIcon />} onClick={() => { editCrew(artist) }} />
-                <Button startIcon={<DeleteIcon />} sx={{ p: 0, mb: 1 }} />
+                <Button startIcon={<DeleteIcon />} onClick={() => { deleteArtist(artist) }} />
               </Box>
               <Box sx={{ textAlign: "center", p: 1 }}>
                 <Avatar

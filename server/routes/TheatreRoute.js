@@ -159,6 +159,8 @@ router.post('/updateTheater', upload.single('file'), async (req, res) => {
 });
 router.post('/deleteTheater', async (req, res) => {
     id = req.body.id;
+    console.log(id);
+    console.log("___________________");
     await Theater.deleteOne({ id: id }).then((result) => {
         console.log(result);
         res.status(HTTP_STATUS_CODES.OK).send("deleted Successfully");

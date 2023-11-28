@@ -6,6 +6,9 @@ import "slick-carousel/slick/slick-theme.css";
 import { Box, Card, CardMedia, CardContent, Typography, Grid, Button, } from "@mui/material";
 import Container from "@mui/material/Container";
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { getDataFromEndPoint } from "@/src/lib/backend-api";
+
 
 const MovieCard = ({
   movie,
@@ -15,8 +18,17 @@ const MovieCard = ({
   onImageClick: any;
 }) => {
   const router = useRouter();
-  const editMovie = (movieId:string)=>{
+  const editMovie = (movieId: string) => {
     router.push(`/movies/${movieId}/edit`);
+  }
+
+  async function deleteMovie(movieId:any){
+    const formURL = "movies/deleteMovie";
+    const data = { "id": movieId };
+    const response = await getDataFromEndPoint(data, formURL, "POST");
+    if (response != null) {
+      router.refresh();
+    }
   }
 
   return (
@@ -34,15 +46,14 @@ const MovieCard = ({
         onClick={() => onImageClick(movie.id)} // Uncomment this line if click handler is needed
       />
       <CardContent>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Typography gutterBottom variant="subtitle2" component="div">
-            {movie.title}
-          </Typography>
-          <Button startIcon={<EditIcon />} onClick={()=>{editMovie(movie.id)}} />
-        </Box>
+        <Typography gutterBottom variant="subtitle2" component="div">
+          {movie.title}
+        </Typography>
         <Typography variant="body2" color="text.secondary">
           {movie.format}
         </Typography>
+        <Button startIcon={<EditIcon />} onClick={() => { editMovie(movie.id) }} />
+        <Button startIcon={<DeleteIcon />} onClick={() => { deleteMovie(movie.id) }} />
       </CardContent>
     </Card>
   );
