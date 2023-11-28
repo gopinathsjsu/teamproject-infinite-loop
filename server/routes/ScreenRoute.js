@@ -18,6 +18,14 @@ router.post('/addScreen', async (req, res) => {
         const theater_id = req.body.theater_id;
         // const screen_count = await ScreenModel.countDocuments({ theater_id: theater_id });
         // console.log(screen_count);
+        let seat_count = 0;
+
+        for (const key in seatArray) {
+            if (seatArray.hasOwnProperty(key)) {
+                const array = seatArray[key];
+                seat_count += array.reduce((acc, value) => (value !== 3 ? acc + 1 : acc), 0);
+            }
+        }
         const newScreen = new ScreenModel({
             id: uniqid(),
             name: req.body.screenName,
@@ -25,7 +33,7 @@ router.post('/addScreen', async (req, res) => {
             format: req.body.format,
             rows: req.body.rows,
             columns: req.body.col,
-            seating_capacity: req.body.rows * req.body.col,
+            seating_capacity: seat_count,
             cost: req.body.cost,
             seating_arrangement: seatArray,
             theater_id: theater_id,
@@ -157,25 +165,25 @@ router.post('/addMovie', async (req, res) => {
                 tickets_bought: 0,
             };
         }
-        if (screen.movie_name) {
-            res.send(HTTP_STATUS_CODES.BAD_REQUEST);
-        }
-        else {
-            await ScreenModel.updateOne({ id: screenId }, {
-                movie_name: movie.title,
-                movie_image: movie.poster_url,
-                movie_id: movie.id,
-                run_time: movie.run_time,
-                movie_id: movie.id,
-                cost: tkt_price,
-                seats_day_wise: timestampsForDays
-            }).then((result) => {
-                console.log(result);
-            }).catch((error) => {
-                console.error(error);
-            });
-            res.json({ message: "Updated Movies in Screen", status: HTTP_STATUS_CODES.OK, data: "" });
-        }
+        // if (screen.movie_name) {
+        //     res.status(HTTP_STATUS_CODES.BAD_REQUEST);
+        // }
+        // else {
+        await ScreenModel.updateOne({ id: screenId }, {
+            movie_name: movie.title,
+            movie_image: movie.poster_url,
+            movie_id: movie.id,
+            run_time: movie.run_time,
+            movie_id: movie.id,
+            cost: tkt_price,
+            seats_day_wise: timestampsForDays
+        }).then((result) => {
+            console.log(result);
+        }).catch((error) => {
+            console.error(error);
+        });
+        res.json({ message: "Updated Movies in Screen", status: HTTP_STATUS_CODES.OK, data: "" });
+        // }
     } catch (error) {
         console.error('Error creating user:', error);
         res.json({
