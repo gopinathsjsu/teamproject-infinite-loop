@@ -43,6 +43,7 @@ router.post('/signup', upload.single('file'), async (req, res) => {
     const genres = req.body.genres;
     const cast = req.body.favoriteArtists;
     const crew = req.body.favoriteCrew;
+    const profile_url = req.file.location;
     const preferredLanguages = req.body.preferredLanguages
 
     const password = await bcrypt.hash(password_value, saltRounds);
@@ -76,8 +77,8 @@ router.post('/signup', upload.single('file'), async (req, res) => {
             is_admin: isAdmin,
             is_prime: false,
         });
-        const customerID = await createCustomer(newUser.user_id, name, email, phoneNumber);
-        newUser.stripe_customer_id = customerID;
+      //  const customerID = await createCustomer(newUser.user_id, name, email, phoneNumber);
+    //    newUser.stripe_customer_id = customerID;
         console.log(newUser);
         // Save the user to the database
 
@@ -112,7 +113,7 @@ router.post("/login", async (req, res) => {
             })
         }
         else {
-            data = { email: req.body.email, fullname: users.fullname, isAdmin: users.is_admin }
+            data = { email: req.body.email, fullname: users.fullname, isAdmin: users.is_admin, profile_url: users.profile_url }
             createToken(req, res, email, password);
             console.log(res.getHeaders()['set-cookie']);
             password_match = await bcrypt.compare(password, users.password)

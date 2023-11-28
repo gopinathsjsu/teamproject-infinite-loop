@@ -33,7 +33,7 @@ export async function apiRegisterUser(
   return handleResponse<UserRegisterResponse>(response).then((data) => data.message);
 }
 
-export async function apiLoginUser(credentials: string): Promise<string> {
+export async function apiLoginUser(credentials: string): Promise<any> {
   const response = await fetch(`${SERVER_ENDPOINT}/user/login`, {
     method: "POST",
     credentials: "include",
@@ -43,7 +43,7 @@ export async function apiLoginUser(credentials: string): Promise<string> {
     body: credentials,
   });
   console.log(response);
-  return handleResponse<UserLoginResponse>(response).then((data) => data.fullnmae);
+  return handleResponse<any>(response).then((data) => data.data);
 }
 
 export async function apiLogoutUser(): Promise<void> {

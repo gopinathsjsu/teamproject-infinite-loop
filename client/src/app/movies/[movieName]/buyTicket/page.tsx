@@ -28,9 +28,9 @@ export default function addScreen() {
     const [theaters, setTheaters] = useState<any[]>([]);
     const [screens, setScreens] = useState<any[]>([]);
     const [timings, setTimings] = useState<any[]>([]);
-    const [cost, setCost] = useState();
+    const [cost, setCost] = useState(0);
     const [title, setTitle] = useState();
-    const [releaseDate, setReleaseDate] = useState();
+    const [releaseDate, setReleaseDate] = useState<any>();
     const [endDate, setEndDate] = useState();
 
     //SEATS CODE
@@ -46,7 +46,9 @@ export default function addScreen() {
                 setTitle(res.data.movieName);
                 setTheaters(res.data.theaters);
                 setEndDate(res.data.endDate);
-                setReleaseDate(res.data.releaseDate);
+                const currentDate = Dayjs(new Date());
+                const openingDate = currentDate > Dayjs(res.data.releaseDate) ? currentDate : Dayjs(res.data.releaseDate);
+                setReleaseDate(openingDate);
             }
         }
         fetchData();
@@ -183,15 +185,45 @@ export default function addScreen() {
         )
     }
 
+    const getReqSeatDeatils = () =>{
+        let seatArray = [];
+        for (let key in seatDetails) {
+            let column = [];
+            for(let i=0;i<seatDetails[key].length;i++){
+                if(seatDetails[key][i]===2){
+                    column.push(3);
+                }else{
+                    column.push(seatDetails[key][i]);
+                }
+            }
+            seatArray.push(column);
+        }
+        return seatArray;
+    }
+
     async function onSubmit() {
         let data = getValues();
-        console.log(data.date);
-        data['screenLayout'] = seatDetails;
+        console.log(data);
+        const timeStamp = data.timing.split(' ')[1];
+        console.log(timeStamp);
+        let time = null;
+        if(timeStamp == 'pm'){
+            time = data.timing.split(':')[0];
+            time = (Number(time) + 12).toString();
+        }else{
+            time = data.timing.split(':')[0];
+        }
+        console.log(time)
+        const key = data.theater+'-'+ data.screen + '-' + time + '-' + data.date;
+        console.log(key);
+        data['screenLayout'] = getReqSeatDeatils();
         data['seatSelected'] = selectedSeats;
         data['movie_id'] = movieName;
-        const post_data = await getDataFromEndPoint(data, 'payment/buyTickets', 'POST');
-        console.log(post_data);
+        data['key'] = key;
+        data['price'] = cost * selectedSeats.length*100;
+        data['is_prime'] = false;
         console.log(data);
+        const post_data = await getDataFromEndPoint(data, 'payment/buyTickets', 'POST');
     };
 
     function theaterChange(event: any) {

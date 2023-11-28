@@ -52,6 +52,7 @@ export default function SignIn() {
         try {
             const user = await apiLoginUser(JSON.stringify(data));
             store.setLoggedIn();
+            store.setUser(user);
             return router.push("/");
         } catch (error: any) {
             if (error instanceof Error) {
@@ -117,11 +118,11 @@ export default function SignIn() {
                         {!loading ? <span> Sign In</span> : <span>Loading...</span>}
                     </Button>
                     <Grid container>
-                        <Grid item xs>
+                        {/* <Grid item xs>
                             <Link href="#" variant="body2">
                                 Forgot password?
                             </Link>
-                        </Grid>
+                        </Grid> */}
                         <Grid item>
                             <Link href="/signup" variant="body2">
                                 {"Don't have an account? Sign Up"}

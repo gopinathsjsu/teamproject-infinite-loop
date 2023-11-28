@@ -73,7 +73,7 @@ export default function Checkout() {
         });
 
         const response = await getDataFromEndPoint(reqData, 'user/signup' ,'POST');
-        if(response.status == 200){
+        if(response != null){
             console.log('success');
             router.push('/signin');
         }

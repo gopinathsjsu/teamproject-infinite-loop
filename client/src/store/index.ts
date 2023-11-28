@@ -9,6 +9,8 @@ type Store = {
   authUser: FilteredUser | null;
   isLoggedIn: boolean;
   requestLoading: boolean;
+  user: any;
+  setUser: (user:any) => void;
   setLoggedIn: () => void;
   setLoggedOut: () => void;
   setAuthUser: (user: FilteredUser | null) => void;
@@ -20,6 +22,8 @@ const useStore = create(persist((set) => ({
   authUser: null,
   isLoggedIn: false,
   requestLoading: false,
+  user: null,
+  setUser: (newUser:any) => set((state:any) =>({ ...state, user: newUser})),
   setLoggedIn: () => set((state:any) => ({ ...state, isLoggedIn: true })),
   setLoggedOut: () => set((state:any) => ({ ...state, isLoggedIn: false })),
   setAuthUser: (user:any) => set((state:any) => ({ ...state, authUser: user })),

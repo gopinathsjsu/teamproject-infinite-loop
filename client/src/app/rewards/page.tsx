@@ -3,6 +3,7 @@ import React from 'react';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Button, Paper, Grid, Card, CardContent, LinearProgress } from '@mui/material';
 import { styled } from '@mui/system';
 import CheckIcon from '@mui/icons-material/Check';
+import { useRouter } from 'next/navigation';
 
 // Styled components with theme
 const BenefitsContainer = styled(Box)(({ theme }) => ({
@@ -155,8 +156,13 @@ const RewardsProgress = ({ points, goal }) => {
 };
 
 const RewardsPage = () => {
-  const totalPoints = 200; // Example points, replace with actual data
-  const goalPoints = 280; // Example goal points for next reward
+  const router = useRouter();
+  const totalPoints = 200; 
+  const goalPoints = 280;
+
+  function joinNow(){
+    router.push('https://buy.stripe.com/test_dR68zzgiP9QJ3bqcMM');
+  }
 
   return (
     <Box sx={{ flexGrow: 1, padding: 3 }}>
@@ -191,7 +197,7 @@ const RewardsPage = () => {
       </Grid>
       <RewardsProgress points={totalPoints} goal={goalPoints} />
       <MemberBenefitsSection />
-      <JoinButton variant="contained">Join Now</JoinButton>
+      <JoinButton onClick={()=>(joinNow())} variant="contained">Join Now</JoinButton>
     </Box>
   );
 };
