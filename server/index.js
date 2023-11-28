@@ -14,7 +14,7 @@ const paymentRoute = require('../server/routes/PaymentRoute');
 const winston = require('winston');
 const port = 8080
 const corsOptions = {
-  origin: 'http://localhost:3000',
+  origin: ['http://localhost:3000','https://checkout.stripe.com'],
   credentials: true,
 };
 const logger = winston.createLogger({
