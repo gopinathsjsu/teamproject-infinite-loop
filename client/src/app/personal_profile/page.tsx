@@ -238,8 +238,9 @@ export default function Profile() {
             reqData.append(key, value as string);
           }
         }
-      })
-      await getDataFromEndPoint(reqData, `user/updateProfile/${userData.user_id}` ,'POST');
+      });
+      reqData.append('id',userData.user_id);
+      await getDataFromEndPoint(reqData, `user/updateProfile` ,'POST');
       setEditEnabled(false);
     }
   }

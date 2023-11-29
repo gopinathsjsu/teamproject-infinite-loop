@@ -157,24 +157,38 @@ router.post("/login", async (req, res) => {
 })
 
 router.post('/updateProfile', upload.single('file'), async (req, res) => {
-    console.log(req.body);
-    const user = await User.findOne({ email: req.body.email });
-    console.log(user);
-    if (user) {
-        user.firstname = req.body.firstName
-        user.lastname = req.body.lastName
-        user.dob = req.body.birthDate
-        user.gender = req.body.identity
-        user.mobile = req.body.phone
-        user.genres = [];
-        if (req.file)
-            user.profile_url = req.file.location
-        user.favourite_artists = [];
-        await user.save();
-        res.json({ message: "User details updated successfully", status: HTTP_STATUS_CODES.OK });
-    } else {
-        res.json({ message: "Cannot update user details", status: HTTP_STATUS_CODES.NOT_FOUND });
+    post_data = req.body;
+    console.log(post_data);
+    if (req.file) {
+        profile_url = req.file.location;
     }
+    const cast = req.body.favoriteCast;
+    const crew = req.body.favoriteCrew;
+        await User.updateOne({ user_id: post_data.id }, {
+            fullname: post_data.fullName,
+            email: post_data.email,
+            firstname: '',
+            lastname: '',
+            dob: post_data.dob,
+            gender: post_data.gender,
+            mobile: post_data.phoneNumber,
+            genres: post_data.genres,
+            favourite_artists: cast,
+            favourite_crew: crew,
+            preferred_languages: post_data.preferredLanguages,
+            address1: post_data.address1,
+            address2: post_data.address2,
+            city: post_data.city,
+            state: post_data.state,
+            country: post_data.scountry,
+            zipcode: post_data.zipCode,
+            ...(req.file && { profile_url }),
+        }).then((result) => {
+            console.log(result);
+            res.status(HTTP_STATUS_CODES.OK).send("updated successfully");
+        }).catch((error) => {
+            console.error(error);
+        })
 });
 
 
@@ -208,12 +222,7 @@ router.get('/profileDetails/:id', async(req,res) => {
             console.error(err);
             res.status(HTTP_STATUS_CODES.BAD_REQUEST).send("Internal server Error");
         })
-
-    }).catch((err) => {
-        console.error(err);
-        res.status(HTTP_STATUS_CODES.BAD_REQUEST).send("Internal server Error");
-    })
-});
+})
 
 
 module.exports = router;
