@@ -10,10 +10,9 @@ export default function LocationSearchInput({ sendLocation }: { sendLocation: an
 
   const handleSelect = async (value: any) => {
     const results = await geocodeByAddress(value);
-    const latLng = await getLatLng(results[0]);
-    console.log(results);
+    const addressComponents = results[0].address_components;
     setAddress(value);
-    sendLocation(value);
+    sendLocation(addressComponents);
   };
 
   return (
