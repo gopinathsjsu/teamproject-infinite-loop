@@ -5,15 +5,17 @@ require('dotenv').config();
 const app = express();
 const redisHelperAdd = async (key, value) => {
     const redisClient = redis.createClient({
-        url: 'redis://default:xHUpp2qKD5ukdaLns6luRsAINgAergn7@redis-17055.c321.us-east-1-2.ec2.cloud.redislabs.com:17055'
+        url: process.env.REDIS_URL
     });
     redisClient.on('error', (err) => {
         console.error('Redis Client Error', err);
     }).connect();
     console.log("here at Add");
-        console.log(key + "   added to redis");
-    console.log(value  + "  added to redis");
+    console.log(key + "   added to redis");
+    console.log(value + "  added to redis");
+    const expirationInSeconds = 600;
     await redisClient.hSet(key, value)
+    await redisClient.expire(key, expirationInSeconds);
     await redisClient.quit();
 }
 
@@ -21,7 +23,7 @@ exports.RedisHelperAdd = redisHelperAdd;
 
 const redisHelperGet = async (key) => {
     const redisClient = await redis.createClient({
-        url: 'redis://default:xHUpp2qKD5ukdaLns6luRsAINgAergn7@redis-17055.c321.us-east-1-2.ec2.cloud.redislabs.com:17055'
+        url: process.env.REDIS_URL
     });
     await redisClient.on('error', (err) => {
         console.error('Redis Client Error', err);
