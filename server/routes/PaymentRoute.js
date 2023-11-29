@@ -55,6 +55,10 @@ router.post('/checkout_sessions/:id', async (req, res) => {
     console.log(redis_data);
     const data = JSON.parse(JSON.parse(redis_data).body);
     console.log(data);
+    const coupon = await stripe.coupons.create({
+  percent_off: 20,
+  duration: 'once',
+});
         if (req.method === 'POST') {
             const lineItems = [{
                 price_data: {
@@ -70,11 +74,16 @@ router.post('/checkout_sessions/:id', async (req, res) => {
                 price: 'price_1OElaUA475w0fpJunbITKKhP',
                 quantity: 1,
             
-            }
-            ]
+            },
+            ];
             try {
                 const session = await stripe.checkout.sessions.create({
                     line_items: lineItems,
+                     discounts: [
+                        {
+                            coupon: 'f80FGkXD',
+                        },
+                    ],
                     mode: 'payment',
                     success_url: `http://localhost:8080/payment/success?session_id={CHECKOUT_SESSION_ID}&key=${req.params.id}`,
                     cancel_url: `${req.headers.origin}/?canceled=true`,
@@ -115,14 +124,15 @@ router.get('/success', async (req, res) => {
         const no_of_seats_booked = seat_selected.length;
         await ScreenModel.findOneAndUpdate({ id: screen_id }, {
             $inc: { [`seats_day_wise.${filter_date}.${timing}.tickets_bought`]: no_of_seats_booked },
-             $set: {
-                     [`seats_day_wise.${filter_date}.${timing}.SeatArray`]: screen_layout
-                 }
+            $set: {
+                [`seats_day_wise.${filter_date}.${timing}.SeatArray`]: screen_layout
+            }
         }).then((result) => {
-                console.log(result);
-            }).catch((error) => {
-                console.error(error);
-        })
+            console.log(result);
+        }).catch((error) => {
+            console.error(error);
+        });
+        RedisHelperDelete(req.query.key);
         res.send("Payment successful and database updated");
     } catch (err) {
         res.status(500).send(err.message);
