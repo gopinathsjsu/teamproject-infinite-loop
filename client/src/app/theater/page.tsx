@@ -172,7 +172,7 @@ export default function Theater() {
     width: 1,
     accept: "image/*",
   });
-  const store:any = useStore();
+  const store: any = useStore();
   const router = useRouter();
   const [theaterData, setTheaterData] = useState<Theater[]>([]);
   const [formSuccess, setFormSuccess] = useState(false);
@@ -285,11 +285,11 @@ export default function Theater() {
     }
   };
 
-  async function deleteTheater(theaterId:any) {
+  async function deleteTheater(theaterId: any) {
     const formURL = "theater/deleteTheater";
-    const data = {"id" : theaterId};  
+    const data = { "id": theaterId };
     const resp = await getDataFromEndPoint(data, formURL, "POST");
-    if(resp != null){
+    if (resp != null) {
       getTheaters();
     }
   }
@@ -320,13 +320,13 @@ export default function Theater() {
         <Grid container sx={{ justifyContent: "space-between" }} >
           <Typography variant="h4">Theaters</Typography>
           {store.isLoggedIn &&
-          <Button
-            variant="contained"
-            startIcon={<AddCircleOutlineIcon />}
-            onClick={() => setOpen(true)}
-          >
-            Add Theater
-          </Button>
+            <Button
+              variant="contained"
+              startIcon={<AddCircleOutlineIcon />}
+              onClick={() => setOpen(true)}
+            >
+              Add Theater
+            </Button>
           }
         </Grid>
         <Grid item xs={12} container>
@@ -360,10 +360,10 @@ export default function Theater() {
                         </Typography>
                       </Link>
                       {store.isLoggedIn &&
-                      <Button startIcon={<EditIcon />} onClick={() => { editTheater(theater) }} />  
-                      } 
+                        <Button startIcon={<EditIcon />} onClick={() => { editTheater(theater) }} />
+                      }
                       {store.isLoggedIn &&
-                      <Button startIcon={<DeleteIcon />} onClick={() => { deleteTheater(theater.id) }} />
+                        <Button startIcon={<DeleteIcon />} onClick={() => { deleteTheater(theater.id) }} />
                       }
                       <Box>
                         <Button sx={{ fontSize: "1rem", }} onClick={() => addScreen(theater.id)} >
@@ -391,7 +391,7 @@ export default function Theater() {
                             fontSize: "1rem",
                           }}
                         >
-                          {screen}
+                          {/* {screen} */}
                         </Button>
                       ))}
                     </Box>
