@@ -1,0 +1,257 @@
+/* Reset some default styles */
+body {
+    font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f7; /* Light grey background */
+  }
+  
+  /* Heading styles */
+  h4, h6 {
+    color: #000;
+  }
+  
+  /* Paper container */
+  .paper {
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin: 16px;
+    padding: 20px;
+    transition: box-shadow 0.3s ease-in-out;
+    position: relative; /* Enable positioning within paper */
+  }
+  
+  /* Hover effect with slight scale increase */
+  .paper:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    transform: scale(1.02);
+  }
+  
+  /* Icon styles */
+  .icon {
+    margin-right: 8px;
+    font-size: 1.2rem; /* Adjust icon size */
+  }
+  
+  /* Icon colors for success and error */
+  .icon.success {
+    color: #28cd41; /* Green color for success */
+  }
+  
+  .icon.error {
+    color: #ff3b30; /* Red color for error */
+  }
+  
+  /* Responsive grid container */
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  
+  /* Button styles */
+  .button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff; /* Blue color for buttons */
+    color: #fff; /* White text color */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  /* Button hover effect */
+  .button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+  }
+  
+/* Add more styles */
+
+/* Container styles */
+.container {
+    max-width: 1200px; /* Set a maximum width for the container */
+    margin: 0 auto; /* Center the container */
+    padding: 20px; /* Add padding to the container */
+  }
+  
+  /* Section styles */
+  .section {
+    margin-bottom: 40px; /* Add space between sections */
+  }
+  
+  /* Text styles */
+  .text-primary {
+    color: #007bff; /* Primary text color */
+  }
+  
+  .text-secondary {
+    color: #6c757d; /* Secondary text color */
+  }
+  
+  /* Flex container */
+  .flex-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  /* Divider styles */
+  .divider {
+    border-top: 1px solid #ccc; /* Light gray divider line */
+    margin: 20px 0; /* Add space above and below the divider */
+  }
+  
+  /* Responsive image styles */
+  .responsive-image {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Alert styles */
+  .alert {
+    padding: 15px;
+    margin: 15px 0;
+    border: 1px solid transparent;
+    border-radius: 5px;
+  }
+  
+  .alert-success {
+    background-color: #dff0d8; /* Light green background for success */
+    border-color: #d6e9c6; /* Border color for success */
+    color: #3c763d; /* Text color for success */
+  }
+  
+  .alert-danger {
+    background-color: #f2dede; /* Light red background for danger */
+    border-color: #ebccd1; /* Border color for danger */
+    color: #a94442; /* Text color for danger */
+  }
+  
+  /* Card styles */
+  .card {
+    border: 1px solid #ddd; /* Light gray border for cards */
+    border-radius: 8px; /* Rounded corners for cards */
+    padding: 20px; /* Padding inside cards */
+    margin-bottom: 20px; /* Space between cards */
+  }
+
+  /* More styles */
+
+/* Button styles */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+    color: #007bff;
+    background-color: #fff;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+  
+  .btn:hover {
+    background-color: #007bff;
+    color: #fff;
+  }
+  
+  /* Input styles */
+  .input-group {
+    margin-bottom: 20px;
+  }
+  
+  .input-label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+  
+  .input-field {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  /* Navigation styles */
+  .navbar {
+    background-color: #333;
+    padding: 15px 0;
+  }
+  
+  .nav-link {
+    color: #fff;
+    text-decoration: none;
+    margin-right: 20px;
+    font-size: 18px;
+  }
+  
+  .nav-link:hover {
+    color: #007bff;
+  }
+  
+  /* Footer styles */
+  .footer {
+    background-color: #333;
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+  }
+  
+  /* Table styles */
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  .table th, .table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .table th {
+    background-color: #f2f2f2;
+  }
+  
+  /* Tooltip styles */
+  .tooltip {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  /* Add more styles as needed */
+  
+  
+    

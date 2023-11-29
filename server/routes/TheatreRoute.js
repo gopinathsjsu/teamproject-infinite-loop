@@ -99,7 +99,7 @@ router.get('/getAllTheatersScreens/:id', async (req, res) => {
         console.log(movie_data);
         var response = [];
         for (const theater of Theaters) {
-            const screenDetails = await ScreenModel.find({ theater_id: theater.id, movie_id: req.params.id }).select({ name: 1, id: 1, show_timings: 1, _id: 0 ,price:1});
+            const screenDetails = await ScreenModel.find({ theater_id: theater.id, movie_id: req.params.id }).select({ name: 1, id: 1, show_timings: 1, _id: 0, price: 1 });
             console.log(screenDetails);
             response.push({
                 id: theater.id,
@@ -168,5 +168,22 @@ router.post('/deleteTheater', async (req, res) => {
         console.log(err);
         res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).send("Internal server Error");
     })
+});
+router.get('/getTheatersNearBy/:pincode', async (req, res) => {
+    console.log(req.params['pincode']);
+    pincode = Number(req.params['pincode']);
+    try {
+
+        const theatersNearby = await Theater.find({
+            zipcode: { $gte: pincode - 500, $lte: pincode + 500 }
+        });
+        res.json({
+            theaters: theatersNearby
+        })
+    }
+    catch (err) {
+        console.log(err);
+        res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).send("Interal server error");
+    }
 });
 module.exports = router; 

@@ -72,7 +72,7 @@ export default function addScreen() {
         let newMovieSeatDetails = { ...seatDetails };
         for (let key in seatDetails) {
             seatDetails[key].forEach((seatValue, seatIndex) => {
-                if (seatValue === 2) {
+                if (seatValue === 3) {
                     seatDetails[key][seatIndex] = 0;
                 }
             })
@@ -275,6 +275,7 @@ export default function addScreen() {
                                 {editable ?
                                     <Box gap={2} my={4}>
                                         <Button variant="contained" onClick={changeEditable}>Show Preview</Button>
+                                        <Button variant="outlined" onClick={clearSelectedSeats}>Reset Layout</Button>
                                     </Box>
                                     : <Box gap={2} my={4}>
                                         <Button style={{ marginRight: "5px" }} variant="outlined" onClick={changeEditable}>Edit Layout</Button>

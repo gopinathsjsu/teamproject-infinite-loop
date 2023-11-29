@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, set } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import {
@@ -15,6 +15,7 @@ import {
   InputLabel,
   Link,
   MenuItem,
+  Modal,
   Select,
   TextField,
   Typography,
@@ -41,6 +42,18 @@ const schema = zod.object({
   timing: zod.string().min(1, "Select at least one timing"),
 });
 
+const modalStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};
+
 export default function addScreen() {
   const router = useRouter();
   const { movieName } = useParams();
@@ -52,10 +65,12 @@ export default function addScreen() {
   const [title, setTitle] = useState();
   const [releaseDate, setReleaseDate] = useState<any>();
   const [endDate, setEndDate] = useState();
-
+  const [open, setOpen] = useState(false);
   //SEATS CODE
   const [seatDetails, setSeatDetails] = useState<Seats>({});
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
+  const [key, setKey] = useState<string>("");
+  const checkoutURL = `http://localhost:8080/payment/checkout_sessions/${key}`;
 
   useEffect(() => {
     clearSelectedSeats();
@@ -234,17 +249,17 @@ export default function addScreen() {
   };
 
   const getReqSeatDeatils = () => {
-    let seatArray = [];
+    let seatArray:any = {};
     for (let key in seatDetails) {
       let column = [];
       for (let i = 0; i < seatDetails[key].length; i++) {
         if (seatDetails[key][i] === 2) {
-          column.push(3);
+          column.push(1);
         } else {
           column.push(seatDetails[key][i]);
         }
       }
-      seatArray.push(column);
+      seatArray[key] = column;
     }
     return seatArray;
   };
@@ -268,14 +283,18 @@ export default function addScreen() {
     data["seatSelected"] = selectedSeats;
     data["movie_id"] = movieName;
     data["key"] = key;
-    data["price"] = cost * selectedSeats.length * 100;
+    data["price"] = cost * 100;
     data["is_prime"] = false;
     console.log(data);
     const post_data = await getDataFromEndPoint(
       data,
-      "payment/buyTickets",
+      "payment/storeTicketBookingDetails",
       "POST"
     );
+    if (post_data.status == 200) {
+      setKey(key);
+      setOpen(true);
+    }
   }
 
   function theaterChange(event: any) {
@@ -294,6 +313,10 @@ export default function addScreen() {
     });
   }
 
+  const handleCloseModal = () => {
+    setOpen(false);
+  };
+
   return (
     <React.Fragment>
       <CssBaseline />
@@ -301,7 +324,7 @@ export default function addScreen() {
         maxWidth={false}
         style={{ marginLeft: "0px", marginRight: "0px", marginTop: "6%" }}
       >
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form>
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <Typography variant="h4">Book Ticket - {title}</Typography>
           </Box>
@@ -450,7 +473,7 @@ export default function addScreen() {
                     {selectedSeats.length !== 0 && (
                       <Button
                         variant="contained"
-                        type="submit"
+                        // type="submit"
                         onClick={() => {
                           onSubmit();
                         }}
@@ -477,6 +500,19 @@ export default function addScreen() {
           </div>
         </>
       </Container>
+      <Modal open={open} onClose={handleCloseModal}>
+        <Box sx={modalStyle}>
+          <form action={checkoutURL} method="POST">
+            <Button
+              type="submit"
+              style={{ marginRight: "5px" }}
+              variant="outlined"
+            >
+              checkout
+            </Button>
+          </form>
+        </Box>
+      </Modal>
     </React.Fragment>
   );
 }

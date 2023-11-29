@@ -7,19 +7,20 @@ import { Box, Card, CardActionArea, CardMedia, CardContent, Typography } from '@
 import Container from '@mui/material/Container';
 import { useRouter } from 'next/navigation';
 import { getDataFromEndPoint } from '@/src/lib/backend-api';
+import useStore from '@/src/store';
 
-
-const MovieCard = ({ movie, onImageClick }: { movie: any, onImageClick: any }) => {
+const Theatercard = ({ theater, onImageClick }: { theater: any, onImageClick: any }) => {
     const [isHovered, setIsHovered] = useState(false);
 
+
     return (
-        <Card 
-            sx={{ 
+        <Card
+            sx={{
                 width: 200,  // Set the width to 200 pixels
                 height: 300, // Change the height when hovered
-                m: 1, 
-                boxShadow: 3, 
-                position: 'relative', 
+                m: 1,
+                boxShadow: 3,
+                position: 'relative',
                 overflow: 'hidden',
                 '&:hover': {
                     boxShadow: 6,
@@ -28,28 +29,28 @@ const MovieCard = ({ movie, onImageClick }: { movie: any, onImageClick: any }) =
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            <CardActionArea onClick={() => onImageClick(movie.id)}>
+            <CardActionArea onClick={() => onImageClick(theater.id)}>
                 <CardMedia
                     component="img"
                     height="300"
-                    image={movie.banner_url}
-                    alt={movie.title}
+                    image={theater.image_url}
+                    alt={theater.title}
                     sx={{ cursor: 'pointer', transition: 'transform 0.5s ease', transform: isHovered ? 'scale(1.1)' : 'scale(1)' }}
                 />
                 {isHovered ? (
                     <Box sx={{ position: 'absolute', bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.7)', color: 'white', p: 1, width: '100%', height: '100%' }}>
                         <Typography variant="h6" component="div">
-                            {movie.title}
+                            {theater.name}
                         </Typography>
                         <Typography variant="body2">
-                            {movie.genres}
+                            {theater.city}
                         </Typography>
                     </Box>
                 ) : (
                     <CardContent>
                         <Typography variant="body2" color="text.secondary">
-                            {movie.category}
-                        </Typography> 
+                            {theater.state}
+                        </Typography>
                     </CardContent>
                 )}
             </CardActionArea>
@@ -57,28 +58,36 @@ const MovieCard = ({ movie, onImageClick }: { movie: any, onImageClick: any }) =
     );
 };
 
-const MovieSlider = () => {
+interface TheaterNearByProps {
+    location: string;
+}
+const TheaterNearBy: React.FC<TheaterNearByProps> = ({ location }) => {
     const router = useRouter();
-    const [movieData, setMovieData] = useState([]);
-    const handleCardClick = (movieId: any) => {
-        router.push(`/movies/${movieId}`);
+    const store: any = useStore();
+    const [theaterNearByData, setTheaterNearByData] = useState([]);
+    const handleCardClick = (theaterId: any) => {
+        router.push(`/theater/${theaterId}/screens`);
     };
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await getDataFromEndPoint('', 'movie/getRecommendedMovies', 'GET');
-            const data = response.data;
+            const pincode = store.pincode;
+            const response = await getDataFromEndPoint('', 'theater/getTheatersNearBy/' + location, 'GET');
+            const data = response.theaters;
             console.log(data);
-            setMovieData(data);
+            setTheaterNearByData(data);
+            console.log("here");
+            console.log(theaterNearByData);
+            console.log("here");
         };
         fetchData();
-    }, []);
+    }, [location]);
 
     const settings = {
         dots: false,
         infinite: true,
         speed: 500,
-        slidesToShow: 6,
+        slidesToShow: theaterNearByData.length,
         slidesToScroll: 1,
         nextArrow: <SampleNextArrow className={undefined} style={undefined} onClick={undefined} />,
         prevArrow: <SamplePrevArrow className={undefined} style={undefined} onClick={undefined} />,
@@ -86,21 +95,15 @@ const MovieSlider = () => {
 
     return (
         <Box>
-            <Typography variant="h6" sx={{ mb: 2 }}>
-                Recommended Movies
-            </Typography>
+            {theaterNearByData.length ? (
+                <Typography variant="h6" sx={{ mb: 2 }}>
+                    Theaters Near By
+                </Typography>) : ("")}
             <Slider {...settings}>
-                {movieData.map((movie, index) => (
-                    <MovieCard key={index} movie={movie} onImageClick={handleCardClick} />
+                {theaterNearByData.map((movie, index) => (
+                    <Theatercard key={index} theater={movie} onImageClick={handleCardClick} />
                 ))}
             </Slider>
-            <Box mt={4} sx={{ width: '100%', height: '120px', overflow: 'hidden' }}>
-    <img
-        src="https://drive.google.com/uc?id=1RyP7TcOdok3IYMVMwE364m9ghuLFGRvL" // Modified URL
-        alt="Banner"
-        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-    />
-</Box>
         </Box>
     );
 };
@@ -127,6 +130,4 @@ function SamplePrevArrow(props: { className: any; style: any; onClick: any; }) {
     );
 }
 
-
-
-export default MovieSlider;
+export default TheaterNearBy;

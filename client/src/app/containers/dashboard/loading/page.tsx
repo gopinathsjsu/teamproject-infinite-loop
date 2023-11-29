@@ -1,12 +1,17 @@
 import React from 'react';
 
 const LoadingAnimation = () => {
-  // You can replace this URL with the path to your own animated loading image
-  const loadingImageUrl = 'https://media.giphy.com/media/DnU97wuSjD1xTXW6Dx/giphy.gif';
+  const loadingImageUrl = 'https://media.giphy.com/media/Ck8tWBj2lCTnUKdwxW/giphy.gif';
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-      <img src={loadingImageUrl} alt="Loading..." style={{ width: '100px', height: '100px' }} />
+    <div style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '100vh',
+      background: 'linear-gradient(to right, #f8f8f8, #e7e7e7)' // Light grey gradient background
+    }}>
+      <img src={loadingImageUrl} alt="Loading..." style={{ width: '200px', height: '200px' }} />
     </div>
   );
 };

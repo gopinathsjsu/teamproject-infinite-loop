@@ -12,6 +12,7 @@ const { RedisHelperAdd, RedisHelperGet, RedisHelperDelete } = require('../Helper
 const { createCustomer } = require('../Helpers/stripeAPI');
 const { sendSignUpEmail, sendTicketEmail } = require('../Helpers/sendGridHelper');
 const { generateAndPingQRCode } = require('../Helpers/qrCodeGenerator');
+const Movie = require('../models/MovieModel');
 const saltRounds = 10;
 router.get('/addUser', async (req, res) => {
     // RedisHelperAdd(req, res, "hello", { "token": "hello" })
@@ -207,22 +208,43 @@ router.get('/sendMessage', async (req, res) => {
     sendMessage(req, res);
     // res.json({ message: "User details updated successfully", status: HTTP_STATUS_CODES.OK });
 });
-router.get('/profileDetails/:id', async(req,res) => {
-        id = req.params['id'];
-        console.log(id);
-        await User.findOne({user_id : id}).then((result) => {
-            console.log(result);
-            res.json({
-                message : "User details",
-                status : HTTP_STATUS_CODES.OK,
-                data: result
-            })
-
-        }).catch((err) => {
-            console.error(err);
-            res.status(HTTP_STATUS_CODES.BAD_REQUEST).send("Internal server Error");
+router.get('/profileDetails/:id', async (req, res) => {
+    id = req.params['id'];
+    console.log(id);
+    await User.findOne({ user_id: id }).then((result) => {
+        console.log(result);
+        res.json({
+            message: "User details",
+            status: HTTP_STATUS_CODES.OK,
+            data: result
         })
-})
+    }).catch((err) => {
+        console.error(err);
+        res.status(HTTP_STATUS_CODES.BAD_REQUEST).send("Internal server Error");
+    })
 
+});
+
+router.get('/getReommendedMovies/:id', async (req, res) => {
+    id = req.params['id'];
+    const user = await User.findOne({ user_id: id });
+    const userPreferredGenresString = user.genres[0];
+    const userPreferredGenres = userPreferredGenresString.split(',').map(genre => genre.trim());
+    console.log(userPreferredGenres);
+    try {
+        const recommendedMovies = await Movie.find({
+            $or: userPreferredGenres.map(genre => ({ genres: new RegExp(genre, 'i') })),
+        });
+        res.json({
+            status: HTTP_STATUS_CODES.OK,
+            message: "found Movies",
+            data: recommendedMovies
+        })
+    }
+    catch (err) {
+        console.error(err);
+        res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).send("OOPS>>>....");
+    }
+})
 
 module.exports = router;
