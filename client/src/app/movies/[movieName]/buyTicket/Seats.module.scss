@@ -84,8 +84,9 @@
         transform: rotateX(-50deg);
         box-shadow: 0 3px 10px rgba(3, 198, 252, 0.75);
         text-align: center;
-        background-color: #03c6fc;
+        background: linear-gradient(45deg, #03c6fc, #1047c7);
         height: 8rem;
         width: 90%;
+        border-radius: 0 0 100% 100% / 120px;
     }
 }

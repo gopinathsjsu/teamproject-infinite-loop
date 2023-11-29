@@ -9,20 +9,32 @@ const { upload } = require('../Helpers/S3');
 const { sendMessage } = require('../Helpers/WhatsappAPI');
 const uniqid = require('uniqid');
 const { RedisHelperAdd, RedisHelperGet, RedisHelperDelete } = require('../Helpers/RedisHelper');
-const {createCustomer} = require('../Helpers/stripeAPI');
-const { sendSignUpEmail } = require('../Helpers/sendGridHelper');
+const { createCustomer } = require('../Helpers/stripeAPI');
+const { sendSignUpEmail, sendTicketEmail } = require('../Helpers/sendGridHelper');
 const { generateAndPingQRCode } = require('../Helpers/qrCodeGenerator');
 const saltRounds = 10;
-router.get('/addUser', (req, res) => {
+router.get('/addUser', async (req, res) => {
     // RedisHelperAdd(req, res, "hello", { "token": "hello" })
+    // const data = await RedisHelperGet("hello");
+    // console.log('_______');
+    // console.log(data);
+    // res.json({
+    //    /     data: JSON.parse(data)
+    // })
     // const data = {
     //     email: 'mahendrachittupolu@gmail.com',
-    //     name: 'Mahendra'
+    //     name: 'Mahendra',
+    //     movieName: 'Animal',
+    //     showTime: '9:00 Am',
+    //     seatNos: 'A1 B1 C1 D1',
+    //     theaterName: "sandhya",
+    //     qrlink: "https://cdn.britannica.com/17/155017-050-9AC96FC8/Example-QR-code.jpg"
     // };
-    // sendSignUpEmail(data);
-    // console.log(data)
+    // // sendSignUpEmail(data);
+    // // console.log(data)
     generateAndPingQRCode('123456789', "Test");
-    res.send('Hello, world!');
+    // sendTicketEmail(data);
+    // res.send('Hello, world!');
 });
 
 router.post('/signup', upload.single('file'), async (req, res) => {
@@ -77,13 +89,13 @@ router.post('/signup', upload.single('file'), async (req, res) => {
             is_admin: isAdmin,
             is_prime: false,
         });
-      //  const customerID = await createCustomer(newUser.user_id, name, email, phoneNumber);
-    //    newUser.stripe_customer_id = customerID;
+        //  const customerID = await createCustomer(newUser.user_id, name, email, phoneNumber);
+        //    newUser.stripe_customer_id = customerID;
         console.log(newUser);
         // Save the user to the database
 
         try {
-             await newUser.save();
+            await newUser.save();
 
             res.status(HTTP_STATUS_CODES.OK).send("user registered successfully");
         }
@@ -113,7 +125,7 @@ router.post("/login", async (req, res) => {
             })
         }
         else {
-            data = { email: req.body.email, fullname: users.fullname, isAdmin: users.is_admin, profile_url: users.profile_url }
+            data = { email: req.body.email, fullname: users.fullname, isAdmin: users.is_admin, profile_url: users.profile_url, user_id: users.user_id }
             createToken(req, res, email, password);
             console.log(res.getHeaders()['set-cookie']);
             password_match = await bcrypt.compare(password, users.password)
@@ -181,19 +193,23 @@ router.get('/sendMessage', async (req, res) => {
     sendMessage(req, res);
     // res.json({ message: "User details updated successfully", status: HTTP_STATUS_CODES.OK });
 });
-router.get('/profileDetails/:id', async(req,res) => {
-        id = req.params['id'];
-        await User.findOne({id : id}).then((result) => {
-            console.log(result);
-            res.json({
-                message : "User details",
-                status : HTTP_STATUS_CODES.OK,
-                data: result
-            })
-
-        }).catch((err) => {
-            console.error(err);
-            res.status(HTTP_STATUS_CODES.BAD_REQUEST).send("Internal server Error");
+router.get('/profileDetails/:id', async (req, res) => {
+    id = req.params['id'];
+    console.log(id);
+    await User.findOne({ user_id: id }).then((result) => {
+        console.log(result);
+        res.json({
+            message: "User details",
+            status: HTTP_STATUS_CODES.OK,
+            data: result
         })
+
+    }).catch((err) => {
+        console.error(err);
+        res.status(HTTP_STATUS_CODES.BAD_REQUEST).send("Internal server Error");
+    })
+
 });
+
+
 module.exports = router;
