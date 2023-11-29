@@ -42,6 +42,7 @@ router.post('/addScreen', async (req, res) => {
 
         // Save the Screen to the database
         await newScreen.save();
+        await TheaterModel.updateOne({ id: theater_id }, { $push: { screen_ids: newScreen.id } });
         res.json({ message: "Added movie successfully", status: HTTP_STATUS_CODES.OK });
     } catch (error) {
         console.error('Error creating user:', error);
@@ -171,7 +172,7 @@ router.post('/addMovie', async (req, res) => {
         // else {
         await ScreenModel.updateOne({ id: screenId }, {
             movie_name: movie.title,
-            movie_image: movie.poster_url,
+            movie_image: movie.banner_url,
             movie_id: movie.id,
             run_time: movie.run_time,
             movie_id: movie.id,

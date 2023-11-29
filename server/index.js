@@ -4,6 +4,7 @@ const cors = require('cors')
 const mongoose = require('./db');
 const UserRoute = require('../server/routes/UserRoute')
 const TheatreRoute = require('../server/routes/TheatreRoute')
+const PosterRoute = require('../server/routes/PosterRoute')
 const MovieRoute = require('../server/routes/MovieRoute')
 const ScreenRoute = require('../server/routes/ScreenRoute')
 const ArtistRoute = require('../server/routes/ArtistRoute')
@@ -14,7 +15,7 @@ const paymentRoute = require('../server/routes/PaymentRoute');
 const winston = require('winston');
 const port = 8080
 const corsOptions = {
-  origin: ['http://localhost:3000','https://checkout.stripe.com'],
+  origin: ['http://localhost:3000', 'https://checkout.stripe.com'],
   credentials: true,
 };
 const logger = winston.createLogger({
@@ -48,6 +49,7 @@ app.use(
 app.use('/payment', paymentRoute)
 app.use('/artist', ArtistRoute)
 app.use('/theater', TheatreRoute)
+app.use('/poster', PosterRoute)
 app.use('/screen', ScreenRoute)
 app.use('/movie', MovieRoute)
 app.use('/user', UserRoute)
