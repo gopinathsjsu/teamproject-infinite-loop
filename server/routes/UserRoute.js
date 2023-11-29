@@ -193,7 +193,6 @@ router.get('/sendMessage', async (req, res) => {
     sendMessage(req, res);
     // res.json({ message: "User details updated successfully", status: HTTP_STATUS_CODES.OK });
 });
-<<<<<<< HEAD
 router.get('/profileDetails/:id', async(req,res) => {
         id = req.params['id'];
         console.log(id);
@@ -208,16 +207,6 @@ router.get('/profileDetails/:id', async(req,res) => {
         }).catch((err) => {
             console.error(err);
             res.status(HTTP_STATUS_CODES.BAD_REQUEST).send("Internal server Error");
-=======
-router.get('/profileDetails/:id', async (req, res) => {
-    id = req.params['id'];
-    await User.findOne({ id: id }).then((result) => {
-        console.log(result);
-        res.json({
-            message: "User details",
-            status: HTTP_STATUS_CODES.OK,
-            data: result
->>>>>>> 3eaecaa3d5f5c243aca7e3024857f2b2210a21a2
         })
 
     }).catch((err) => {
