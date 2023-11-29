@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const Parallax = ({ image, height = '500px' }) => {
+const Parallax = ({ height = '500px' }) => {
   const [offset, setOffset] = useState(0);
 
   const handleScroll = () => setOffset(window.pageYOffset);
@@ -11,10 +11,13 @@ const Parallax = ({ image, height = '500px' }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Replace YOUR_FILE_ID with your actual file ID from Google Drive.
+  const gifUrl = "https://drive.google.com/uc?export=view&id=1KWxW1QJftNz1euts-alzr4ev23I-w3zc";
+
   return (
     <div
       style={{
-        backgroundImage: `url(https://cdn.flatworldsolutions.com/digital-photography/images/how-to-add-the-parallax-effect-to-your-photos.jpg)`,
+        backgroundImage: `url(${gifUrl})`,
         backgroundAttachment: 'fixed',
         backgroundPosition: `50% ${offset * 0.5}px`,
         backgroundRepeat: 'no-repeat',

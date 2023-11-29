@@ -8,6 +8,7 @@ import Container from '@mui/material/Container';
 import { useRouter } from 'next/navigation';
 import { getDataFromEndPoint } from '@/src/lib/backend-api';
 
+
 const MovieCard = ({ movie, onImageClick }: { movie: any, onImageClick: any }) => {
     const [isHovered, setIsHovered] = useState(false);
 
@@ -93,6 +94,13 @@ const MovieSlider = () => {
                     <MovieCard key={index} movie={movie} onImageClick={handleCardClick} />
                 ))}
             </Slider>
+            <Box mt={4} sx={{ width: '100%', height: '120px', overflow: 'hidden' }}>
+    <img
+        src="https://drive.google.com/uc?id=1RyP7TcOdok3IYMVMwE364m9ghuLFGRvL" // Modified URL
+        alt="Banner"
+        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+    />
+</Box>
         </Box>
     );
 };
@@ -118,5 +126,7 @@ function SamplePrevArrow(props: { className: any; style: any; onClick: any; }) {
         />
     );
 }
+
+
 
 export default MovieSlider;

@@ -29,7 +29,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+      <title>Box Office</title>
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+        <link rel="icon" href="https://drive.google.com/uc?export=view&id=1gF49xuN0t0yjIv7WoybLhTScP6b15-fJ" />
       </head>
       <body>
         <ThemeProvider theme={theme}>
