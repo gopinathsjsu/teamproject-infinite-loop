@@ -125,7 +125,7 @@ router.post("/login", async (req, res) => {
             })
         }
         else {
-            data = { email: req.body.email, fullname: users.fullname, isAdmin: users.is_admin, profile_url: users.profile_url }
+            data = { email: req.body.email, fullname: users.fullname, isAdmin: users.is_admin, profile_url: users.profile_url, user_id: users.user_id }
             createToken(req, res, email, password);
             console.log(res.getHeaders()['set-cookie']);
             password_match = await bcrypt.compare(password, users.password)
@@ -195,7 +195,8 @@ router.get('/sendMessage', async (req, res) => {
 });
 router.get('/profileDetails/:id', async(req,res) => {
         id = req.params['id'];
-        await User.findOne({id : id}).then((result) => {
+        console.log(id);
+        await User.findOne({user_id : id}).then((result) => {
             console.log(result);
             res.json({
                 message : "User details",
