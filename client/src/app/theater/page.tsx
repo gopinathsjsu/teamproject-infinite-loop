@@ -440,11 +440,11 @@ export default function Theater() {
                         sx={{
                           display: "flex",
                           alignItems: "center",
-                          backgroundColor: "#f5f5f5",
+                          // backgroundColor: "#f5f5f5",
                           borderRadius: "8px",
                           padding: "8px 16px",
                           maxWidth: "fit-content",
-                          boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                          // boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
                           "&:hover": {
                             backgroundColor: "#e0e0e0",
                           },
@@ -468,11 +468,11 @@ export default function Theater() {
                           display: "flex",
                           alignItems: "center",
                           mt: 1,
-                          backgroundColor: "#f5f5f5",
+                          // backgroundColor: "#f5f5f5",
                           borderRadius: "8px",
                           padding: "8px 16px",
                           maxWidth: "fit-content",
-                          boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                          // boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
                           "&:hover": {
                             backgroundColor: "#e0e0e0",
                           },

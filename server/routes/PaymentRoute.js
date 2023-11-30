@@ -6,7 +6,7 @@ const User = require('../models/UserModel');
 const { RedisHelperAdd, RedisHelperGet, RedisHelperDelete } = require('../Helpers/RedisHelper');
 const { HTTP_STATUS_CODES } = require('../constants');
 const Transaction = require('../models/TransactionModel');
-const generateAndPingQRCode = require('../Helpers/qrCodeGenerator');
+const {generateAndPingQRCode} = require('../Helpers/qrCodeGenerator');
 const uniqid = require('uniqid');
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);

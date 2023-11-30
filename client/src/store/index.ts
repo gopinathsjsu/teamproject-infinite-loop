@@ -5,7 +5,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware"
 
 
-type Store = {
+export type Store = {
   authUser: FilteredUser | null;
   isLoggedIn: boolean;
   requestLoading: boolean;
