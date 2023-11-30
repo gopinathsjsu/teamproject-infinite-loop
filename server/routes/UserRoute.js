@@ -37,9 +37,9 @@ router.get('/addUser', async (req, res) => {
     // };
     // // sendSignUpEmail(data);
     // // console.log(data)
-    generateAndPingQRCode('123456789', "Test");
+    console.log(await generateAndPingQRCode('123456789', "Test"));
     // sendTicketEmail(data);
-    // res.send('Hello, world!');
+    res.send('Hello, world!');
 });
 
 router.post('/signup', upload.single('file'), async (req, res) => {
@@ -174,31 +174,31 @@ router.post('/updateProfile', upload.single('file'), async (req, res) => {
     }
     const cast = req.body.favoriteCast;
     const crew = req.body.favoriteCrew;
-        await User.updateOne({ user_id: post_data.id }, {
-            fullname: post_data.fullName,
-            email: post_data.email,
-            firstname: '',
-            lastname: '',
-            dob: post_data.dob,
-            gender: post_data.gender,
-            mobile: post_data.phoneNumber,
-            genres: post_data.genres,
-            favourite_artists: cast,
-            favourite_crew: crew,
-            preferred_languages: post_data.preferredLanguages,
-            address1: post_data.address1,
-            address2: post_data.address2,
-            city: post_data.city,
-            state: post_data.state,
-            country: post_data.scountry,
-            zipcode: post_data.zipCode,
-            ...(req.file && { profile_url }),
-        }).then((result) => {
-            console.log(result);
-            res.status(HTTP_STATUS_CODES.OK).send("updated successfully");
-        }).catch((error) => {
-            console.error(error);
-        })
+    await User.updateOne({ user_id: post_data.id }, {
+        fullname: post_data.fullName,
+        email: post_data.email,
+        firstname: '',
+        lastname: '',
+        dob: post_data.dob,
+        gender: post_data.gender,
+        mobile: post_data.phoneNumber,
+        genres: post_data.genres,
+        favourite_artists: cast,
+        favourite_crew: crew,
+        preferred_languages: post_data.preferredLanguages,
+        address1: post_data.address1,
+        address2: post_data.address2,
+        city: post_data.city,
+        state: post_data.state,
+        country: post_data.scountry,
+        zipcode: post_data.zipCode,
+        ...(req.file && { profile_url }),
+    }).then((result) => {
+        console.log(result);
+        res.status(HTTP_STATUS_CODES.OK).send("updated successfully");
+    }).catch((error) => {
+        console.error(error);
+    })
 });
 
 
@@ -236,7 +236,7 @@ router.get('/profileDetails/:id', async (req, res) => {
 
 router.get('/getPurchaseHistory/:id', async (req, res) => {
     id = req.params['id'];
-  //  console.log(id);
+    //  console.log(id);
     const movies = await getMovieDetails();
     //console.log(movies);
     const theaters = await getTheaterDetails();
@@ -247,11 +247,11 @@ router.get('/getPurchaseHistory/:id', async (req, res) => {
         console.log(movies[item.movie_id]);
         itemm.movie = movies[item.movie_id];
         itemm.theater = theaters[item.theater_id];
-        itemm.details=item;
+        itemm.details = item;
         response.push(itemm);
     });
     console.log(purchase_history);
-   
+
     res.json({
         message: "Purchase history",
         status: HTTP_STATUS_CODES.OK,
@@ -281,7 +281,7 @@ router.get('/getReommendedMovies/:id', async (req, res) => {
     }
 })
 
-router.get('/getRewards/:id', async (req, res) => { 
+router.get('/getRewards/:id', async (req, res) => {
     id = req.params['id'];
     console.log(id);
     await User.findOne({ user_id: id }).select({ "rewards": 1 }).then((result) => {

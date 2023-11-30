@@ -4,6 +4,7 @@ import React, { useRef, useState } from 'react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import ReactToPrint from "react-to-print";
 interface TicketProps {
     name: string;
     movieName: string;
@@ -11,6 +12,7 @@ interface TicketProps {
     seatNo: string;
     theaterName: string;
     qrLink: string;
+    screenName: string;
 }
 const containerStyle = {
     display: 'flex',
@@ -24,56 +26,36 @@ const cardStyle = {
     transform: 'scale(1.25)', // Increase size by 25%
     // Add other styling for the card here if needed
 };
-const TicketCard: React.FC<TicketProps> = ({ name, movieName, showTime, seatNo, theaterName, qrLink }) => {
+const TicketCard: React.FC<TicketProps> = ({ name, movieName, showTime, seatNo, theaterName, qrLink, screenName }) => {
     const ticketRef = useRef<HTMLDivElement>(null);
     const [qrCodeLoaded, setQrCodeLoaded] = useState(false);
 
     const downloadPdf = () => {
-        if (ticketRef.current && qrCodeLoaded) {
-            html2canvas(ticketRef.current, {
-                scale: 1, useCORS: true, windowHeight: ticketRef.current.scrollHeight,
-                windowWidth: ticketRef.current.scrollWidth
-            }).then((canvas) => {
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF({
-                    orientation: 'p',
-                    unit: 'mm',
-                    format: 'a4',
-                });
-
-                const imgWidth = 190;
-                const imgHeight = (canvas.height * imgWidth / canvas.width) - 50;
-                pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
-                pdf.save('ticket.pdf');
-            });
-        } else {
-            console.error('Ticket content is not fully loaded');
-        }
+        window.print();
     };
+
 
 
     return (
         <div style={containerStyle}>
             <div style={cardStyle} ref={ticketRef}>
                 <Paper elevation={3} sx={{
-                    maxWidth: 300, margin: 'auto', padding: 2, backgroundColor: '#26a69a'
+                    maxWidth: 300, margin: 'auto', padding: 2, backgroundColor: '#80CBC4'
                 }}>
-                    <Typography variant="h5" component="h1" sx={{ color: '#fff', textAlign: 'center', marginBottom: 2 }}>
+                    <Typography variant="h5" component="h1" sx={{ color: 'black', textAlign: 'center', marginBottom: 2 }}>
                         Box Office
                     </Typography>
-                    <Typography variant="h6" component="h2" sx={{ color: '#fff', textAlign: 'center', marginBottom: 2 }}>
+                    <Typography variant="h6" component="h2" sx={{ color: 'black', textAlign: 'center', marginBottom: 2 }}>
                         Ticket
                     </Typography>
-                    <Box sx={{ color: '#fff', margin: '16px', textAlign: 'center' }}>
+                    <Box sx={{ color: 'black', margin: '2px', textAlign: 'center' }}>
                         <Typography variant="body1">Hi {name},</Typography>
                         <Typography variant="body1">Your ticket for the</Typography>
-                        <Typography variant="body1">{movieName}</Typography>
-                        <Typography variant="body1">{showTime}</Typography>
-                        <Typography variant="body1">{seatNo}</Typography>
-                        <Typography variant="body1">{theaterName}</Typography>
-                        <Typography variant="body1" sx={{ marginBottom: 2 }}>
-                            This is your ticket
-                        </Typography>
+                        <Typography variant="body1">Movie Name : <span style={{ fontWeight: 'bold' }}> {movieName}</span></Typography>
+                        <Typography variant="body1">Screen Name : {screenName}</Typography>
+                        <Typography variant="body1">Show Time :<span style={{ fontWeight: 'bold' }}> {showTime}</span></Typography>
+                        <Typography variant="body1">SeatNos :<span style={{ fontWeight: 'bold' }}> {seatNo} </span></Typography>
+                        <Typography variant="body1">Theater Name : {theaterName}</Typography>
                         <Typography variant="body1">scan this QR at the theater to enjoy your show</Typography>
                     </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2, overflow: 'visible' }}>

@@ -50,6 +50,7 @@
     "react-slick": "^0.29.0",
     "react-spring": "^9.7.3",
     "react-three-fiber": "^6.0.13",
+    "react-to-print": "^2.14.15",
     "recharts": "^2.10.1",
     "redis": "^4.6.11",
     "sass": "^1.69.5",

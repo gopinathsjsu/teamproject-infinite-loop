@@ -10,6 +10,8 @@ const Transaction = require('../models/TransactionModel');
 const { generateAndPingQRCode } = require('../Helpers/qrCodeGenerator');
 const uniqid = require('uniqid');
 const { daysDifference } = require('../controllers/MovieController');
+const { sendTicketEmail } = require('../Helpers/sendGridHelper');
+const Theater = require('../models/TheaterModel');
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
@@ -52,11 +54,12 @@ router.post('/storeTicketBookingDetails', async (req, res) => {
         })
     }
 });
-router.post('/checkout_sessions/:id', async (req, res) => {
+router.post('/checkout_sessions/:id/:rewards', async (req, res) => {
     console.log("at payment checkout session");
     console.log("-------------------");
     console.log(req.params['id']);
     console.log("-------------------");
+    rewards = req.params['rewards'];
     const redis_data = await RedisHelperGet(req.params['id']);
     console.log(redis_data);
     const data = JSON.parse(JSON.parse(redis_data).body);
@@ -142,6 +145,7 @@ router.get('/success', async (req, res) => {
         const current_day = daysDifference(movie_details.release_date, date);
         movie_details.day_wise_tickets_sold[current_day] = movie_details.day_wise_tickets_sold[current_day] + no_of_seats_booked;
         movie_details.save();
+        const theaters_details = await Theater.findOne({ id: theater_id });
         const transaction = new Transaction({
             id: uniqid(),
             user_id: data.user_id,
@@ -155,25 +159,47 @@ router.get('/success', async (req, res) => {
             price: data.price,
             payment_method: session.payment_method_types[0],
             status: session.payment_status,
+            email: session.customer_details.email,
+            name: session.customer_details.name,
+            movieName: movie_details.title,
+            theaterName: theaters_details.name,
+
         });
         await transaction.save();
-        await ScreenModel.findOneAndUpdate({ id: screen_id }, {
-            $inc: { [`seats_day_wise.${filter_date}.${timing}.tickets_bought`]: no_of_seats_booked },
-            $set: {
-                [`seats_day_wise.${filter_date}.${timing}.SeatArray`]: screen_layout
-            }
-        }).then((result) => {
-            console.log(result);
-        }).catch((error) => {
-            console.error(error);
-        });
+        // await ScreenModel.findOneAndUpdate({ id: screen_id }, {
+        //     $inc: { [`seats_day_wise.${filter_date}.${timing}.tickets_bought`]: no_of_seats_booked },
+        //     $set: {
+        //         [`seats_day_wise.${filter_date}.${timing}.SeatArray`]: screen_layout
+        //     }
+        // }).then((result) => {
+        //     console.log(result);
+        // }).catch((error) => {
+        //     console.error(error);
+        // });
+        const email_data = {
+            email: session.customer_details.email,
+            name: session.customer_details.name,
+            movieName: movie_details.title,
+            showTime: timing,
+            seatNos: seat_selected.join(' '),
+            screenName: screenDetails.name,
+            theaterName: theaters_details.name,
+            qrlink: qr_code,
+        }
+        await sendTicketEmail(email_data)
         await RedisHelperDelete(req.query.key);
-        res.redirect(303, 'http://localhost:3000/book-ticket/ticket');
+        res.redirect(303, 'http://localhost:3000/book-ticket/ticket/' + transaction.id);
     } catch (err) {
         res.status(500).send(err.message);
     }
 });
-
+router.get('/getTicketData/:id', async (req, res) => {
+    const ticketDetails = await Transaction.findOne({ id: req.params['id'] })
+    res.json({
+        data: ticketDetails,
+        status: HTTP_STATUS_CODES.OK
+    })
+})
 router.post('/buyTickets', async (req, res) => {
     console.log("at payment buy tickets");
     console.log(req.body);

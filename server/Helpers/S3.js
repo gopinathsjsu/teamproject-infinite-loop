@@ -65,7 +65,6 @@ function getUrl(key) {
     const url = s3.getSignedUrl('getObject', {
         Bucket: bucketName,
         Key: key,
-        Expires: 30 * 60
     })
     return url;
 }
@@ -85,7 +84,7 @@ const uploadToS3 = async (filePath, id) => {
 
     const params = {
         Bucket: bucketName,
-        Key: 'box-office-team-infinite-loop/qrcode' + id + '.png',
+        Key: '/qrcode' + id + '.png',
         Body: fs.createReadStream(filePath),
         ContentType: 'image/png', // Adjust the content type accordingly
     };

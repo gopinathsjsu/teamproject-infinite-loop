@@ -2,7 +2,7 @@ const sgMail = require('@sendgrid/mail')
 require('dotenv').config();
 api_key = process.env.SENDGRID_API_KEY;
 
-exports.sendSignUpEmail = (data) => {
+exports.sendSignUpEmail = async (data) => {
     const { email, name } = data;
     console.log(api_key);
     sgMail.setApiKey(api_key)
@@ -18,7 +18,7 @@ exports.sendSignUpEmail = (data) => {
         },
     };
 
-    sgMail.send(msg)
+    await sgMail.send(msg)
         .then(() => {
             console.log('Signup email sent successfully');
         })
@@ -27,8 +27,8 @@ exports.sendSignUpEmail = (data) => {
         });
 }
 
-exports.sendTicketEmail = (data) => {
-    const { email, name, movieName, showTime, seatNos, theaterName, qrlink } = data;
+exports.sendTicketEmail = async (data) => {
+    const { email, name, movieName, showTime, seatNos, theaterName, qrlink, screenName } = data;
     console.log(api_key);
     sgMail.setApiKey(api_key)
     const msg = {
@@ -43,16 +43,17 @@ exports.sendTicketEmail = (data) => {
             showTime: showTime,
             seatNos: seatNos,
             theaterName: theaterName,
-            qrlink: qrlink
+            qrlink: qrlink,
+            screenName: screenName
             // Add any other dynamic data you want to include in the email
         },
     };
 
-    sgMail.send(msg)
+    await sgMail.send(msg)
         .then(() => {
             console.log('Ticket email sent successfully');
         })
         .catch((error) => {
-            console.error('Error sending signup email:', error);
+            console.log('Error sending signup email:', error);
         });
 }

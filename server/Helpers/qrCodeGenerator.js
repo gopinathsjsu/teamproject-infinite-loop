@@ -9,7 +9,8 @@ const generateAndPingQRCode = async (transactionId, urlToPing) => {
 
         console.log('QR Code saved as qrcode.png');
     });
-    link = await uploadToS3(filepath, "123");
+    link = await uploadToS3(filepath, transactionId);
+    // console.log(link);
     url_aws = await getUrl(link.key)
     return url_aws;
 };
