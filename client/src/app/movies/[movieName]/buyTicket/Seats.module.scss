@@ -39,10 +39,12 @@
     cursor: default;
     color: #f2f2f2 !important;
     box-shadow: none;
+    border: none;
 }
 
 .seatBooked {
     background: rgba(138, 138, 138, 0.418);
+    border: 0.8px solid #52c41a; /* Green border for not booked seats */
     cursor: default;
     border: none; /* No green border for booked seats */
 }
@@ -60,6 +62,7 @@
 .seatSelected {
     color: #fff !important;
     background: rgb(53 212 6);
+    border: 0.8px solid #52c41a; /* Green border for not booked seats */
     border: none; /* No green border for selected seats */
 }
 

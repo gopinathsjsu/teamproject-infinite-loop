@@ -18,6 +18,7 @@
   padding: 7px 11px;
   border-radius: 3px;
   box-shadow: 0 2px 4px 0 rgb(0 0 0 / 11%), 0 2px 4px 0 rgb(0 0 0 / 14%);
+  border: 0.8px solid #52c41a; /* Green border for not booked seats */
 }
 
 .colName {
@@ -33,6 +34,7 @@
 .seatBooked {
   cursor: default;
   // background: #fff;
+  border: none; /* Green border for not booked seats */
   color: #fbf9f9 !important;
   box-shadow: none;
 }
@@ -40,10 +42,12 @@
 .seatSelected {
   color: #fff !important;
   background: rgb(53 212 6);
+  border: 0.8px solid #52c41a; /* Green border for not booked seats */
 }
 
 .seatBlocked {
   color: #fff !important;
+  border: none;
   background: tomato;
 }
 
