@@ -225,7 +225,7 @@ function ResponsiveAppBar() {
         );
     };
 
-    function submitSuccess(){
+    function submitSuccess() {
         setOpenDiscounts(false);
     }
 
@@ -593,7 +593,7 @@ function ResponsiveAppBar() {
                                 height: "400px",
                             }}
                         >
-                           <Discount submitSuccess={submitSuccess}/>
+                            <Discount submitSuccess={submitSuccess} />
                         </Box>
                     </Fade>
                 </Modal>
