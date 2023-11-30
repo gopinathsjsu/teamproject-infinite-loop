@@ -43,7 +43,7 @@ router.post('/addScreen', async (req, res) => {
         // Save the Screen to the database
         await newScreen.save();
         await TheaterModel.updateOne({ id: theater_id }, { $push: { screen_ids: newScreen.id } });
-        res.json({ message: "Added movie successfully", status: HTTP_STATUS_CODES.OK });
+        res.json({ message: "Added screen successfully", status: HTTP_STATUS_CODES.OK });
     } catch (error) {
         console.error('Error creating user:', error);
         res.json({

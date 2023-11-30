@@ -40,7 +40,7 @@ router.post('/add', upload.array('movieposter', 2), async (req, res) => {
         res.json({ message: "Added movie successfully", status: HTTP_STATUS_CODES.OK });
     } catch (error) {
         console.error('Error creating user:', error);
-        res.status(500).send('Internal Server Error');
+        res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).send('Internal Server Error');
     }
 })
 router.post('/updateMovie', upload.array('movieposter', 2), async (req, res) => {
@@ -73,7 +73,7 @@ router.post('/updateMovie', upload.array('movieposter', 2), async (req, res) => 
     // Save the user to the database
     await Movie.updateOne({ id: req.body.id }, update).then((result) => {
         console.log(result);
-        res.status(HTTP_STATUS_CODES.OK).send("updated successfully");
+        res.status(HTTP_STATUS_CODES.OK).send("updated movie details successfully");
     }).catch((err) => {
         console.log(err);
         res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).send("Internal server error");
@@ -95,10 +95,10 @@ router.get('/all', async (req, res) => {
 
         // Save the user to the database
         const movies = await Movie.find();
-        res.json({ message: "Added movie successfully", status: HTTP_STATUS_CODES.OK, movies: movies });
+        res.json({ message: "loaded all movie successfully", status: HTTP_STATUS_CODES.OK, movies: movies });
     } catch (error) {
         console.error('Error creating user:', error);
-        res.status(500).send('Internal Server Error');
+        res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).send('Internal Server Error');
     }
 })
 
@@ -138,8 +138,8 @@ router.get('/:id', async (req, res) => {
         //  console.log(movie);
         res.json({ message: "Added movie successfully", status: HTTP_STATUS_CODES.OK, movie: movie, cast: cast, crew: crew });
     } catch (error) {
-        console.error('Error creating user:', error);
-        res.status(500).send('Internal Server Error');
+        console.error('Error ', error);
+        res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).send('Internal Server Error');
     }
 })
 
