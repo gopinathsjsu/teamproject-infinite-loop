@@ -21,7 +21,6 @@ import {
     Backdrop,
     Drawer,
     Fade,
-    Grid,
     InputAdornment,
     List,
     ListItem,
@@ -31,12 +30,10 @@ import {
     createFilterOptions,
 } from "@mui/material";
 import { Autocomplete, TextField } from "@mui/material";
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as zod from 'zod';
 import LocationSearchInput from "./LocationSearchInput"; // adjust the path as necessary
 import Script from "next/script";
 import useStore from "@/src/store";
+import Discount from "./discount";
 
 const MapIconWrapper = styled("div")(({ theme }) => ({
     padding: theme.spacing(0, 2),
@@ -80,11 +77,6 @@ const style = {
     p: 4,
 };
 
-const discountSchema = zod.object({
-    tuesdayDiscount: zod.string().min(0, { message: "Must be between 0 and 100" }).max(100, { message: "Must be between 0 and 100" }),
-    dailyDiscount: zod.string().min(0, { message: "Must be between 0 and 100" }).max(100, { message: "Must be between 0 and 100" })
-  });
-
 function ResponsiveAppBar() {
     const router = useRouter();
     const [imageUrl, setImageUrl] = React.useState("/static/images/avatar/2.jpg");
@@ -107,10 +99,6 @@ function ResponsiveAppBar() {
     const [open, setOpen] = useState(false);
     const [settings, setSettings] = useState<any[]>([]);
     const [opeDiscounts, setOpenDiscounts] = useState<boolean>(false);
-
-    const { control, handleSubmit, formState: { errors } } = useForm({
-        resolver: zodResolver(discountSchema)
-    });
 
     React.useEffect(() => {
         fetchMovieData();
@@ -167,6 +155,7 @@ function ResponsiveAppBar() {
         name: string;
         profile_url: string;
     }
+
     const handleCardClick = (movieId: string) => {
         router.push(`/movies/${movieId}`);
     };
@@ -236,13 +225,9 @@ function ResponsiveAppBar() {
         );
     };
 
-    const getErrorMessage = (error: any) => {
-        return error && typeof error.message === 'string' ? error.message : '';
-    };
-
-    const onSubmit = (data: any) => {
-        console.log(data);
-    };
+    function submitSuccess(){
+        setOpenDiscounts(false);
+    }
 
     return (
         <Box>
@@ -485,7 +470,7 @@ function ResponsiveAppBar() {
                                     <PinDropIcon />
                                 </MapIconWrapper>
                             </Search>
-                            {location != "" ? location : "Select Location"}
+                            {location != "" ? location : "Select Pincode"}
                         </Button>
                         {store.isLoggedIn ? (
                             <Box sx={{ flexGrow: 0 }}>
@@ -608,51 +593,7 @@ function ResponsiveAppBar() {
                                 height: "400px",
                             }}
                         >
-                            <form onSubmit={handleSubmit(onSubmit)}>
-                                <Grid container spacing={2}>
-                                    <Grid item xs={12}>
-                                        <Controller
-                                            name="tuesdayDiscount"
-                                            control={control}
-                                            defaultValue={0}
-                                            render={({ field }) => (
-                                                <TextField
-                                                    {...field}
-                                                    type="number"
-                                                    label="Tuesday Discounts (%)"
-                                                    error={Boolean(errors.tuesdayDiscount)}
-                                                    helperText={getErrorMessage(errors.tuesdayDiscount)}
-                                                    InputProps={{ inputProps: { min: 0, max: 100 } }}
-                                                    fullWidth
-                                                />
-                                            )}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <Controller
-                                            name="dailyDiscount"
-                                            control={control}
-                                            defaultValue={0}
-                                            render={({ field }) => (
-                                                <TextField
-                                                    {...field}
-                                                    type="number"
-                                                    label="Daily Discounts (%)"
-                                                    error={Boolean(errors.dailyDiscount)}
-                                                    helperText={getErrorMessage(errors.dailyDiscount)}
-                                                    InputProps={{ inputProps: { min: 0, max: 100 } }}
-                                                    fullWidth
-                                                />
-                                            )}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <Button type="submit" variant="contained" color="primary">
-                                            Submit
-                                        </Button>
-                                    </Grid>
-                                </Grid>
-                            </form>
+                           <Discount submitSuccess={submitSuccess}/>
                         </Box>
                     </Fade>
                 </Modal>

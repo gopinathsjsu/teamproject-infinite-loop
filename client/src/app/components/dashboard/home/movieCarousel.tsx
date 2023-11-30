@@ -83,25 +83,17 @@ const ImageSlider = () => {
 
   const fetchMovieData = async () => {
     const response = await getDataFromEndPoint("", 'poster/all', 'GET');
-    console.log(response);
     const data = response.data;
-    console.log('--------');
-    console.log(data);
-    console.log('--------');
     const mappedData = data.map((movie: any) => ({
       id: movie.id,
       title: movie.title,
       poster_url: movie.poster_url,
       poster_id: movie.poster_id
     }));
-    console.log(mappedData);
     setMovieData(mappedData);
   };
   const fetchMovies = async () => {
     const response = await getDataFromEndPoint("", 'movie/all', 'GET');
-    console.log("moviessDataa");
-    console.log(response);
-    console.log("moviessDataa");
     const data = response.movies;
     const mappedData = data.map((movie: any) => ({
       id: movie.id,

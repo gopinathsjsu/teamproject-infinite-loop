@@ -293,7 +293,9 @@ export default function addScreen() {
                         {seatDetails && editable && <RenderSeats />}
                         {seatDetails && !editable && <RenderFormatedSeats />}
                         <div className={styles.cont_screen}>
-                            <div className={styles.screen}></div>
+                            <div className={styles.screen}>
+                                <span className={styles.screen_text}>SCREEN</span>
+                            </div>
                         </div>
                     </div>
                 </>

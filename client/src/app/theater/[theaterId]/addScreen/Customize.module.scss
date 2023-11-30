@@ -107,4 +107,14 @@
     width: 90%;
     border-radius: 0 0 100% 100% / 120px;
   }
+  
+  .screen_text {
+    color: white; /* Choose color that suits your design */
+    font-size: 2rem; /* Adjust size as needed */
+    font-weight: bold; /* If you want the text to be bold */
+    transform: rotateX(50deg); /* Counteract the parent rotation if needed */
+    position: relative;
+    z-index: 2; /* Ensure it's above the screen layer */
+    top: 2rem;
+  }
 }

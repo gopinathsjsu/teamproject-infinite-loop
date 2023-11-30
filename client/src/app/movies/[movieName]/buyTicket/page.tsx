@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { useForm, Controller, set } from "react-hook-form";
+import { useParams } from "next/navigation";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import {
@@ -22,6 +22,7 @@ import {
   TableCell,
   TableContainer,
   TableRow,
+  TextField,
   Typography,
 } from "@mui/material";
 
@@ -59,7 +60,6 @@ const style = {
 };
 
 export default function addScreen() {
-  const router = useRouter();
   const { movieName } = useParams();
   const [editable, setEditable] = useState<boolean>(true);
   const [theaters, setTheaters] = useState<any[]>([]);
@@ -70,20 +70,21 @@ export default function addScreen() {
   const [releaseDate, setReleaseDate] = useState<any>();
   const [endDate, setEndDate] = useState();
   const [open, setOpen] = useState(false);
-  //SEATS CODE
   const [seatDetails, setSeatDetails] = useState<Seats>({});
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
   const [orderDetails, setOrderDetails] = useState<any>(null);
+  const [discountRates, setDiscountRates] = useState<any>(null);
   const [key, setKey] = useState<string>("");
   const checkoutURL = `http://localhost:8080/payment/checkout_sessions/${key}`;
 
   useEffect(() => {
     clearSelectedSeats();
+
     const fetchData = async () => {
-      const response: any = await fetch(
-        `http://localhost:8080/theater/getAllTheatersScreens/${movieName}`
-      );
-      if (response.status === 200) {
+      try {
+        const response: any = await fetch(
+          `http://localhost:8080/theater/getAllTheatersScreens/${movieName}`
+        );
         const res = await response.json();
         setTitle(res.data.movieName);
         setTheaters(res.data.theaters);
@@ -94,9 +95,24 @@ export default function addScreen() {
             ? currentDate
             : Dayjs(res.data.releaseDate);
         setReleaseDate(openingDate);
+
+      } catch (error) {
+        console.log(error);
       }
     };
+
+    const fetchDiscountRates = async () => {
+      try {
+        const response: any = await fetch(`http://localhost:8080/discount/all`);
+        const res = await response.json();
+        setDiscountRates(res.data)
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     fetchData();
+    fetchDiscountRates();
   }, []);
 
   //SEATS CODE
@@ -139,6 +155,7 @@ export default function addScreen() {
         "screen/getScreenLayout",
         "POST"
       );
+      setSelectedSeats([]);
       setSeatDetails({ ...response.data.seatArray });
       setCost(response.data.cost);
       changeEditable();
@@ -272,6 +289,7 @@ export default function addScreen() {
   async function onSubmit() {
     let data = getValues();
     let dayOfWeek = data.date.day();
+    console.log(dayOfWeek);
     const timeStamp = data.timing.split(" ")[1];
     let time = null;
     if (timeStamp == "pm") {
@@ -281,6 +299,10 @@ export default function addScreen() {
       time = data.timing.split(":")[0];
     }
     const key = data.theater + "-" + data.screen + "-" + time + "-" + data.date;
+    let discount = dayOfWeek.toString() === "2" ? discountRates.tuesday : null;
+    if (time >= 18) discount = discountRates.night_time;
+    const totalPrice = discount != null ? cost * selectedSeats.length * (1 - discount * 0.01) : cost * selectedSeats.length;
+    data["discount"] = discount;
     data["screenLayout"] = getReqSeatDeatils();
     data["seatSelected"] = selectedSeats;
     data["movie_id"] = movieName;
@@ -293,17 +315,16 @@ export default function addScreen() {
     //   "POST"
     // );
     // if (reqData.status == 200) {
-    //   setKey(key);
-    //   setOpen(true);
-    // }
     const tempOrderDetails = {
-      ticketsBooked :selectedSeats.join(","),
+      ticketsBooked: selectedSeats.join(","),
       pricePerTicket: cost,
-      discount : dayOfWeek === "2" ? "Tuesday's Discount 10%" : "5%",
-      totalPrice: cost * selectedSeats.length,
+      discount: dayOfWeek.toString() === "2" ? `Tuesday's Discount ${discount}%` : (time >= 18 ? `Night Show Discount ${discount}%` : '0'),
+      totalPrice: totalPrice,
     }
     setOrderDetails(tempOrderDetails);
+    setKey(key);
     setOpen(true);
+    // }
   }
 
   function theaterChange(event: any) {
@@ -351,6 +372,19 @@ export default function addScreen() {
                 defaultValue={null}
                 render={({ field }) => (
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    {!editable ? (
+                      <TextField
+                        {...field}
+                        label="SelectDate"
+                        value={field.value ? Dayjs(field.value).format('MM/DD/YYYY') : ''}
+                        disabled={!editable}
+                        fullWidth
+                        variant="outlined"
+                        InputLabelProps={{
+                          shrink: Boolean(field.value),
+                        }}
+                      />
+                    ) : (
                     <DatePicker
                       disabled={!editable}
                       minDate={Dayjs(releaseDate)}
@@ -359,6 +393,8 @@ export default function addScreen() {
                       label="Select Date"
                       {...field}
                     />
+                    )
+                    }
                   </LocalizationProvider>
                 )}
               />
@@ -503,7 +539,9 @@ export default function addScreen() {
               <div> Select Theater and Apply Changes to Select Layout </div>
             )}
             <div className={styles.cont_screen}>
-              <div className={styles.screen}></div>
+              <div className={styles.screen}>
+                <span className={styles.screen_text}>SCREEN</span>
+              </div>
             </div>
           </div>
         </>
@@ -554,7 +592,7 @@ export default function addScreen() {
             </TableContainer>
             <Button
               type="submit"
-              sx={{ mt:5}}
+              sx={{ mt: 5 }}
               variant="contained"
             >
               checkout

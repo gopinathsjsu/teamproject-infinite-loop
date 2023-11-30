@@ -37,23 +37,23 @@ const screen =
 export default function editScreen() {
 
     const router = useRouter();
-    const [screenDetails,setScreenDetails] = useState<any>({});
+    const [screenDetails, setScreenDetails] = useState<any>({});
     const [seatDetails, setSeatDetails] = useState<Seats>(screen?.seats || {});
     const { theaterId } = useParams();
     const [row, setRow] = useState<number>(screen?.rows || 0);
     const [column, setColumn] = useState<number>(screen?.cols || 0);
     const [editable, setEditable] = useState<boolean>(false);
 
-    useEffect(() => { 
-        clearSelectedSeats(); 
-        if(localStorage.getItem('screenDetails') != null){
+    useEffect(() => {
+        clearSelectedSeats();
+        if (localStorage.getItem('screenDetails') != null) {
             let data = localStorage.getItem('screenDetails');
-            if( data == null) data = "";
+            if (data == null) data = "";
             else {
                 const details = JSON.parse(data);
-                setValue('screenName',details.name);
+                setValue('screenName', details.name);
                 setValue('format', details.format);
-                setValue('timing',details.timings);
+                setValue('timing', details.timings);
                 setScreenDetails(details);
                 setSeatDetails(details.seatDetails);
                 setRow(details.rows);
@@ -269,8 +269,8 @@ export default function editScreen() {
 
                                 {editable ?
                                     <Box gap={2} my={4}>
-                                        <Button variant="contained" onClick={changeEditable} sx={{mr:2}}>Show Preview</Button>
-                                         <Button variant="outlined" onClick={clearSelectedSeats}>Reset Layout</Button>
+                                        <Button variant="contained" onClick={changeEditable} sx={{ mr: 2 }}>Show Preview</Button>
+                                        <Button variant="outlined" onClick={clearSelectedSeats}>Reset Layout</Button>
                                     </Box>
                                     : <Box gap={2} my={4}>
                                         <Button style={{ marginRight: "5px" }} variant="outlined" onClick={changeEditable}>Edit Layout</Button>
@@ -288,7 +288,9 @@ export default function editScreen() {
                         {seatDetails && editable && <RenderSeats />}
                         {seatDetails && !editable && <RenderFormatedSeats />}
                         <div className={styles.cont_screen}>
-                            <div className={styles.screen}></div>
+                            <div className={styles.screen}>
+                                <span className={styles.screen_text}>SCREEN</span>
+                            </div>
                         </div>
                     </div>
                 </>
