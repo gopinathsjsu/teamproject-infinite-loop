@@ -107,7 +107,7 @@ router.get('/all', async (req, res) => {
 })
 
 router.get('/getAllMoviesNames', async (req, res) => { 
-    const response = await Movie.find().select({ title: 1, _id: 0 });
+    const response = await Movie.find().select({ title: 1, _id: 0 ,id:1});
     res.json({
         message: "get movie names",
         status: HTTP_STATUS_CODES.OK,
