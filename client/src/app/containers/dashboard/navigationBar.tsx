@@ -1,5 +1,6 @@
 import * as React from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -14,55 +15,28 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
-import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
 import PinDropIcon from "@mui/icons-material/PinDrop";
 import {
     Backdrop,
     Drawer,
     Fade,
+    Grid,
     InputAdornment,
     List,
     ListItem,
     ListItemText,
     ListSubheader,
     Modal,
-    Stack,
     createFilterOptions,
 } from "@mui/material";
-
+import { Autocomplete, TextField } from "@mui/material";
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as zod from 'zod';
 import LocationSearchInput from "./LocationSearchInput"; // adjust the path as necessary
 import Script from "next/script";
 import useStore from "@/src/store";
-import { useEffect, useState } from "react";
-import { Autocomplete, TextField } from "@mui/material";
-import theme from "../../styles/theme";
-
-const Search = styled("div")(({ theme }) => ({
-    position: "relative",
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
-    "&:hover": {
-        backgroundColor: alpha(theme.palette.common.white, 0.25),
-    },
-    marginRight: theme.spacing(2),
-    marginLeft: 0,
-    width: "100%",
-    [theme.breakpoints.up("sm")]: {
-        marginLeft: theme.spacing(3),
-        width: "auto",
-    },
-}));
-
-const SearchIconWrapper = styled("div")(({ theme }) => ({
-    padding: theme.spacing(0, 2),
-    height: "100%",
-    position: "absolute",
-    pointerEvents: "none",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-}));
 
 const MapIconWrapper = styled("div")(({ theme }) => ({
     padding: theme.spacing(0, 2),
@@ -73,35 +47,27 @@ const MapIconWrapper = styled("div")(({ theme }) => ({
     alignItems: "center",
     justifyContent: "center",
     marginTop: "10px",
-    left: "-60px",
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: "inherit",
-    "& .MuiInputBase-input": {
-        padding: theme.spacing(1, 1, 1, 0),
-        // vertical padding + font size from searchIcon
-        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-        transition: theme.transitions.create("width"),
-        width: "100%",
-        [theme.breakpoints.up("md")]: {
-            width: "20ch",
-        },
-    },
+    left: "-70px",
 }));
 
 const pages = [
     { name: "Movies", route: "/movies/all" },
     { name: "Theaters", route: "/theater" },
     { name: "Arists", route: "/artist/all" },
+    { name: 'Manage Discounts', route: 'openModal' },
 ];
-const settings = [
+const profileSettings = [
     { name: 'Profile', route: '/personal_profile' },
     { name: 'Purchases', route: '/purchases' },
     { name: 'Rewards', route: '/rewards' },
     { name: 'Manage Membership', route: 'https://billing.stripe.com/p/login/test_cN23e27JRdQPeMEbII' },
     { name: 'Logout', route: '/logout', icon: 'LogoutIcon' },
 ];
+
+const adminSettings = [
+    { name: 'Profile', route: '/personal_profile' },
+    { name: 'Logout', route: '/logout' },
+]
 
 const style = {
     position: "absolute" as "absolute",
@@ -114,9 +80,13 @@ const style = {
     p: 4,
 };
 
+const discountSchema = zod.object({
+    tuesdayDiscount: zod.string().min(0, { message: "Must be between 0 and 100" }).max(100, { message: "Must be between 0 and 100" }),
+    dailyDiscount: zod.string().min(0, { message: "Must be between 0 and 100" }).max(100, { message: "Must be between 0 and 100" })
+  });
+
 function ResponsiveAppBar() {
     const router = useRouter();
-    //   const [movieData, setMovieData] = useState([]);
     const [imageUrl, setImageUrl] = React.useState("/static/images/avatar/2.jpg");
     const filter = createFilterOptions<MovieOptionType>();
     const [location, setLocation] = React.useState("");
@@ -125,8 +95,6 @@ function ResponsiveAppBar() {
         name: "",
         profile_url: "",
     });
-    const [inputValue, setInputValue] = React.useState("");
-    const [isExpanded, setExpanded] = React.useState(false);
     const [drawerOpen, setDrawerOpen] = React.useState(false);
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
         null
@@ -137,12 +105,21 @@ function ResponsiveAppBar() {
     const store: any = useStore();
     const [movieData, setMovieData] = useState<MovieOptionType[]>([]);
     const [open, setOpen] = useState(false);
+    const [settings, setSettings] = useState<any[]>([]);
+    const [opeDiscounts, setOpenDiscounts] = useState<boolean>(false);
 
+    const { control, handleSubmit, formState: { errors } } = useForm({
+        resolver: zodResolver(discountSchema)
+    });
 
     React.useEffect(() => {
         fetchMovieData();
-
         const user = store.user;
+        if (user != null && user.isAdmin) {
+            setSettings(adminSettings);
+        } else {
+            setSettings(profileSettings);
+        }
         if (user != null) {
             setImageUrl(user.profile_url);
         }
@@ -210,35 +187,15 @@ function ResponsiveAppBar() {
         },
     }));
 
-    const SearchIconWrapper = styled("div")(({ theme }) => ({
-        padding: theme.spacing(0, 2),
-        height: "100%",
-        position: "absolute",
-        pointerEvents: "none",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-    }));
-
-    const StyledInputBase = styled(InputBase)(({ theme }) => ({
-        color: "inherit",
-        "& .MuiInputBase-input": {
-            padding: theme.spacing(1, 1, 1, 0),
-            paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-            transition: theme.transitions.create("width"),
-            width: "100%",
-            [theme.breakpoints.up("md")]: {
-                width: "20ch",
-            },
-        },
-    }));
-
-    // Component
-
     function redirectToPage(page: any) {
         if (page.name == 'Logout') {
+            store.setIsAdmin(false);
             store.setLoggedOut();
             router.push('/');
+            return;
+        }
+        else if (page.route == 'openModal') {
+            setOpenDiscounts(true);
             return;
         }
         router.push(page.route);
@@ -252,7 +209,6 @@ function ResponsiveAppBar() {
         const streetNumber = getAddressComponent('street_number');
         const formattedAddress1 = `${streetNumber} ${street}`;
         setOpen(false);
-        // console.log(getAddressComponent('postal_code'));
         setLocation(formattedAddress1);
         store.setPinCode(getAddressComponent('postal_code'));
         console.log(store.pincode + "hehhehhehehheheh");
@@ -260,7 +216,10 @@ function ResponsiveAppBar() {
 
     }
 
-    const handleClose = () => setOpen(false);
+    const handleClose = () => {
+        setOpen(false);
+        setOpenDiscounts(false);
+    };
 
     function navigateToSignUp() {
         router.push("/signup");
@@ -275,6 +234,14 @@ function ResponsiveAppBar() {
         return (
             <img src={logoUrl} alt="Box Office Logo" style={{ width: 'auto', height: '50px' }} /> // Adjust height as needed
         );
+    };
+
+    const getErrorMessage = (error: any) => {
+        return error && typeof error.message === 'string' ? error.message : '';
+    };
+
+    const onSubmit = (data: any) => {
+        console.log(data);
     };
 
     return (
@@ -332,19 +299,24 @@ function ResponsiveAppBar() {
                                     display: { xs: "block", md: "none" },
                                 }}
                             >
-                                {pages.map((page) => (
-                                    <MenuItem key={page.name} onClick={handleCloseNavMenu}>
-                                        <Typography
-                                            onClick={() => {
-                                                redirectToPage(page);
-                                            }}
-                                            textAlign="center"
-                                        >
-                                            {" "}
-                                            {page.name}
-                                        </Typography>
-                                    </MenuItem>
-                                ))}
+                                {pages.map((page) => {
+                                    if (page.route !== "openModal" || (page.route === "openModal" && store.isAdmin)) {
+                                        return (
+                                            <MenuItem key={page.name} onClick={handleCloseNavMenu}>
+                                                <Typography
+                                                    onClick={() => {
+                                                        redirectToPage(page);
+                                                    }}
+                                                    textAlign="center"
+                                                >
+                                                    {" "}
+                                                    {page.name}
+                                                </Typography>
+                                            </MenuItem>
+                                        )
+                                    }
+                                    return null;
+                                })}
                             </Menu>
                         </Box>
                         <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
@@ -365,17 +337,21 @@ function ResponsiveAppBar() {
                             Box Office
                         </Typography>
                         <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-                            {pages.map((page) => (
-                                <Button
-                                    key={page.name}
-                                    onClick={() => {
-                                        redirectToPage(page);
-                                    }}
-                                    sx={{ my: 2, color: "white", display: "block" }}
-                                >
-                                    {page.name}
-                                </Button>
-                            ))}
+                            {pages.map((page) => {
+                                if (page.route !== "openModal" || (page.route === "openModal" && store.isAdmin)) {
+                                    return (<Button
+                                        key={page.name}
+                                        onClick={() => {
+                                            redirectToPage(page);
+                                        }}
+                                        sx={{ my: 2, color: "white", display: "block" }}
+                                    >
+                                        {page.name}
+                                    </Button>
+                                    )
+                                }
+                                return null;
+                            })}
                         </Box>
                         <Autocomplete
                             value={value}
@@ -509,7 +485,7 @@ function ResponsiveAppBar() {
                                     <PinDropIcon />
                                 </MapIconWrapper>
                             </Search>
-                            {location != null ? location : "Select Location"}
+                            {location != "" ? location : "Select Location"}
                         </Button>
                         {store.isLoggedIn ? (
                             <Box sx={{ flexGrow: 0 }}>
@@ -604,6 +580,79 @@ function ResponsiveAppBar() {
                             }}
                         >
                             <LocationSearchInput sendLocation={sendLocation} />
+                        </Box>
+                    </Fade>
+                </Modal>
+                <Modal
+                    aria-labelledby="transition-modal-title"
+                    aria-describedby="transition-modal-description"
+                    open={opeDiscounts}
+                    onClose={handleClose}
+                    closeAfterTransition
+                    slots={{ backdrop: Backdrop }}
+                    slotProps={{
+                        backdrop: {
+                            timeout: 500,
+                        },
+                    }}
+                >
+                    <Fade in={opeDiscounts}>
+                        <Box
+                            sx={{
+                                ...style,
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                width: "600px",
+                                maxWidth: "1000px",
+                                height: "400px",
+                            }}
+                        >
+                            <form onSubmit={handleSubmit(onSubmit)}>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12}>
+                                        <Controller
+                                            name="tuesdayDiscount"
+                                            control={control}
+                                            defaultValue={0}
+                                            render={({ field }) => (
+                                                <TextField
+                                                    {...field}
+                                                    type="number"
+                                                    label="Tuesday Discounts (%)"
+                                                    error={Boolean(errors.tuesdayDiscount)}
+                                                    helperText={getErrorMessage(errors.tuesdayDiscount)}
+                                                    InputProps={{ inputProps: { min: 0, max: 100 } }}
+                                                    fullWidth
+                                                />
+                                            )}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <Controller
+                                            name="dailyDiscount"
+                                            control={control}
+                                            defaultValue={0}
+                                            render={({ field }) => (
+                                                <TextField
+                                                    {...field}
+                                                    type="number"
+                                                    label="Daily Discounts (%)"
+                                                    error={Boolean(errors.dailyDiscount)}
+                                                    helperText={getErrorMessage(errors.dailyDiscount)}
+                                                    InputProps={{ inputProps: { min: 0, max: 100 } }}
+                                                    fullWidth
+                                                />
+                                            )}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <Button type="submit" variant="contained" color="primary">
+                                            Submit
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+                            </form>
                         </Box>
                     </Fade>
                 </Modal>

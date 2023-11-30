@@ -13,11 +13,15 @@ import {
   FormHelperText,
   Grid,
   InputLabel,
-  Link,
   MenuItem,
   Modal,
+  Paper,
   Select,
-  TextField,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
   Typography,
 } from "@mui/material";
 
@@ -28,6 +32,7 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Dayjs from "dayjs";
 import { loadStripe } from "@stripe/stripe-js";
+
 const stripePromise = loadStripe(
   "pk_test_51OEgQqA475w0fpJudMi36tfpe04jdRxLTraIo1nwDrPcvgdEhXz77lWWfloifqjrI7UsggP5JppqQvU1fg6hZsuB00ibyRUIcB"
 );
@@ -42,12 +47,11 @@ const schema = zod.object({
   timing: zod.string().min(1, "Select at least one timing"),
 });
 
-const modalStyle = {
-  position: "absolute",
+const style = {
+  position: "absolute" as "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
@@ -69,6 +73,7 @@ export default function addScreen() {
   //SEATS CODE
   const [seatDetails, setSeatDetails] = useState<Seats>({});
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
+  const [orderDetails, setOrderDetails] = useState<any>(null);
   const [key, setKey] = useState<string>("");
   const checkoutURL = `http://localhost:8080/payment/checkout_sessions/${key}`;
 
@@ -249,7 +254,7 @@ export default function addScreen() {
   };
 
   const getReqSeatDeatils = () => {
-    let seatArray:any = {};
+    let seatArray: any = {};
     for (let key in seatDetails) {
       let column = [];
       for (let i = 0; i < seatDetails[key].length; i++) {
@@ -266,9 +271,8 @@ export default function addScreen() {
 
   async function onSubmit() {
     let data = getValues();
-    console.log(data);
+    let dayOfWeek = data.date.day();
     const timeStamp = data.timing.split(" ")[1];
-    console.log(timeStamp);
     let time = null;
     if (timeStamp == "pm") {
       time = data.timing.split(":")[0];
@@ -276,25 +280,30 @@ export default function addScreen() {
     } else {
       time = data.timing.split(":")[0];
     }
-    console.log(time);
     const key = data.theater + "-" + data.screen + "-" + time + "-" + data.date;
-    console.log(key);
     data["screenLayout"] = getReqSeatDeatils();
     data["seatSelected"] = selectedSeats;
     data["movie_id"] = movieName;
     data["key"] = key;
     data["price"] = cost * 100;
     data["is_prime"] = false;
-    console.log(data);
-    const post_data = await getDataFromEndPoint(
-      data,
-      "payment/storeTicketBookingDetails",
-      "POST"
-    );
-    if (post_data.status == 200) {
-      setKey(key);
-      setOpen(true);
+    // const reqData = await getDataFromEndPoint(
+    //   data,
+    //   "payment/storeTicketBookingDetails",
+    //   "POST"
+    // );
+    // if (reqData.status == 200) {
+    //   setKey(key);
+    //   setOpen(true);
+    // }
+    const tempOrderDetails = {
+      ticketsBooked :selectedSeats.join(","),
+      pricePerTicket: cost,
+      discount : dayOfWeek === "2" ? "Tuesday's Discount 10%" : "5%",
+      totalPrice: cost * selectedSeats.length,
     }
+    setOrderDetails(tempOrderDetails);
+    setOpen(true);
   }
 
   function theaterChange(event: any) {
@@ -473,7 +482,6 @@ export default function addScreen() {
                     {selectedSeats.length !== 0 && (
                       <Button
                         variant="contained"
-                        // type="submit"
                         onClick={() => {
                           onSubmit();
                         }}
@@ -501,12 +509,53 @@ export default function addScreen() {
         </>
       </Container>
       <Modal open={open} onClose={handleCloseModal}>
-        <Box sx={modalStyle}>
+        <Box sx={{
+          ...style,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "600px",
+          maxWidth: "1000px",
+          height: "400px",
+        }}>
           <form action={checkoutURL} method="POST">
+            <Typography variant="h6">{title}</Typography>
+            <TableContainer component={Paper} style={{ boxShadow: "none" }}>
+              <Table sx={{ minWidth: 550 }} aria-label="simple table">
+                <TableBody>
+                  <TableRow>
+                    <TableCell component="th" scope="row">
+                      Tickets Booked
+                    </TableCell>
+                    <TableCell align="right">{orderDetails?.ticketsBooked}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell component="th" scope="row">
+                      Cost Per Ticket
+                    </TableCell>
+                    <TableCell align="right">${orderDetails?.pricePerTicket}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell component="th" scope="row">
+                      Discount
+                    </TableCell>
+                    <TableCell align="right">{orderDetails?.discount}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell component="th" scope="row">
+                      Total Price
+                    </TableCell>
+                    <TableCell align="right">
+                      ${orderDetails?.totalPrice}
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
             <Button
               type="submit"
-              style={{ marginRight: "5px" }}
-              variant="outlined"
+              sx={{ mt:5}}
+              variant="contained"
             >
               checkout
             </Button>

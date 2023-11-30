@@ -53,7 +53,8 @@ export default function SignIn() {
             const user = await apiLoginUser(JSON.stringify(data));
             store.setLoggedIn();
             store.setUser(user);
-            return router.push("/");
+            store.setIsAdmin(user.isAdmin);
+            router.push("/");
         } catch (error: any) {
             if (error instanceof Error) {
                 handleApiError(error);

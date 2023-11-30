@@ -115,15 +115,17 @@ router.post("/login", async (req, res) => {
     try {
         email = req.body.email;
         password = req.body.password;
+        console.log(email);
         const users = await User.findOne({ email: email });
         console.log(users);
         // users_obj = JSON.parse(users);
         // console.log(users_obj.password);
-        if (users.length === 0) {
-            res.json({
-                message: 'user not found',
-                status: HTTP_STATUS_CODES.NOT_FOUND
-            })
+        if (users == null) {
+            // res.json({
+            //     message: 'user not found',
+            //     status: HTTP_STATUS_CODES.NOT_FOUND
+            // })
+            res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).send("user not found");
         }
         else {
             data = { email: req.body.email, fullname: users.fullname, isAdmin: users.is_admin, profile_url: users.profile_url, user_id: users.user_id }
