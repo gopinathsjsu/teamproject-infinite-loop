@@ -7,7 +7,7 @@ const Movie = require('../models/MovieModel');
 const { RedisHelperAdd, RedisHelperGet, RedisHelperDelete } = require('../Helpers/RedisHelper');
 const { HTTP_STATUS_CODES } = require('../constants');
 const Transaction = require('../models/TransactionModel');
-const { generateAndPingQRCode } = require('../Helpers/qrCodeGenerator');
+const {generateAndPingQRCode} = require('../Helpers/qrCodeGenerator');
 const uniqid = require('uniqid');
 const { daysDifference } = require('../controllers/MovieController');
 require('dotenv').config();
@@ -42,10 +42,10 @@ router.post('/storeTicketBookingDetails', async (req, res) => {
             })
         }
     } else {
-        value_add = {
-            body: JSON.stringify(req.body)
-        }
-        await RedisHelperAdd(key, value_add);
+            value_add = {
+                body: JSON.stringify(req.body)
+            }
+       await RedisHelperAdd(key, value_add);
         res.json({
             message: "Seat booking details stored",
             status: HTTP_STATUS_CODES.OK,
@@ -53,14 +53,14 @@ router.post('/storeTicketBookingDetails', async (req, res) => {
     }
 });
 router.post('/checkout_sessions/:id', async (req, res) => {
-    console.log("at payment checkout session");
+    //  console.log("at payment checkout session");
     console.log("-------------------");
     console.log(req.params['id']);
     console.log("-------------------");
     const redis_data = await RedisHelperGet(req.params['id']);
     console.log(redis_data);
     const data = JSON.parse(JSON.parse(redis_data).body);
-    // console.log(data);
+    console.log(data);
     const coupon = await stripe.coupons.create({
         percent_off: 20,
         duration: 'once',
@@ -116,7 +116,7 @@ router.get('/success', async (req, res) => {
 
         const session = await stripe.checkout.sessions.retrieve(session_id);
         console.log(session);
-        console.log("at payment success success");
+        console.log("at payment success");
         const redis_data = await RedisHelperGet(req.query.key);
         data = JSON.parse(JSON.parse(redis_data).body);
         console.log(data);
@@ -125,19 +125,19 @@ router.get('/success', async (req, res) => {
         const timing = data.timing
         const screen_id = data.screen;
         const theater_id = data.theater;
-
+       
         const screen_layout = data.screenLayout;
         const seat_selected = data.seatSelected;
         const movie_id = data.movie_id;
         const no_of_seats_booked = seat_selected.length;
-        const rewards = data.price * seat_selected.length;
+        const rewards =  data.price*seat_selected.length;
         const qr_code = await generateAndPingQRCode(session.payment_intent, 'http://localhost:8080/verifyTicket/' + session.payment_intent);
-        const screenDetails = await ScreenModel.findOneAndUpdate({ id: screen_id, theater_id: theater_id }, {
-            $inc: { [`seats_day_wise.${filter_date}.${timing}.tickets_bought`]: no_of_seats_booked, 'total_tickets_booked': no_of_seats_booked },
+         const screenDetails =  await ScreenModel.findOneAndUpdate({ id: screen_id,theater_id:theater_id }, {
+            $inc: { [`seats_day_wise.${filter_date}.${timing}.tickets_bought`]: no_of_seats_booked },
             $set: {
                 [`seats_day_wise.${filter_date}.${timing}.SeatArray`]: screen_layout
             }
-        });
+         });
         const movie_details = await Movie.findOneAndUpdate({ id: movie_id });
         const current_day = daysDifference(movie_details.release_date, date);
         movie_details.day_wise_tickets_sold[current_day] = movie_details.day_wise_tickets_sold[current_day] + no_of_seats_booked;
@@ -157,18 +157,12 @@ router.get('/success', async (req, res) => {
             status: session.payment_status,
         });
         await transaction.save();
-        await ScreenModel.findOneAndUpdate({ id: screen_id }, {
-            $inc: { [`seats_day_wise.${filter_date}.${timing}.tickets_bought`]: no_of_seats_booked },
-            $set: {
-                [`seats_day_wise.${filter_date}.${timing}.SeatArray`]: screen_layout
-            }
-        }).then((result) => {
-            console.log(result);
-        }).catch((error) => {
-            console.error(error);
+        await User.findOneAndUpdate({ user_id: data.user_id }, {
+            $inc: { rewards: rewards }
         });
+     
         await RedisHelperDelete(req.query.key);
-        res.redirect(303, 'http://localhost:3000/book-ticket/ticket');
+         res.redirect(303,'http://localhost:3000/');
     } catch (err) {
         res.status(500).send(err.message);
     }
