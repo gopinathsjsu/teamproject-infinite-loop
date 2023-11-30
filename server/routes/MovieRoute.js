@@ -106,6 +106,14 @@ router.get('/all', async (req, res) => {
     }
 })
 
+router.get('/getAllMoviesNames', async (req, res) => { 
+    const response = await Movie.find().select({ title: 1, _id: 0 });
+    res.json({
+        message: "get movie names",
+        status: HTTP_STATUS_CODES.OK,
+        data: response
+    })
+});
 router.get('/getRecommendedMovies', async (req, res) => {
     console.log('at recommended movies');
     try {
@@ -133,7 +141,7 @@ async function getMovieArtists(movie, key) {
 }
 router.get('/getMovieOccupancyDayWise/:id', async (req, res) => { 
     try {
-        const movie = await Movie.findOne({ id: req.params.id });
+        const movie = await Movie.findOne({ id: req.params.id }).select({ 'day_wise_tickets_sold': 1 });
         const occupancy = movie.day_wise_tickets_sold;
         console.log(occupancy);
         res.json({
