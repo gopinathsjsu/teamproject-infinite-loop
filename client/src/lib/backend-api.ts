@@ -37,14 +37,12 @@ export async function getDataFromEndPoint(credentials: any, endpoint: string, me
         credentials: "include",
         body: credentials,
     };
-    console.log(credentials);
     if (!isFormData) {
         fetchOptions.headers = {
             'Content-Type': 'application/json'
         };
         fetchOptions.body = JSON.stringify(credentials);
     }
-    console.log(fetchOptions.body);
     const response = await fetch(fetchUrl, fetchOptions);
 
     return handleResponse<GetEndpointResponse>(response).then((data) => data);

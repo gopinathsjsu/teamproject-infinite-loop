@@ -7,9 +7,12 @@ import * as zod from "zod";
 import {
   Box,
   Button,
+  Checkbox,
   Container,
   CssBaseline,
   FormControl,
+  FormControlLabel,
+  FormGroup,
   FormHelperText,
   Grid,
   InputLabel,
@@ -78,8 +81,10 @@ export default function addScreen() {
   const [discountRates, setDiscountRates] = useState<any>(null);
   const [key, setKey] = useState<string>("");
   const [isPatched, setIsPatched] = useState<boolean>(false);
-  const checkoutURL = `http://localhost:8080/payment/checkout_sessions/${key}`;
-  const store:any = useStore();
+  const [rewardsEnabled, setRewardsEnabled] = useState<string>("false")
+  const checkoutURL = `http://localhost:8080/payment/checkout_sessions/${key}/${rewardsEnabled}`;
+  const [rewards, setRewards] = useState<number>(0);
+  const store: any = useStore();
 
   useEffect(() => {
     if (!isPatched) {
@@ -140,8 +145,19 @@ export default function addScreen() {
       }
     }
 
+    const fetchRewardPoint = async () => {
+      try {
+        const response: any = await fetch(`http://localhost:8080/user/getRewards/${store.user.user_id}`);
+        const res = await response.json();
+        setRewards(res.data)
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     fetchData();
     fetchDiscountRates();
+    fetchRewardPoint();
   }, []);
 
   //SEATS CODE
@@ -327,11 +343,13 @@ export default function addScreen() {
     } else {
       time = data.timing.split(":")[0];
     }
+    console.log(time);
     const key = data.theater + "-" + data.screen + "-" + time + "-" + data.date;
     let discount = dayOfWeek.toString() === "2" ? discountRates.tuesday : null;
+    console.log(discountRates);
     if (time >= 18) discount = discountRates.night_time;
     const totalPrice = discount != null ? cost * selectedSeats.length * (1 - discount * 0.01) : cost * selectedSeats.length;
-    data["user_id"] = store.user? store.user.user_id : null;
+    data["user_id"] = store.user ? store.user.user_id : null;
     data["discount"] = discount;
     data["screenLayout"] = getReqSeatDeatils();
     data["seatSelected"] = selectedSeats;
@@ -360,8 +378,8 @@ export default function addScreen() {
   function theaterChange(event: any) {
     theaters.forEach((theater) => {
       if (theater.id == event.target.value) {
-        setValue('screen',null);
-        setValue('timing',null);
+        setValue('screen', null);
+        setValue('timing', null);
         setScreens(theater.screen_details);
         setTimings([]);
       }
@@ -374,6 +392,14 @@ export default function addScreen() {
         setTimings(screen.show_timings);
       }
     });
+  }
+
+  function handleRewards(event: React.ChangeEvent<HTMLInputElement>) {
+    if (event.target.checked) {
+      setRewardsEnabled("true");
+    } else {
+      setRewardsEnabled("false");
+    }
   }
 
   const handleCloseModal = () => {
@@ -590,7 +616,12 @@ export default function addScreen() {
           height: "400px",
         }}>
           <form action={checkoutURL} method="POST">
-            <Typography variant="h6">{title}</Typography>
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Typography variant="h6">{title}</Typography>
+              <FormGroup>
+                <FormControlLabel control={<Checkbox onChange={handleRewards} />} label={"Apply Your Rewards: " + rewards} />
+              </FormGroup>
+            </Box>
             <TableContainer component={Paper} style={{ boxShadow: "none" }}>
               <Table sx={{ minWidth: 550 }} aria-label="simple table">
                 <TableBody>
@@ -620,6 +651,16 @@ export default function addScreen() {
                       ${orderDetails?.totalPrice}
                     </TableCell>
                   </TableRow>
+                  {rewardsEnabled === "true" &&
+                    <TableRow>
+                      <TableCell component="th" scope="row">
+                        Final Price After Rewards
+                      </TableCell>
+                      <TableCell align="right">
+                        ${orderDetails?.totalPrice - (0.1 * rewards)}
+                      </TableCell>
+                    </TableRow>
+                  }
                 </TableBody>
               </Table>
             </TableContainer>
