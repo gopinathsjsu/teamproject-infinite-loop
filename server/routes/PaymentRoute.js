@@ -122,17 +122,28 @@ router.get('/success', async (req, res) => {
         const filter_date = date.toISOString().split('T')[0];
         const timing = data.timing
         const screen_id = data.screen;
+        const theater_id = data.theater;
         const screen_layout = data.screenLayout;
         const seat_selected = data.seatSelected;
         const movie_id = data.movie_id;
         const no_of_seats_booked = seat_selected.length;
         const rewards =  data.price*seat_selected.length;
         const qr_code = await generateAndPingQRCode(session.payment_intent, 'http://localhost:8080/verifyTicket/' + session.payment_intent);
+         const screenDetails =  await ScreenModel.findOneAndUpdate({ id: screen_id,theater_id:theater_id }, {
+            $inc: { [`seats_day_wise.${filter_date}.${timing}.tickets_bought`]: no_of_seats_booked },
+            $set: {
+                [`seats_day_wise.${filter_date}.${timing}.SeatArray`]: screen_layout
+            }
+        });
         const transaction = new Transaction({
             id: uniqid(),
             user_id: data.user_id,
             movie_id: movie_id,
-            booking_details: data,
+            theater_id: theater_id,
+            screen_id: screenDetails.name,
+            seat_ids: seat_selected,
+            show_date: filter_date,
+            show_time: timing,
             qr_code: qr_code,
             price: data.price,
             payment_method: session.payment_method_types[0],
@@ -142,16 +153,7 @@ router.get('/success', async (req, res) => {
         await User.findOneAndUpdate({ user_id: data.user_id }, {
             $inc: { rewards: rewards }
         });
-        await ScreenModel.findOneAndUpdate({ id: screen_id }, {
-            $inc: { [`seats_day_wise.${filter_date}.${timing}.tickets_bought`]: no_of_seats_booked },
-            $set: {
-                [`seats_day_wise.${filter_date}.${timing}.SeatArray`]: screen_layout
-            }
-        }).then((result) => {
-            console.log(result);
-        }).catch((error) => {
-            console.error(error);
-        });
+     
         await RedisHelperDelete(req.query.key);
          res.redirect(303,'http://localhost:3000/');
     } catch (err) {
