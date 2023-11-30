@@ -181,6 +181,7 @@ export default function Theater() {
   const [theaterId, setTheaterId] = useState<string>("");
   const [open, setOpen] = React.useState<boolean>(false);
   const [isFile, setIsFile] = React.useState<boolean>(false);
+  const isAdmin = store.isAdmin; // Replace with the actual way to get this info
   const { handleSubmit, control, formState: { errors }, setValue } = useForm({ resolver: zodResolver(schema) });
 
   const getErrorMessage = (error: any) => {
@@ -319,7 +320,7 @@ export default function Theater() {
       <Grid container sx={{ mt: 5 }} spacing={2}>
         <Grid container sx={{ justifyContent: "space-between" }} >
           <Typography variant="h4">Theaters</Typography>
-          {store.isLoggedIn &&
+          {isAdmin &&
             <Button
               variant="contained"
               startIcon={<AddCircleOutlineIcon />}
@@ -359,10 +360,10 @@ export default function Theater() {
                           {theater.name}
                         </Typography>
                       </Link>
-                      {store.isLoggedIn &&
+                      {isAdmin &&
                         <Button startIcon={<EditIcon />} onClick={() => { editTheater(theater) }} />
                       }
-                      {store.isLoggedIn &&
+                      {isAdmin &&
                         <Button startIcon={<DeleteIcon />} onClick={() => { deleteTheater(theater.id) }} />
                       }
                       <Box>
