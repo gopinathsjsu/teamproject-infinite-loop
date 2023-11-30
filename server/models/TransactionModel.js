@@ -3,7 +3,7 @@ const uniqid = require('uniqid');
 
 const transactionSchema = new mongoose.Schema({
     id: { type: String},
-    user_id: { type: String  },
+    user_id: { type: String ,default:"" },
     movie_id: { type: String, default:"" },
     theater_id: { type: String, default:"" },
     screen_id: { type: String, default:"" },
