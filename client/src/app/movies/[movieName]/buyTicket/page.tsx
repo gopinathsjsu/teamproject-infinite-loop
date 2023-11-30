@@ -309,12 +309,12 @@ export default function addScreen() {
     data["key"] = key;
     data["price"] = cost * 100;
     data["is_prime"] = false;
-    // const reqData = await getDataFromEndPoint(
-    //   data,
-    //   "payment/storeTicketBookingDetails",
-    //   "POST"
-    // );
-    // if (reqData.status == 200) {
+    const reqData = await getDataFromEndPoint(
+      data,
+      "payment/storeTicketBookingDetails",
+      "POST"
+    );
+    if (reqData.status == 200) {
     const tempOrderDetails = {
       ticketsBooked: selectedSeats.join(","),
       pricePerTicket: cost,
@@ -324,7 +324,7 @@ export default function addScreen() {
     setOrderDetails(tempOrderDetails);
     setKey(key);
     setOpen(true);
-    // }
+    }
   }
 
   function theaterChange(event: any) {

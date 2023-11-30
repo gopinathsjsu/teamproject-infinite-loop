@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Box, Grid, Typography, Button, Modal, Backdrop, Fade, Stack, TextField, FormControl, FormHelperText, InputLabel, Select, MenuItem } from '@mui/material';
+import { Box, Grid, Typography, Button, Modal, Backdrop, Fade, Stack, TextField, FormControl, FormHelperText, InputLabel, Select, MenuItem, Chip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
@@ -47,7 +47,7 @@ const schema = zod.object({
 
 export default function Screen() {
     const router = useRouter();
-    const store:any = useStore();
+    const store: any = useStore();
     const { theaterId } = useParams();
     const [screenData, setScreenData] = useState<Screen[]>([]);
     const [open, setOpen] = React.useState<boolean>(false);
@@ -180,7 +180,7 @@ export default function Screen() {
     const standardSize = {
         width: '650px', // Example responsive sizes
         height: '500px', // Set height to auto, but you can fix it if necessary
-      };
+    };
     return (
         <React.Fragment>
             <CssBaseline />
@@ -189,69 +189,65 @@ export default function Screen() {
                     <Grid container sx={{ mb: 2, marginTop: 10, justifyContent: 'space-between' }}>
                         <Typography variant="h4">Screens</Typography>
                         {store.isLoggedIn &&
-                        <Button variant="contained" startIcon={<AddCircleOutlineIcon />} onClick={addNewScreen}>
-                            Add Screen
-                        </Button>
+                            <Button variant="contained" startIcon={<AddCircleOutlineIcon />} onClick={addNewScreen}>
+                                Add Screen
+                            </Button>
                         }
                     </Grid>
                     <Grid item xs={12} container>
                         <Grid container spacing={2} alignItems="center" justifyContent="left">
-                        {screenData.map((screen, index) => (
-                            <Grid item key={index} sx={standardSize}>
-                                              <Box sx={{
-                                                    bgcolor: 'white',
-                                                    p: 3,
-                                                    borderRadius: 2,
-                                                    boxShadow: 3,
-                                                    display: 'flex',
-                                                    flexDirection: { xs: 'column', md: 'row' },
-                                                    alignItems: 'center',
-                                                    height: '100%', // Ensure all containers have the same height
-                                                }}>
+                            {screenData.map((screen, index) => (
+                                <Grid item key={index} sx={standardSize}>
+                                    <Box sx={{
+                                        bgcolor: 'white',
+                                        p: 3,
+                                        borderRadius: 2,
+                                        boxShadow: 3,
+                                        display: 'flex',
+                                        flexDirection: { xs: 'column', md: 'row' },
+                                        alignItems: 'center',
+                                        height: '100%', // Ensure all containers have the same height
+                                    }}>
                                         <img src={screen.imageUrl} alt="screeb" style={{ marginBottom: 16, marginRight: 24, width: 192, borderRadius: 8 }} />
                                         <Box sx={{ flex: 1 }}>
                                             <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
                                                 <Typography variant="h6" component="h3" sx={{ mb: 1, fontWeight: 'medium', fontSize: '2rem' }} style={{}} color="#01579B">{screen.name}</Typography>
                                                 <Box>
-                                                {store.isLoggedIn &&
-                                                    <Button startIcon={<EditIcon />} sx={{ mb: 1, fontSize: '1rem' }} onClick={() => (editScreen(screen))} />
-                                                }
                                                     {store.isLoggedIn &&
-                                                    <Button startIcon={<DeleteIcon />} sx={{ mb: 1, fontSize: '1rem' }} onClick={() => (deleteScreen(screen))} />
-                                                }
+                                                        <Button startIcon={<EditIcon />} sx={{ mb: 1, fontSize: '1rem' }} onClick={() => (editScreen(screen))} />
+                                                    }
+                                                    {store.isLoggedIn &&
+                                                        <Button startIcon={<DeleteIcon />} sx={{ mb: 1, fontSize: '1rem' }} onClick={() => (deleteScreen(screen))} />
+                                                    }
                                                 </Box>
                                             </Grid>
                                             {store.isLoggedIn &&
-                                            <Button sx={{ mb: 1, fontSize: '1rem' }} onClick={() => handleOpenModal(screen.id)}>
-                                                Add/Change Movie
-                                            </Button>
+                                                <Button sx={{ mb: 1, fontSize: '1rem' }} onClick={() => handleOpenModal(screen.id)}>
+                                                    Add/Change Movie
+                                                </Button>
                                             }
                                             <Box sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }}>
                                                 {`Current Movie: `}{screen.currentMovie}
                                             </Box>
                                             <Box sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }}>
-                                                {`Run time: `}{screen.runtime}
+                                                {`Run time: `}{screen.runtime} min
                                             </Box>
                                             <Box sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }}>
-                                                {`cost: `}{screen.cost}{`$`}
+                                                {`Price: `}{screen.cost}{`$`}
                                             </Box>
                                             <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', mb: 2 }}>
-                                            <Box sx={{ bgcolor: 'blue.100', color: 'blue.800', px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }}>Timings:</Box>
-                                            <Grid container spacing={1}>
-                                                {screen.timings.map((time, screenIndex) => (
-                                                <Grid item xs={6} key={screenIndex}> {/* 2x2 layout, 2 items per row */}
-                                                    <Button sx={{ px: 1, py: 0.5, borderRadius: 1, width: '100%', fontSize: '1rem' }}>
-                                                    {time}
-                                                    </Button>
+                                                <Box sx={{ml:1}}>Timings:</Box>
+                                                <Grid container spacing={2} sx={{mt:1}}>
+                                                    <Box sx={{ml:1}}>
+                                                    {screen.timings.map((time, index) => (
+                                                        <Chip sx={{ml:1}} label={time} />
+                                                    ))}
+                                                    </Box>
                                                 </Grid>
-                                                ))}
-                                            </Grid>
                                             </Box>
-                                            {/* {screen.currentMovie != null &&  */}
                                             <Button onClick={() => { bookTicket(screen) }} variant="contained">
                                                 Book Ticket
                                             </Button>
-                                            {/* } */}
                                         </Box>
                                     </Box>
                                 </Grid>
