@@ -27,7 +27,7 @@ export default function LocationSearchInput({ sendLocation }: { sendLocation: an
         >
           <TextField
             {...getInputProps({
-              label: 'Search Places...',
+              label: 'Search Pincode...',
             })}
             variant="outlined"
             fullWidth

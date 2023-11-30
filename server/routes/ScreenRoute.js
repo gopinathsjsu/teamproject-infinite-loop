@@ -66,6 +66,110 @@ router.get('/all', async (req, res) => {
         })
     }
 })
+
+router.get('/getTicketsBoughtByTheatersLocation/:id', async (req, res) => {
+    movie_id_val = req.params['id']
+    await ScreenModel.aggregate([
+        {
+            $match: {
+                // Add your match conditions here if needed
+                movie_id: movie_id_val,
+            },
+        },
+        {
+            $group: {
+                _id: {
+                    screen_id: '$id',
+                    movie_name: '$movie_name',
+                    theater_id: '$theater_id',
+                },
+                tickets_bought: { $sum: '$total_tickets_booked' },
+            },
+        },
+        {
+            $group: {
+                _id: '$_id.screen_id',
+                city_values: {
+                    $push: {
+                        movie_name: '$_id.movie_name',
+                        theaters: {
+                            theater_id: '$_id.theater_id',
+                            tickets_bought: '$tickets_bought',
+                        },
+                    },
+                },
+            },
+        },
+        {
+            $project: {
+                _id: 0,
+                screens: '$_id',
+                city_values: 1,
+            },
+        },
+        {
+            $unwind: '$city_values',
+        },
+        {
+            $lookup: {
+                from: 'theaters', // Assuming the name of your theater model is 'theaterModel'
+                localField: 'city_values.theaters.theater_id',
+                foreignField: 'id',
+                as: 'theater_info',
+            },
+        },
+        {
+            $unwind: '$theater_info',
+        },
+        {
+            $set: {
+                'city_values.theaters.theater_name': '$theater_info.name',
+                'city_values.city': '$theater_info.city',
+            },
+        },
+        {
+            $group: {
+                _id: '$city_values.theaters.city',
+                // _id: '$screens',
+                city_values: { $push: '$city_values' },
+            },
+        },
+        {
+            $project: {
+                _id: 0,
+                city_values: 1,
+            },
+        },
+    ]).then(result => {
+        console.log(result[0].city_values);
+        const transformedData = {};
+        const cityMap = {};
+
+        result[0].city_values.forEach(cityValue => {
+            const cityName = cityValue.city.replace(/\s/g, ''); // Remove spaces in city name
+
+            if (!transformedData[cityName]) {
+                transformedData[cityName] = {};
+            }
+
+            if (!transformedData[cityName][cityValue.theaters.theater_name]) {
+                transformedData[cityName][cityValue.theaters.theater_name] = 0;
+            }
+
+            transformedData[cityName][cityValue.theaters.theater_name] += cityValue.theaters.tickets_bought;
+        });
+
+        console.log(transformedData);
+        // send_data = {
+        //     result: objects
+        // }
+        res.json({
+            data: transformedData
+        })
+    }).catch(err => {
+        console.error(err);
+    });
+});
 router.get('/:id/:value?', async (req, res) => {
 
     try {
@@ -177,7 +281,8 @@ router.post('/addMovie', async (req, res) => {
             run_time: movie.run_time,
             movie_id: movie.id,
             cost: tkt_price,
-            seats_day_wise: timestampsForDays
+            seats_day_wise: timestampsForDays,
+            city: theater.city
         }).then((result) => {
             console.log(result);
         }).catch((error) => {
@@ -275,4 +380,5 @@ router.post('/deleteScreen', async (req, res) => {
         res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).send("Internal server Error");
     })
 });
+
 module.exports = router;
