@@ -19,6 +19,7 @@
     "@mui/material": "^5.14.18",
     "@mui/styled-engine": "^5.14.18",
     "@mui/system": "^5.14.18",
+    "@mui/x-charts": "^6.18.2",
     "@mui/x-date-pickers": "^6.18.1",
     "@react-three/drei": "^9.89.0",
     "@stripe/react-stripe-js": "^2.4.0",
