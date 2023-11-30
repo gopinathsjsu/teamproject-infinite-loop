@@ -131,7 +131,21 @@ async function getMovieArtists(movie, key) {
     console.log(artists_details);
     return artists_details;
 }
-
+router.get('/getMovieOccupancyDayWise/:id', async (req, res) => { 
+    try {
+        const movie = await Movie.findOne({ id: req.params.id });
+        const occupancy = movie.day_wise_tickets_sold;
+        console.log(occupancy);
+        res.json({
+            message: "get occupancy",
+            status: HTTP_STATUS_CODES.OK,
+            data: occupancy
+        })
+    }
+    catch (err) {
+        res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).send('Internal Server Error');
+    }
+});
 router.get('/:id', async (req, res) => {
     try {
         // console.log(req.params.id);
