@@ -15,6 +15,9 @@ const { generateAndPingQRCode } = require('../Helpers/qrCodeGenerator');
 const Movie = require('../models/MovieModel');
 const Transaction = require('../models/TransactionModel');
 const saltRounds = 10;
+const { getMovieDetails } = require('../controllers/MovieController');
+const { getTheaterDetails } = require('../controllers/TheaterController');
+const { get } = require('request');
 router.get('/addUser', async (req, res) => {
     // RedisHelperAdd(req, res, "hello", { "token": "hello" })
     // const data = await RedisHelperGet("hello");
@@ -231,18 +234,18 @@ router.get('/profileDetails/:id', async (req, res) => {
 router.get('/getPurchaseHistory/:id', async (req, res) => {
     id = req.params['id'];
     console.log(id);
-    await Transaction.findOne({ user_id: id }).then((result) => {
-        console.log(result);
-        res.json({
-            message: "Purchase History details",
-            status: HTTP_STATUS_CODES.OK,
-            data: result
-        })
-    }).catch((err) => {
-        console.error(err);
-        res.status(HTTP_STATUS_CODES.BAD_REQUEST).send("Internal server Error");
+    const movies = getMovieDetails();
+    const theaters = getTheaterDetails();
+    const purchase_history = await Transaction.find({ user_id: id });
+    purchase_history.forEach((item) => {
+        item.movie = movies[item.movie_id];
+        item.theater = theaters[item.theater_id];
     })
-
+    res.json({
+        message: "Purchase history",
+        status: HTTP_STATUS_CODES.OK,
+        data: purchase_history
+    });
 });
 
 router.get('/getReommendedMovies/:id', async (req, res) => {
