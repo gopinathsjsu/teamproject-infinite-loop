@@ -29,17 +29,17 @@ router.post('/storeTicketBookingDetails', async (req, res) => {
             value_add = {
                 body: JSON.stringify(req.body)
             }
-            RedisHelperAdd(key, value_add)
+            await RedisHelperAdd(key, value_add)
             res.json({
                 message: "Seat booking details stored",
                 status: HTTP_STATUS_CODES.OK,
             })
         }
     } else {
-        value_add = {
-            body: JSON.stringify(req.body)
-        }
-        RedisHelperAdd(key, value_add);
+            value_add = {
+                body: JSON.stringify(req.body)
+            }
+       await RedisHelperAdd(key, value_add);
         res.json({
             message: "Seat booking details stored",
             status: HTTP_STATUS_CODES.OK,

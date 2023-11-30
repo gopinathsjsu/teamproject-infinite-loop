@@ -110,6 +110,7 @@ export default function Contact() {
   const [formSuccessMessage, setFormSuccessMessage] = useState("");
   const [open, setOpen] = useState(false);
   const store:any = useStore();
+  const isAdmin = store.isAdmin; // Replace with the actual way to get this info
   const [selectedFile, setSelectedFile] = useState(null);
   const [imageUrl, setImageUrl] = useState('/broken-image.jpg');
   const [enableEdit, setEnableEdit] = useState<boolean>(false);
@@ -284,7 +285,7 @@ export default function Contact() {
 
   return (
     <div>
-      {store.isLoggedIn &&
+      {isAdmin &&
       <Button
         sx={{ paddingTop: 2, paddingRight: 0, fontWeight: "bold" }}
         onClick={handleOpen}
@@ -468,10 +469,10 @@ export default function Contact() {
           {cast.map((artist: any, index: number) => (
             <Grid item key={`member-${index}`} xs={6} sm={4} md={3} lg={2}>
               <Box sx={{ position: 'relative', justifyContent: "space-between", display: "flex", top: 30 }}>
-              {store.isLoggedIn &&
+              {isAdmin &&
                 <Button startIcon={<EditIcon />} onClick={() => { editCast(artist) }} />
               }
-              {store.isLoggedIn &&
+              {isAdmin &&
                 <Button startIcon={<DeleteIcon />} onClick={()=> {deleteArtist(artist)}}/>
               }
               </Box>
@@ -499,10 +500,10 @@ export default function Contact() {
           {crew.map((artist: any, index: number) => (
             <Grid item key={`member-${index}`} xs={6} sm={4} md={3} lg={2}>
               <Box sx={{ position: 'relative', justifyContent: "space-between", display: "flex", top: 30 }}>
-              {store.isLoggedIn &&
+              {isAdmin &&
                 <Button startIcon={<EditIcon />} onClick={() => { editCrew(artist) }} />
               }
-              {store.isLoggedIn &&
+              {isAdmin &&
                 <Button startIcon={<DeleteIcon />} onClick={() => { deleteArtist(artist) }} />
               }
               </Box>

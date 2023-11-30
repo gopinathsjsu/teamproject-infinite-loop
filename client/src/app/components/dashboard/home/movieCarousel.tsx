@@ -16,6 +16,7 @@ import { TextField } from "@mui/material";
 import { SelectChangeEvent } from '@mui/material/Select';
 
 
+
 interface Movie {
   poster_id: string;
   id: string;
@@ -75,11 +76,12 @@ const ImageSlider = () => {
   const [selectedMovies, setSelectedMovies] = useState("");
   const [isMounted, setIsMounted] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const store: any = useStore();
+  const isAdmin = store.isAdmin; // Replace with the actual way to get this info
   const [formData, setFormData] = useState({
     posterName: ""
   });
   const router = useRouter();
-  const store: any = useStore();
 
   const fetchMovieData = async () => {
     const response = await getDataFromEndPoint("", 'poster/all', 'GET');
@@ -194,7 +196,7 @@ const ImageSlider = () => {
           </div>
         ))}
       </Slider>
-      {store.isLoggedIn &&
+      {isAdmin && // Conditional rendering based on isAdmin status
         <Button variant="contained" onClick={handleOpenModal}>
           Add Poster
         </Button>

@@ -1,0 +1,36 @@
+/* Add this CSS in your styles or as a separate file */
+
+.ticket-container {
+    border: 1px solid #ccc; /* Add border to ticket container */
+    margin-bottom: 20px; /* Add margin to the bottom of each ticket container */
+    display: flex; /* Use flex display to arrange containers side by side */
+  }
+  
+  .ticket-image {
+    width: 200px;
+    height: auto;
+    margin-right: 1rem;
+    border-radius: 0.25rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+  
+  .ticket-details {
+    flex: 1; /* Allow details to take the remaining space */
+    padding: 10px; /* Add padding to the details for better spacing */
+  }
+  
+  .qr-code {
+    width: 80px;
+    height: 80px;
+    margin-right: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .ticket-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Add gap between ticket containers */
+  }
+
+
+  

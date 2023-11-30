@@ -7,6 +7,9 @@ import { Box, Card, CardActionArea, CardMedia, CardContent, Typography } from '@
 import Container from '@mui/material/Container';
 import { useRouter } from 'next/navigation';
 import { getDataFromEndPoint } from '@/src/lib/backend-api';
+import Link from 'next/link'; // Correct import for Next.js Link component
+
+
 
 const MovieCard = ({ movie, onImageClick }: { movie: any, onImageClick: any }) => {
     const [isHovered, setIsHovered] = useState(false);
@@ -107,12 +110,14 @@ const MovieSlider = () => {
                         }
                     `}
                 </style>
-                <img
+                <a href="./rewards">
+                    <img
                     className="responsive-banner"
                     src="https://drive.google.com/uc?id=1RyP7TcOdok3IYMVMwE364m9ghuLFGRvL" // Modified URL
                     alt="Banner"
                     style={{ width: '100%', objectFit: 'cover', objectPosition: 'center' }}
-                />
+                    />
+                </a>
             </Box>
         </Box>
     );

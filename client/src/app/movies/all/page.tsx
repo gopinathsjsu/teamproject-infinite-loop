@@ -20,6 +20,7 @@ const MovieCard = ({
 }) => {
   const router = useRouter();
   const store:any = useStore();
+  const isAdmin = store.isAdmin; // Replace with the actual way to get this info
   const editMovie = (movieId: string) => {
     router.push(`/movies/${movieId}/edit`);
   }
@@ -55,10 +56,10 @@ const MovieCard = ({
         <Typography variant="body2" color="text.secondary">
           {movie.format}
         </Typography>
-        {store.isLoggedIn &&
+        {isAdmin &&
         <Button startIcon={<EditIcon />} onClick={() => { editMovie(movie.id) }} />
         }
-                {store.isLoggedIn &&
+                {isAdmin &&
         <Button startIcon={<DeleteIcon />} onClick={() => { deleteMovie(movie.id) }} />
                 }
       </CardContent>
@@ -109,6 +110,7 @@ const MovieSlider = () => {
   // const navigate = useNavigate(); // Call useNavigate at the top level of your component
   const router = useRouter();
   const store:any = useStore();
+  const isAdmin = store.isAdmin; // Replace with the actual way to get this info
   const handleAddMovieClick = () => {
     router.push("/movies/add"); // Use navigate function to change the route
   };
@@ -125,7 +127,7 @@ const MovieSlider = () => {
         <Typography variant="h6" sx={{ mb: 2 }}>
           Recommended Movies
         </Typography>
-        {store.isLoggedIn &&
+        {isAdmin &&
         <Button
           variant="contained"
           sx={{ paddingLeft: 2, mb: 2 }}

@@ -11,12 +11,9 @@
 }
 
 .seats {
-    -webkit-user-select: none;
-    /* Chrome/Safari */
-    -moz-user-select: none;
-    /* Firefox */
-    -ms-user-select: none;
-    /* IE10+ */
+    -webkit-user-select: none; /* Chrome/Safari */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* IE10+ */
     user-select: none;
     cursor: pointer;
     color: #545454;
@@ -25,6 +22,7 @@
     padding: 7px 11px;
     border-radius: 3px;
     box-shadow: 0 2px 4px 0 rgb(0 0 0 / 11%), 0 2px 4px 0 rgb(0 0 0 / 14%);
+    border: 0.8px solid #52c41a; /* Green border for not booked seats */
 }
 
 .colName {
@@ -39,7 +37,6 @@
 
 .seatBlocked {
     cursor: default;
-    // background: #fff;
     color: #f2f2f2 !important;
     box-shadow: none;
 }
@@ -47,6 +44,7 @@
 .seatBooked {
     background: rgba(138, 138, 138, 0.418);
     cursor: default;
+    border: none; /* No green border for booked seats */
 }
 
 .disableSeat {
@@ -57,12 +55,12 @@
     padding: 7px 11px;
     border-radius: 3px;
     box-shadow: 0 2px 4px 0 rgb(0 0 0 / 11%), 0 2px 4px 0 rgb(0 0 0 / 14%);
-  }
-  
+}
 
 .seatSelected {
     color: #fff !important;
     background: rgb(53 212 6);
+    border: none; /* No green border for selected seats */
 }
 
 .paymentButton {
