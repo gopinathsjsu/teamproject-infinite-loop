@@ -1,5 +1,6 @@
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { updateUserDetails } = require('../controllers/UserController');
 
 async function createCustomer(userID, name, email, phone) {
   try {
@@ -13,7 +14,7 @@ async function createCustomer(userID, name, email, phone) {
     });
     // save the customer id in the database
     const customerID = customer.id;
-    const result = await updateUserDetails(userID, {StripeCustomerID: customerID});
+    const result = await updateUserDetails(userID, {stripe_customer_id: customerID});
     if (result) {
       console.log('Customer created successfully in the stripe API');
       return customerID;
@@ -24,7 +25,15 @@ async function createCustomer(userID, name, email, phone) {
     throw err;
   }
 }
-
+async function getCustomer(customerID) {
+    try {
+        const customer = await stripe.customers.retrieve(customerID);
+        return customer;
+    } catch (err) {
+        console.error('Error occured while getting the customer: ', err.message);
+        throw err;
+    }
+}
 async function createPaymentMethod(userID, paymentType, paymentToken, billingDetails, customerID = '') { 
     try {
         const paymentInfo = {
@@ -87,4 +96,4 @@ async function handler(req, res) {
     }
 }
 
-module.exports = { handler, createCustomer, createPaymentMethod};
+module.exports = { handler, createCustomer, createPaymentMethod,getCustomer};

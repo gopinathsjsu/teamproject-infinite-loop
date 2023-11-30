@@ -9,7 +9,7 @@ const { upload } = require('../Helpers/S3');
 const { sendMessage } = require('../Helpers/WhatsappAPI');
 const uniqid = require('uniqid');
 const { RedisHelperAdd, RedisHelperGet, RedisHelperDelete } = require('../Helpers/RedisHelper');
-const { createCustomer } = require('../Helpers/stripeAPI');
+const { createCustomer, getCustomer } = require('../Helpers/stripeAPI');
 const { sendSignUpEmail, sendTicketEmail } = require('../Helpers/sendGridHelper');
 const { generateAndPingQRCode } = require('../Helpers/qrCodeGenerator');
 const Movie = require('../models/MovieModel');
@@ -94,8 +94,8 @@ router.post('/signup', upload.single('file'), async (req, res) => {
             is_admin: isAdmin,
             is_prime: false,
         });
-        //  const customerID = await createCustomer(newUser.user_id, name, email, phoneNumber);
-        //    newUser.stripe_customer_id = customerID;
+          const customerID = await createCustomer(newUser.user_id, name, email, phoneNumber);
+          newUser.stripe_customer_id = customerID;
         console.log(newUser);
         // Save the user to the database
 
@@ -114,7 +114,10 @@ router.post('/signup', upload.single('file'), async (req, res) => {
     }
 
 })
-
+router.get('/isPrimeMember', async (req, res) => {
+    const customer = await getCustomer('cus_P6KWCV7FfjVlfw');
+    console.log(customer);
+})
 router.post("/login", async (req, res) => {
     try {
         email = req.body.email;
