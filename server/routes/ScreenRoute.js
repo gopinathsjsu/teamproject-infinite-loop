@@ -170,6 +170,53 @@ router.get('/getTicketsBoughtByTheatersLocation/:id', async (req, res) => {
         console.error(err);
     });
 });
+router.get('/getTicketsBookedInTheaters', async (req, res) => {
+    await ScreenModel.aggregate([
+        {
+            $group: {
+                _id: "$theater_id",
+                total_tickets_bought: { $sum: "$total_tickets_booked" }
+            }
+        },
+        {
+            $lookup: {
+                from: 'theaters', // Assuming the name of your theater model is 'theaterModel'
+                localField: '_id',
+                foreignField: 'id',
+                as: 'theater_info',
+            },
+        },
+        {
+            $unwind: '$theater_info'
+        },
+        {
+            $set: {
+                'theater_name': '$theater_info.name',
+            },
+        },
+        {
+            $project: {
+                _id: 0,
+                total_tickets_bought: 1,
+                theater_name: 1
+            }
+        }
+    ]).then((result) => {
+        console.log(result);
+        const data = result.map((item, index) => ({
+            id: index,
+            value: item.total_tickets_bought,
+            label: item.theater_name
+        }));
+
+        res.json({
+            data: data
+        })
+    }).catch((err) => {
+        console.error(err);
+        res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).send(err.message);
+    })
+});
 router.get('/:id/:value?', async (req, res) => {
 
     try {
