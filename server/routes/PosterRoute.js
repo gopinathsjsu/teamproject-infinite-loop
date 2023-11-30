@@ -13,6 +13,7 @@ router.post('/addposter', upload.single('poster'), async (req, res) => {
     const poster = new PosterModel({
         id: uniqid(),
         poster_name: req.body.posterName,
+        poster_id: req.body.posterId,
         poster_url: req.file.location
     })
     try {

@@ -49,8 +49,9 @@ const redisHelperGet = async (key) => {
 
 exports.RedisHelperGet = redisHelperGet;
 
-const redisHelperDelete = async (req, res, key) => {
-    const redisClient = redis.createClient({
+const redisHelperDelete = async (key) => {
+    console.log("at redis delete");
+    const redisClient = await redis.createClient({
         url: process.env.REDIS_URL
     });
     redisClient.on('error', (err) => {

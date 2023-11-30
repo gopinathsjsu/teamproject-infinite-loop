@@ -8,18 +8,17 @@ import Container from '@mui/material/Container';
 import { useRouter } from 'next/navigation';
 import { getDataFromEndPoint } from '@/src/lib/backend-api';
 
-
 const MovieCard = ({ movie, onImageClick }: { movie: any, onImageClick: any }) => {
     const [isHovered, setIsHovered] = useState(false);
 
     return (
-        <Card 
-            sx={{ 
+        <Card
+            sx={{
                 width: 200,  // Set the width to 200 pixels
                 height: 300, // Change the height when hovered
-                m: 1, 
-                boxShadow: 3, 
-                position: 'relative', 
+                m: 1,
+                boxShadow: 3,
+                position: 'relative',
                 overflow: 'hidden',
                 '&:hover': {
                     boxShadow: 6,
@@ -49,7 +48,7 @@ const MovieCard = ({ movie, onImageClick }: { movie: any, onImageClick: any }) =
                     <CardContent>
                         <Typography variant="body2" color="text.secondary">
                             {movie.category}
-                        </Typography> 
+                        </Typography>
                     </CardContent>
                 )}
             </CardActionArea>
@@ -94,13 +93,27 @@ const MovieSlider = () => {
                     <MovieCard key={index} movie={movie} onImageClick={handleCardClick} />
                 ))}
             </Slider>
-            <Box mt={4} sx={{ width: '100%', height: '120px', overflow: 'hidden' }}>
-    <img
-        src="https://drive.google.com/uc?id=1RyP7TcOdok3IYMVMwE364m9ghuLFGRvL" // Modified URL
-        alt="Banner"
-        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-    />
-</Box>
+            <Box mt={4} sx={{ width: '100%', overflow: 'hidden' }}>
+                <style>
+                    {`@media (min-width: 1280px) { 
+                        .responsive-banner {
+                                height: 120px; 
+                            }
+                        }
+                        @media (min-width: 1440px) { 
+                        .responsive-banner {
+                                height: 200px; 
+                            }
+                        }
+                    `}
+                </style>
+                <img
+                    className="responsive-banner"
+                    src="https://drive.google.com/uc?id=1RyP7TcOdok3IYMVMwE364m9ghuLFGRvL" // Modified URL
+                    alt="Banner"
+                    style={{ width: '100%', objectFit: 'cover', objectPosition: 'center' }}
+                />
+            </Box>
         </Box>
     );
 };

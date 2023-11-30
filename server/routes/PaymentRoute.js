@@ -8,7 +8,7 @@ require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 
-router.post('/storeTicketBookingDetails', async (req, res) => { 
+router.post('/storeTicketBookingDetails', async (req, res) => {
     console.log("at payment checkout session");
     console.log(req.body);
     const key = req.body.key;
@@ -18,9 +18,9 @@ router.post('/storeTicketBookingDetails', async (req, res) => {
     // console.log(JSON.parse(JSON.parse(data).body));
     // check_data = JSON.parse(JSON.parse(data).body);
     const newSeatBooking = req.body.seatSelected;
-    if (Object.entries(JSON.parse(data)).length !== 0) { 
+    if (Object.entries(JSON.parse(data)).length !== 0) {
         check_data = JSON.parse(JSON.parse(data).body);
-        if(check_data.seatSelected.some(item => newSeatBooking.includes(item))) {
+        if (check_data.seatSelected.some(item => newSeatBooking.includes(item))) {
             return res.json({
                 message: "Some of the seats are already booked",
                 status: HTTP_STATUS_CODES.BAD_REQUEST,
@@ -36,9 +36,9 @@ router.post('/storeTicketBookingDetails', async (req, res) => {
             })
         }
     } else {
-            value_add = {
-                body: JSON.stringify(req.body)
-            }
+        value_add = {
+            body: JSON.stringify(req.body)
+        }
         RedisHelperAdd(key, value_add);
         res.json({
             message: "Seat booking details stored",
@@ -46,7 +46,7 @@ router.post('/storeTicketBookingDetails', async (req, res) => {
         })
     }
 });
-router.post('/checkout_sessions/:id', async (req, res) => { 
+router.post('/checkout_sessions/:id', async (req, res) => {
     //  console.log("at payment checkout session");
     console.log("-------------------");
     console.log(req.params['id']);
@@ -56,48 +56,48 @@ router.post('/checkout_sessions/:id', async (req, res) => {
     const data = JSON.parse(JSON.parse(redis_data).body);
     console.log(data);
     const coupon = await stripe.coupons.create({
-  percent_off: 20,
-  duration: 'once',
-});
-        if (req.method === 'POST') {
-            const lineItems = [{
-                price_data: {
-                    currency: 'usd', // Set the currency
-                    product_data: {
-                        name: 'Ticket', // Or any other name relevant to the ticket
-                    },
-                    unit_amount: data.price, // Assuming 'price' is in the smallest currency unit (like cents for USD)
+        percent_off: 20,
+        duration: 'once',
+    });
+    if (req.method === 'POST') {
+        const lineItems = [{
+            price_data: {
+                currency: 'usd', // Set the currency
+                product_data: {
+                    name: 'Ticket', // Or any other name relevant to the ticket
                 },
-                quantity: data.seatSelected.length, // The quantity of tickets
-            }, {
-        
-                price: 'price_1OElaUA475w0fpJunbITKKhP',
-                quantity: 1,
-            
+                unit_amount: data.price, // Assuming 'price' is in the smallest currency unit (like cents for USD)
             },
-            ];
-            try {
-                const session = await stripe.checkout.sessions.create({
-                    line_items: lineItems,
-                     discounts: [
-                        {
-                            coupon: 'f80FGkXD',
-                        },
-                    ],
-                    mode: 'payment',
-                    success_url: `http://localhost:8080/payment/success?session_id={CHECKOUT_SESSION_ID}&key=${req.params.id}`,
-                    cancel_url: `${req.headers.origin}/?canceled=true`,
-                    automatic_tax: { enabled: true },
-                });
-                //  console.log(session);
-                res.redirect(303, session.url);
-            } catch (err) {
-                res.status(err.statusCode || 500).json(err.message);
-            }
-        } else {
-            res.setHeader('Allow', 'POST');
-            res.status(405).end('Method Not Allowed');
+            quantity: data.seatSelected.length, // The quantity of tickets
+        }, {
+
+            price: 'price_1OElaUA475w0fpJunbITKKhP',
+            quantity: 1,
+
+        },
+        ];
+        try {
+            const session = await stripe.checkout.sessions.create({
+                line_items: lineItems,
+                discounts: [
+                    {
+                        coupon: 'f80FGkXD',
+                    },
+                ],
+                mode: 'payment',
+                success_url: `http://localhost:8080/payment/success?session_id={CHECKOUT_SESSION_ID}&key=${req.params.id}`,
+                cancel_url: `${req.headers.origin}/?canceled=true`,
+                automatic_tax: { enabled: true },
+            });
+            //  console.log(session);
+            res.redirect(303, session.url);
+        } catch (err) {
+            res.status(err.statusCode || 500).json(err.message);
         }
+    } else {
+        res.setHeader('Allow', 'POST');
+        res.status(405).end('Method Not Allowed');
+    }
 
 });
 
@@ -132,7 +132,7 @@ router.get('/success', async (req, res) => {
         }).catch((error) => {
             console.error(error);
         });
-        RedisHelperDelete(req.query.key);
+        await RedisHelperDelete(req.query.key);
         res.send("Payment successful and database updated");
     } catch (err) {
         res.status(500).send(err.message);

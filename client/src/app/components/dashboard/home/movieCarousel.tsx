@@ -13,9 +13,11 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { styled } from "@mui/material/styles";
 import SendIcon from "@mui/icons-material/Send";
 import { TextField } from "@mui/material";
+import { SelectChangeEvent } from '@mui/material/Select';
 
 
 interface Movie {
+  poster_id: string;
   id: string;
   title: string;
   poster_url: string;
@@ -69,7 +71,8 @@ const VisuallyHiddenInput = styled("input")({
 const ImageSlider = () => {
   const [open, setOpen] = useState(false);
   const [movieData, setMovieData] = useState<Movie[]>([]);
-  const [selectedMovies, setSelectedMovies] = useState<string[]>([]);
+  const [movieListData, setMovieListData] = useState<Movie[]>([]);
+  const [selectedMovies, setSelectedMovies] = useState("");
   const [isMounted, setIsMounted] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [formData, setFormData] = useState({
@@ -82,18 +85,34 @@ const ImageSlider = () => {
     const response = await getDataFromEndPoint("", 'poster/all', 'GET');
     console.log(response);
     const data = response.data;
+    console.log('--------');
     console.log(data);
+    console.log('--------');
+    const mappedData = data.map((movie: any) => ({
+      id: movie.id,
+      title: movie.title,
+      poster_url: movie.poster_url,
+      poster_id: movie.poster_id
+    }));
+    console.log(mappedData);
+    setMovieData(mappedData);
+  };
+  const fetchMovies = async () => {
+    const response = await getDataFromEndPoint("", 'movie/all', 'GET');
+    console.log("moviessDataa");
+    console.log(response);
+    console.log("moviessDataa");
+    const data = response.movies;
     const mappedData = data.map((movie: any) => ({
       id: movie.id,
       title: movie.title,
       poster_url: movie.poster_url
     }));
-    console.log(mappedData);
-    setMovieData(mappedData);
-  };
-
+    setMovieListData(mappedData);
+  }
   useEffect(() => {
     fetchMovieData();
+    fetchMovies();
   }, []);
 
 
@@ -111,7 +130,10 @@ const ImageSlider = () => {
   };
 
   const handleImageClick = (movieName: string) => {
-    router.push(`/movies/${movieName}`);
+    console.log(movieName);
+    console.log(movieData[Number(movieName)].poster_id);
+    const movieId = movieData[Number(movieName)].poster_id;
+    router.push(`/movies/${movieId}`);
   };
 
   const handleOpenModal = () => {
@@ -145,6 +167,7 @@ const ImageSlider = () => {
       data.append(`poster`, selectedFile);
     }
     data.append("posterName", formData.posterName);
+    data.append('posterId', selectedMovies);
     console.log(data);
     await getDataFromEndPoint(data, 'poster/addPoster', 'POST');
     setSelectedFile(null);
@@ -155,25 +178,26 @@ const ImageSlider = () => {
     // }));
     fetchMovieData();
   }
-  const handleChangeMultiple = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleChangeSingle = (event: SelectChangeEvent<string>) => {
     const { value } = event.target;
-    setSelectedMovies(typeof value === 'string' ? value.split(',') : (value as string[]));
+    console.log(value);
+    setSelectedMovies(value);
+    console.log(selectedMovies);
   };
 
-  const getMovieImages = () => {
-    return selectedMovies.map((movieName: string) => {
-      const matchingMovie = movieData.find((movie) => movie.title === movieName);
-      return matchingMovie ? matchingMovie.poster_url : '';
-    });
-  };
+  // const getMovieImages = () => {
+  //   return selectedMovies.map((movieName: string) => {
+  //     const matchingMovie = movieData.find((movie) => movie.title === movieName);
+  //     return matchingMovie ? matchingMovie.poster_url : '';
+  //   });
+  // };
 
-  const displayImages = selectedMovies.length > 0 ? getMovieImages() : movieData.map((movie) => movie.poster_url);
-
+  const displayImages = movieData.map((movie) => movie.poster_url);
   return (
     <Box>
       <Slider {...settings}>
-        {displayImages.map((image, index) => (
-          <div key={index} onClick={() => handleImageClick(selectedMovies[index])} style={{ cursor: 'pointer' }}>
+        {displayImages.map((image: any, index: any) => (
+          <div key={index} onClick={() => handleImageClick(index)} style={{ cursor: 'pointer' }}>
             <img src={image} alt={`Slide ${index}`} style={{ width: '100%', height: 'auto' }} />
           </div>
         ))}
@@ -192,20 +216,18 @@ const ImageSlider = () => {
               onSubmit={submitForm}
             >
               <FormControl fullWidth>
-                {/* <InputLabel id="mutiple-select-label">Movies</InputLabel>
-            <Select
-              labelId="mutiple-select-label"
-              multiple
-              value={selectedMovies}
-              onChange={handleChangeMultiple}
-              renderValue={(selected) => (selected as string[]).join(', ')}
-            >
-              {movieData.map((movie) => (
-                <MenuItem key={movie.id} value={movie.title}>
-                  {movie.title}
-                </MenuItem>
-              ))}
-            </Select> */}
+                <InputLabel id="single-select-label">Movie</InputLabel>
+                <Select
+                  labelId="single-select-label"
+                  value={selectedMovies}
+                  onChange={handleChangeSingle}
+                >
+                  {movieListData.map((movie) => (
+                    <MenuItem key={movie.id} value={movie.id}>
+                      {movie.title}
+                    </MenuItem>
+                  ))}
+                </Select>
                 <Grid container spacing={2}>
                   <Grid item xs={12} md={12} lg={12}>
                     <TextField
