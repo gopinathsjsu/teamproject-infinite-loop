@@ -1,0 +1,52 @@
+/* aboutUs.css */
+
+/* Professor Card Styles */
+.professor-card {
+    border: 1px solid #ddd;
+    padding: 1rem;
+    margin: 1rem;
+    text-align: center;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Professor Image Styles */
+  .professor-card img {
+    width: 100%;
+    border-radius: 8px;
+  }
+  
+  /* Students Cards Styles */
+  .student-card {
+    border: 1px solid #ddd;
+    padding: 1rem;
+    margin: 1rem;
+    text-align: center;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Student Image Styles */
+  .student-card img {
+    width: 100%;
+    border-radius: 8px;
+  }
+  
+  /* Button Styles */
+  .card-button {
+    text-decoration: none;
+    color: #3f83f8;
+    margin-right: 0.5rem;
+    border: 1px solid #3f83f8;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+  
+  .card-button:hover {
+    background-color: #3f83f8;
+    color: white;
+  }
+  
