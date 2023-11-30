@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const paymentSchema = new mongoose.Schema({
     id: { type: String, required: true },
     transaction_id: { type: String, required: true },
-    card_details: { type: mongoose.Schema.Types.Mixed, default: {} },
+    amount: { type: Number, required: true },
     address: String,
     status: { type: String, required: true },
     user_id: { type: String, required: true },
