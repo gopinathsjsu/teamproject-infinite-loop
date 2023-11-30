@@ -111,6 +111,7 @@ const MovieSlider = () => {
   const router = useRouter();
   const store:any = useStore();
   const isAdmin = store.isAdmin; // Replace with the actual way to get this info
+
   const handleAddMovieClick = () => {
     router.push("/movies/add"); // Use navigate function to change the route
   };

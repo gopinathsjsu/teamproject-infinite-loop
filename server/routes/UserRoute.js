@@ -233,18 +233,26 @@ router.get('/profileDetails/:id', async (req, res) => {
 
 router.get('/getPurchaseHistory/:id', async (req, res) => {
     id = req.params['id'];
-    console.log(id);
-    const movies = getMovieDetails();
-    const theaters = getTheaterDetails();
+  //  console.log(id);
+    const movies = await getMovieDetails();
+    //console.log(movies);
+    const theaters = await getTheaterDetails();
     const purchase_history = await Transaction.find({ user_id: id });
+    const response = [];
     purchase_history.forEach((item) => {
-        item.movie = movies[item.movie_id];
-        item.theater = theaters[item.theater_id];
-    })
+        var itemm = {};
+        console.log(movies[item.movie_id]);
+        itemm.movie = movies[item.movie_id];
+        itemm.theater = theaters[item.theater_id];
+        itemm.details=item;
+        response.push(itemm);
+    });
+    console.log(purchase_history);
+   
     res.json({
         message: "Purchase history",
         status: HTTP_STATUS_CODES.OK,
-        data: purchase_history
+        data: response
     });
 });
 

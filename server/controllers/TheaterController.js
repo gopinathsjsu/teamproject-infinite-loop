@@ -6,7 +6,11 @@ const Theater = require('../models/TheaterModel');
 function getTheaterDetails() { 
     return new Promise((resolve, reject) => {
         Theater.find({}).select({"name": 1, "address": 1, "id": 1, "screens": 1}).then((result) => {
-            resolve(result);
+            const theaters={};
+            result.forEach(theater=>{
+                theaters[theater.id] = theater.name;
+            })
+            resolve(theaters);
         }).catch((err) => {
             reject(err);
         })

@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import Parallax from './parallax/page';
 
 
+
 // Styled components with theme
 const BenefitsContainer = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -164,6 +165,8 @@ const RewardsPage = () => {
   function joinNow(){
     router.push('https://buy.stripe.com/test_dR68zzgiP9QJ3bqcMM');
   }
+
+  
 
   return (
     <Box sx={{ flexGrow: 1, padding: 3 }}>
