@@ -13,9 +13,5 @@ module.exports = {
     INVALID_CREDENTIALS: 'Invalid credentials',
     // Add more custom messages as needed
   },
-  DISCOUNTS: {
-    tuesday: 10,
-    night_time:10
-  }
   // Add more constants as needed
 };

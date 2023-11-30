@@ -133,7 +133,7 @@ router.get('/success', async (req, res) => {
             console.error(error);
         });
         await RedisHelperDelete(req.query.key);
-         res.redirect(303,req.headers.origin);
+        res.send("Payment successful and database updated");
     } catch (err) {
         res.status(500).send(err.message);
     }

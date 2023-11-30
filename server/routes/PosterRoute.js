@@ -19,7 +19,7 @@ router.post('/addposter', upload.single('poster'), async (req, res) => {
     try {
         await poster.save();
         res.json({
-            message: "added poster",
+            message: "fetched data",
             data: poster,
             status: HTTP_STATUS_CODES.OK
         })
