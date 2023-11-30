@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   stripe_customer_id: { type: String },
-  rewards: { type: String },
+  rewards: { type: Number,default:0 },
   address1: { type: String },
   address2: { type: String },
   city: { type: String },

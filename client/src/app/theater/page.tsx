@@ -4,9 +4,17 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Container from "@mui/material/Container";
 import CssBaseline from "@mui/material/CssBaseline";
-import { Box, Grid, Typography, Button, Link, Stack, TextField } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Typography,
+  Button,
+  Link,
+  Stack,
+  TextField,
+} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from "@mui/icons-material/Delete";
 import Modal from "@mui/material/Modal";
 import Backdrop from "@mui/material/Backdrop";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -18,8 +26,9 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
-import useStore from '@/src/store';
-
+import useStore from "@/src/store";
+import EmailIcon from "@mui/icons-material/Email";
+import PhoneIcon from "@mui/icons-material/Phone";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -182,7 +191,12 @@ export default function Theater() {
   const [open, setOpen] = React.useState<boolean>(false);
   const [isFile, setIsFile] = React.useState<boolean>(false);
   const isAdmin = store.isAdmin; // Replace with the actual way to get this info
-  const { handleSubmit, control, formState: { errors }, setValue } = useForm({ resolver: zodResolver(schema) });
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    setValue,
+  } = useForm({ resolver: zodResolver(schema) });
 
   const getErrorMessage = (error: any) => {
     return error && typeof error.message === "string" ? error.message : "";
@@ -193,7 +207,7 @@ export default function Theater() {
       setEnableEdit(false);
       setTheaterId("");
     }
-  }
+  };
 
   const handleFileChange = (e: any) => {
     e.preventDefault();
@@ -246,7 +260,7 @@ export default function Theater() {
       id: theaterItem.id,
     }));
     setTheaterData(mappedData);
-  }
+  };
 
   const updateTheater = async (e: any) => {
     try {
@@ -255,17 +269,17 @@ export default function Theater() {
       if (selectedFile) {
         data.append("file", selectedFile);
       }
-      e['id'] = theaterId;
+      e["id"] = theaterId;
       data.append("data", JSON.stringify(e));
       await getDataFromEndPoint(data, formURL, "POST");
       setOpen(false);
       setEnableEdit(false);
-      setTheaterId('');
+      setTheaterId("");
       getTheaters();
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const onSubmit = async (e: any) => {
     if (enableEdit) {
@@ -288,7 +302,7 @@ export default function Theater() {
 
   async function deleteTheater(theaterId: any) {
     const formURL = "theater/deleteTheater";
-    const data = { "id": theaterId };
+    const data = { id: theaterId };
     const resp = await getDataFromEndPoint(data, formURL, "POST");
     if (resp != null) {
       getTheaters();
@@ -296,15 +310,15 @@ export default function Theater() {
   }
 
   function editTheater(theater: any) {
-    setValue('theater_name', theater.name);
-    setValue('description', theater.description);
-    setValue('location_url', theater.locationUrl);
-    setValue('city', theater.city);
-    setValue('state', theater.state);
-    setValue('address', theater.address);
-    setValue('zipcode', theater.zipcode.toString());
-    setValue('email', theater.email);
-    setValue('phno', (theater.phoneNumber.toString()));
+    setValue("theater_name", theater.name);
+    setValue("description", theater.description);
+    setValue("location_url", theater.locationUrl);
+    setValue("city", theater.city);
+    setValue("state", theater.state);
+    setValue("address", theater.address);
+    setValue("zipcode", theater.zipcode.toString());
+    setValue("email", theater.email);
+    setValue("phno", theater.phoneNumber.toString());
     setOpen(true);
     setEnableEdit(true);
     setTheaterId(theater.id);
@@ -318,9 +332,9 @@ export default function Theater() {
     <React.Fragment>
       <CssBaseline />
       <Grid container sx={{ mt: 5 }} spacing={2}>
-        <Grid container sx={{ justifyContent: "space-between" }} >
+        <Grid container sx={{ justifyContent: "space-between" }}>
           <Typography variant="h4">Theaters</Typography>
-          {isAdmin &&
+          {isAdmin && (
             <Button
               variant="contained"
               startIcon={<AddCircleOutlineIcon />}
@@ -328,89 +342,151 @@ export default function Theater() {
             >
               Add Theater
             </Button>
-          }
+          )}
         </Grid>
         <Grid item xs={12} container>
-          <Grid
-            container
-            spacing={2}
-            alignItems="center"
-            justifyContent="left"
-          >
+          <Grid container spacing={2} alignItems="center" justifyContent="left">
             {theaterData.map((theater, index) => (
               <Grid item xs={12} md={6} lg={6} key={index}>
                 <Box
                   sx={{
-                    bgcolor: "white", p: 3, borderRadius: 2, boxShadow: 3, display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: "center",
+                    bgcolor: "white",
+                    p: 3,
+                    borderRadius: 2,
+                    boxShadow: 3,
+                    display: "flex",
+                    flexDirection: { xs: "column", md: "row" },
+                    alignItems: "center",
                   }}
                 >
-                  <img src={theater.imageUrl} alt="Theater" style={{ marginBottom: 16, marginRight: 24, width: 192, borderRadius: 8, }}
+                  <img
+                    src={theater.imageUrl}
+                    alt="Theater"
+                    style={{
+                      marginBottom: 16,
+                      marginRight: 24,
+                      width: 192,
+                      borderRadius: 8,
+                    }}
                   />
                   <Box sx={{ flex: 1 }}>
-                    <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
-                      <Link href={theater.locationUrl} target="_blank" rel="noopener noreferrer" underline="hover" style={{ textDecoration: "none" }} >
-                        <Typography variant="h6" component="h3"
+                    <Grid
+                      container
+                      justifyContent="space-between"
+                      alignItems="center"
+                      sx={{ mb: 3 }}
+                    >
+                      <Link
+                        href={theater.locationUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        underline="hover"
+                        style={{ textDecoration: "none" }}
+                      >
+                        <Typography
+                          variant="h6"
+                          component="h3"
                           sx={{
                             mb: 1,
                             fontWeight: "medium",
                             fontSize: "2rem",
-                            color: "#01579B"
+                            color: "#01579B",
                           }}
                         >
                           {theater.name}
                         </Typography>
                       </Link>
-                      {isAdmin &&
-                        <Button startIcon={<EditIcon />} onClick={() => { editTheater(theater) }} />
-                      }
-                      {isAdmin &&
-                        <Button startIcon={<DeleteIcon />} onClick={() => { deleteTheater(theater.id) }} />
-                      }
-                      <Box>
-                        <Button sx={{ fontSize: "1rem", }} onClick={() => addScreen(theater.id)} >
-                          Show Screens
-                        </Button>
-                      </Box>
+                      {isAdmin && (
+                        <>
+                          <Button
+                            startIcon={<EditIcon />}
+                            onClick={() => {
+                              editTheater(theater);
+                            }}
+                          />
+                          <Button
+                            startIcon={<DeleteIcon />}
+                            onClick={() => {
+                              deleteTheater(theater.id);
+                            }}
+                          />
+                        </>
+                      )}
                     </Grid>
-                    <Typography variant="body2" sx={{ ml: "10px", fontSize: "1rem" }} >
+                    <Button
+                      variant="outlined"
+                      sx={{ mb: 2 }}
+                      onClick={() => addScreen(theater.id)}
+                    >
+                      Show Screens
+                    </Button>
+                    <Typography
+                      variant="body2"
+                      sx={{ ml: "10px", fontSize: "1rem" }}
+                    >
                       {theater.description}
                     </Typography>
-                    <Typography variant="body2" sx={{ ml: "10px", mb: 1, fontSize: "1rem" }} >
-                      {theater.address}
-                    </Typography>
-                    <Box sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", mb: 2, ml: "10px" }}>
-                      <Box>{`Screens: ${theater.nScreens}`}</Box>
-                      {theater.screenDetails.map((screen, screenIndex) => (
-                        <Button
-                          key={screenIndex}
-                          sx={{
-                            px: 1,
-                            py: 0.5,
-                            borderRadius: 1,
-                            mr: 1,
-                            mb: 1,
-                            fontSize: "1rem",
-                          }}
-                        >
-                          {/* {screen} */}
-                        </Button>
-                      ))}
-                    </Box>
                     <Box
                       sx={{
                         display: "flex",
-                        alignItems: "center",
+                        flexDirection: "column",
+                        alignItems: "flex-start",
                         fontSize: "0.875rem",
                         color: "text.secondary",
+                        mt: 2,
                       }}
                     >
-                      <Box sx={{ mr: 2 }}>
-                        <i className="fas fa-envelope mr-1"></i>
-                        {theater.email}
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          backgroundColor: "#f5f5f5",
+                          borderRadius: "8px",
+                          padding: "8px 16px",
+                          maxWidth: "fit-content",
+                          boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                          "&:hover": {
+                            backgroundColor: "#e0e0e0",
+                          },
+                        }}
+                      >
+                        <EmailIcon
+                          sx={{ marginRight: "8px", color: "#0077b5" }}
+                        />
+                        <Typography variant="body1">
+                          <Link
+                            href={`mailto:${theater.email}`}
+                            underline="none"
+                            sx={{ color: "#0077b5", fontWeight: "bold" }}
+                          >
+                            {theater.email}
+                          </Link>
+                        </Typography>
                       </Box>
-                      <Box>
-                        <i className="fas fa-phone mr-1"></i>
-                        {theater.phoneNumber}
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          mt: 1,
+                          backgroundColor: "#f5f5f5",
+                          borderRadius: "8px",
+                          padding: "8px 16px",
+                          maxWidth: "fit-content",
+                          boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                          "&:hover": {
+                            backgroundColor: "#e0e0e0",
+                          },
+                        }}
+                      >
+                        <PhoneIcon
+                          sx={{ marginRight: "8px", color: "#0077b5" }}
+                        />
+                        <Typography
+                          variant="body1"
+                          sx={{ color: "#333", fontWeight: "bold" }}
+                        >
+                          {theater.phoneNumber}
+                        </Typography>
                       </Box>
                     </Box>
                   </Box>
@@ -461,13 +537,14 @@ export default function Theater() {
                   >
                     {selectedFile ? (
                       <>
-                        File Uploaded{" "}
-                        <CheckCircleOutlineIcon sx={{ ml: 1 }} />
+                        File Uploaded <CheckCircleOutlineIcon sx={{ ml: 1 }} />
                       </>
                     ) : (
                       "Upload Image"
                     )}
-                    <VisuallyHiddenInput type="file" onChange={handleFileChange}
+                    <VisuallyHiddenInput
+                      type="file"
+                      onChange={handleFileChange}
                     />
                   </Button>
                 </Box>

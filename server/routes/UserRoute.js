@@ -13,6 +13,7 @@ const { createCustomer } = require('../Helpers/stripeAPI');
 const { sendSignUpEmail, sendTicketEmail } = require('../Helpers/sendGridHelper');
 const { generateAndPingQRCode } = require('../Helpers/qrCodeGenerator');
 const Movie = require('../models/MovieModel');
+const Transaction = require('../models/TransactionModel');
 const saltRounds = 10;
 router.get('/addUser', async (req, res) => {
     // RedisHelperAdd(req, res, "hello", { "token": "hello" })
@@ -227,6 +228,23 @@ router.get('/profileDetails/:id', async (req, res) => {
 
 });
 
+router.get('/getPurchaseHistory/:id', async (req, res) => {
+    id = req.params['id'];
+    console.log(id);
+    await Transaction.findOne({ user_id: id }).then((result) => {
+        console.log(result);
+        res.json({
+            message: "Purchase History details",
+            status: HTTP_STATUS_CODES.OK,
+            data: result
+        })
+    }).catch((err) => {
+        console.error(err);
+        res.status(HTTP_STATUS_CODES.BAD_REQUEST).send("Internal server Error");
+    })
+
+});
+
 router.get('/getReommendedMovies/:id', async (req, res) => {
     id = req.params['id'];
     const user = await User.findOne({ user_id: id });
@@ -249,4 +267,19 @@ router.get('/getReommendedMovies/:id', async (req, res) => {
     }
 })
 
+router.get('/getRewards/:id', async (req, res) => { 
+    id = req.params['id'];
+    console.log(id);
+    await User.findOne({ user_id: id }).select({ "rewards": 1 }).then((result) => {
+        console.log(result);
+        res.json({
+            message: "Rewards details",
+            status: HTTP_STATUS_CODES.OK,
+            data: result.rewards
+        })
+    }).catch((err) => {
+        console.error(err);
+        res.status(HTTP_STATUS_CODES.BAD_REQUEST).send("Internal server Error");
+    })
+});
 module.exports = router;
