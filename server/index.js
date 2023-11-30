@@ -8,6 +8,7 @@ const PosterRoute = require('../server/routes/PosterRoute')
 const MovieRoute = require('../server/routes/MovieRoute')
 const ScreenRoute = require('../server/routes/ScreenRoute')
 const ArtistRoute = require('../server/routes/ArtistRoute')
+const DiscountRouter = require('../server/routes/DiscountRouter')
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -45,7 +46,7 @@ app.use(
     secret: process.env.JWT_SECRET_KEY,
     // You can use the default in-memory store or choose another session store here
   }));
-
+app.use('/discount', DiscountRouter);
 app.use('/payment', paymentRoute)
 app.use('/artist', ArtistRoute)
 app.use('/theater', TheatreRoute)

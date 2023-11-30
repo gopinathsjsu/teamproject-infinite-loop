@@ -13,12 +13,13 @@ router.post('/addposter', upload.single('poster'), async (req, res) => {
     const poster = new PosterModel({
         id: uniqid(),
         poster_name: req.body.posterName,
+        poster_id: req.body.posterId,
         poster_url: req.file.location
     })
     try {
         await poster.save();
         res.json({
-            message: "fetched data",
+            message: "added poster",
             data: poster,
             status: HTTP_STATUS_CODES.OK
         })
