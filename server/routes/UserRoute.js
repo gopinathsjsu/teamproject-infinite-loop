@@ -267,4 +267,19 @@ router.get('/getReommendedMovies/:id', async (req, res) => {
     }
 })
 
+router.get('/getRewards/:id', async (req, res) => { 
+    id = req.params['id'];
+    console.log(id);
+    await User.findOne({ user_id: id }).select({ "rewards": 1 }).then((result) => {
+        console.log(result);
+        res.json({
+            message: "Rewards details",
+            status: HTTP_STATUS_CODES.OK,
+            data: result.rewards
+        })
+    }).catch((err) => {
+        console.error(err);
+        res.status(HTTP_STATUS_CODES.BAD_REQUEST).send("Internal server Error");
+    })
+});
 module.exports = router;

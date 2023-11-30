@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { status, ScreenModel } = require('../models/ScreenModel');
 const { handler } = require('../Helpers/stripeAPI');
+const User = require('../models/UserModel');
 const { RedisHelperAdd, RedisHelperGet, RedisHelperDelete } = require('../Helpers/RedisHelper');
 const { HTTP_STATUS_CODES } = require('../constants');
 const Transaction = require('../models/TransactionModel');
@@ -125,6 +126,7 @@ router.get('/success', async (req, res) => {
         const seat_selected = data.seatSelected;
         const movie_id = data.movie_id;
         const no_of_seats_booked = seat_selected.length;
+        const rewards =  data.price*seat_selected.length;
         const qr_code = await generateAndPingQRCode(session.payment_intent, 'http://localhost:8080/verifyTicket/' + session.payment_intent);
         const transaction = new Transaction({
             id: uniqid(),
@@ -136,7 +138,10 @@ router.get('/success', async (req, res) => {
             payment_method: session.payment_method_types[0],
             status: session.payment_status,
         });
-       await transaction.save();
+        await transaction.save();
+        await User.findOneAndUpdate({ user_id: data.user_id }, {
+            $inc: { rewards: rewards }
+        });
         await ScreenModel.findOneAndUpdate({ id: screen_id }, {
             $inc: { [`seats_day_wise.${filter_date}.${timing}.tickets_bought`]: no_of_seats_booked },
             $set: {
