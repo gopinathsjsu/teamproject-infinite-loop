@@ -1,6 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
+import { useParams, useSearchParams } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
@@ -33,6 +33,7 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Dayjs from "dayjs";
 import { loadStripe } from "@stripe/stripe-js";
+import useStore from '@/src/store';
 
 const stripePromise = loadStripe(
   "pk_test_51OEgQqA475w0fpJudMi36tfpe04jdRxLTraIo1nwDrPcvgdEhXz77lWWfloifqjrI7UsggP5JppqQvU1fg6hZsuB00ibyRUIcB"
@@ -61,6 +62,7 @@ const style = {
 
 export default function addScreen() {
   const { movieName } = useParams();
+  const searchParams = useSearchParams()
   const [editable, setEditable] = useState<boolean>(true);
   const [theaters, setTheaters] = useState<any[]>([]);
   const [screens, setScreens] = useState<any[]>([]);
@@ -75,11 +77,39 @@ export default function addScreen() {
   const [orderDetails, setOrderDetails] = useState<any>(null);
   const [discountRates, setDiscountRates] = useState<any>(null);
   const [key, setKey] = useState<string>("");
+  const [isPatched, setIsPatched] = useState<boolean>(false);
   const checkoutURL = `http://localhost:8080/payment/checkout_sessions/${key}`;
+  const store:any = useStore();
+
+  useEffect(() => {
+    if (!isPatched) {
+      const theaterId = searchParams.get('theater');
+      const screenId = searchParams.get('screen');
+      const timing = searchParams.get('time');
+
+      if (theaterId) {
+        setValue("theater", theaterId);
+        const selectedTheater = theaters.find((theater) => theater.id === theaterId);
+        if (selectedTheater) {
+          setScreens(selectedTheater.screen_details);
+        }
+        if (screenId && screens.length > 0) {
+          setValue("screen", screenId);
+          const selectedScreen = screens.find((screen) => screen.id === screenId);
+          if (selectedScreen) {
+            setTimings(selectedScreen.show_timings);
+          }
+          if (timing) {
+            setValue("timing", timing);
+            setIsPatched(true);
+          }
+        }
+      }
+    }
+  }, [searchParams, theaters, screens]);
 
   useEffect(() => {
     clearSelectedSeats();
-
     const fetchData = async () => {
       try {
         const response: any = await fetch(
@@ -95,7 +125,6 @@ export default function addScreen() {
             ? currentDate
             : Dayjs(res.data.releaseDate);
         setReleaseDate(openingDate);
-
       } catch (error) {
         console.log(error);
       }
@@ -163,11 +192,11 @@ export default function addScreen() {
   }
 
   const {
-    handleSubmit,
     getValues,
     trigger,
     control,
     formState: { errors },
+    setValue
   } = useForm({
     resolver: zodResolver(schema),
   });
@@ -302,6 +331,7 @@ export default function addScreen() {
     let discount = dayOfWeek.toString() === "2" ? discountRates.tuesday : null;
     if (time >= 18) discount = discountRates.night_time;
     const totalPrice = discount != null ? cost * selectedSeats.length * (1 - discount * 0.01) : cost * selectedSeats.length;
+    data["user_id"] = store.user? store.user.user_id : null;
     data["discount"] = discount;
     data["screenLayout"] = getReqSeatDeatils();
     data["seatSelected"] = selectedSeats;
@@ -315,22 +345,25 @@ export default function addScreen() {
       "POST"
     );
     if (reqData.status == 200) {
-    const tempOrderDetails = {
-      ticketsBooked: selectedSeats.join(","),
-      pricePerTicket: cost,
-      discount: dayOfWeek.toString() === "2" ? `Tuesday's Discount ${discount}%` : (time >= 18 ? `Night Show Discount ${discount}%` : '0'),
-      totalPrice: totalPrice,
-    }
-    setOrderDetails(tempOrderDetails);
-    setKey(key);
-    setOpen(true);
+      const tempOrderDetails = {
+        ticketsBooked: selectedSeats.join(","),
+        pricePerTicket: cost,
+        discount: dayOfWeek.toString() === "2" ? `Tuesday's Discount ${discount}%` : (time >= 18 ? `Night Show Discount ${discount}%` : '0'),
+        totalPrice: totalPrice,
+      }
+      setOrderDetails(tempOrderDetails);
+      setKey(key);
+      setOpen(true);
     }
   }
 
   function theaterChange(event: any) {
     theaters.forEach((theater) => {
       if (theater.id == event.target.value) {
+        setValue('screen',null);
+        setValue('timing',null);
         setScreens(theater.screen_details);
+        setTimings([]);
       }
     });
   }
@@ -385,14 +418,14 @@ export default function addScreen() {
                         }}
                       />
                     ) : (
-                    <DatePicker
-                      disabled={!editable}
-                      minDate={Dayjs(releaseDate)}
-                      maxDate={Dayjs(endDate)}
-                      sx={{ width: "100%" }}
-                      label="Select Date"
-                      {...field}
-                    />
+                      <DatePicker
+                        disabled={!editable}
+                        minDate={Dayjs(releaseDate)}
+                        maxDate={Dayjs(endDate)}
+                        sx={{ width: "100%" }}
+                        label="Select Date"
+                        {...field}
+                      />
                     )
                     }
                   </LocalizationProvider>

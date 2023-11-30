@@ -177,6 +177,10 @@ export default function Screen() {
         setOpen(!open);
     };
 
+    const redirectToBuy = (screen: any,time:string) => {
+        router.push(`/movies/${screen.movieId}/buyTicket?theater=${theaterId}&screen=${screen.id}&time=${time}`)
+    }
+
     const standardSize = {
         width: '650px', // Example responsive sizes
         height: '500px', // Set height to auto, but you can fix it if necessary
@@ -236,12 +240,12 @@ export default function Screen() {
                                                 {`Price: `}{screen.cost}{`$`}
                                             </Box>
                                             <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', mb: 2 }}>
-                                                <Box sx={{ml:1}}>Timings:</Box>
-                                                <Grid container spacing={2} sx={{mt:1}}>
-                                                    <Box sx={{ml:1}}>
-                                                    {screen.timings.map((time, index) => (
-                                                        <Chip sx={{ml:1}} label={time} />
-                                                    ))}
+                                                <Box sx={{ ml: 1 }}>Timings:</Box>
+                                                <Grid container spacing={2} sx={{ mt: 1 }}>
+                                                    <Box sx={{ ml: 1 }}>
+                                                        {screen.timings.map((time, index) => (
+                                                            <Chip sx={{ ml: 1 }} label={time} onClick={() => (redirectToBuy(screen,time))} />
+                                                        ))}
                                                     </Box>
                                                 </Grid>
                                             </Box>
