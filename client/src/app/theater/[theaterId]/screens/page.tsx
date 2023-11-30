@@ -176,6 +176,11 @@ export default function Screen() {
         setSelectedScreenId(screen_id);
         setOpen(!open);
     };
+
+    const standardSize = {
+        width: '650px', // Example responsive sizes
+        height: '500px', // Set height to auto, but you can fix it if necessary
+      };
     return (
         <React.Fragment>
             <CssBaseline />
@@ -191,9 +196,18 @@ export default function Screen() {
                     </Grid>
                     <Grid item xs={12} container>
                         <Grid container spacing={2} alignItems="center" justifyContent="left">
-                            {screenData.map((screen, index) => (
-                                <Grid item xs={12} md={6} lg={6} key={index}>
-                                    <Box sx={{ bgcolor: 'white', p: 3, borderRadius: 2, boxShadow: 3, display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: 'center' }}>
+                        {screenData.map((screen, index) => (
+                            <Grid item key={index} sx={standardSize}>
+                                              <Box sx={{
+                                                    bgcolor: 'white',
+                                                    p: 3,
+                                                    borderRadius: 2,
+                                                    boxShadow: 3,
+                                                    display: 'flex',
+                                                    flexDirection: { xs: 'column', md: 'row' },
+                                                    alignItems: 'center',
+                                                    height: '100%', // Ensure all containers have the same height
+                                                }}>
                                         <img src={screen.imageUrl} alt="screeb" style={{ marginBottom: 16, marginRight: 24, width: 192, borderRadius: 8 }} />
                                         <Box sx={{ flex: 1 }}>
                                             <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
@@ -221,12 +235,17 @@ export default function Screen() {
                                             <Box sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }}>
                                                 {`cost: `}{screen.cost}{`$`}
                                             </Box>
-                                            <Box sx={{ bgcolor: 'blue.100', color: 'blue.800', px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }}>{`Maximum Capacity: `}{screen.maxCapacity}</Box>
                                             <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', mb: 2 }}>
-                                                <Box sx={{ bgcolor: 'blue.100', color: 'blue.800', px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }}>{`Timings:`}</Box>
+                                            <Box sx={{ bgcolor: 'blue.100', color: 'blue.800', px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }}>Timings:</Box>
+                                            <Grid container spacing={1}>
                                                 {screen.timings.map((time, screenIndex) => (
-                                                    <Button key={screenIndex} sx={{ px: 1, py: 0.5, borderRadius: 1, mr: 1, mb: 1, fontSize: '1rem' }}>{time}</Button>
+                                                <Grid item xs={6} key={screenIndex}> {/* 2x2 layout, 2 items per row */}
+                                                    <Button sx={{ px: 1, py: 0.5, borderRadius: 1, width: '100%', fontSize: '1rem' }}>
+                                                    {time}
+                                                    </Button>
+                                                </Grid>
                                                 ))}
+                                            </Grid>
                                             </Box>
                                             {/* {screen.currentMovie != null &&  */}
                                             <Button onClick={() => { bookTicket(screen) }} variant="contained">

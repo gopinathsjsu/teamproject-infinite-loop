@@ -9,6 +9,7 @@ import {
   Grid,
   Typography,
   styled,
+  Chip,
   IconButton,
   makeStyles,
   Link,
@@ -197,50 +198,41 @@ const App: React.FC = () => {
     router.push(`/movies/${movieName}/buyTicket`);
   }
 
+  const transparentChipStyle = {
+    background: 'transparent',
+    border: '1px solid #ffffff', // Add a border for better visibility
+    marginRight: '4px', // Adjust spacing as needed
+    color: '#ffffff', // Text color
+  };
+
   return (
     <>
       <div>
-        <div style={backgroundStyle}>
-          <div style={contentStyle}>
-            <Typography
-              variant="h4"
-              sx={{ fontWeight: "bold", mb: 2 }}
-              component="h1"
-              gutterBottom
-              style={{ fontSize: "80px" }}
-            >
-              {movie.title}
-            </Typography>
-            <Typography
-              variant="subtitle1"
-              sx={{ fontWeight: "bold", mb: 1 }}
-              gutterBottom
-              style={{ fontSize: "30px" }}
-            >
-              {new Date(movie.release_date).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
-            </Typography>
-            <Typography
-              variant="subtitle1"
-              sx={{ fontWeight: "bold", mb: 1 }}
-              gutterBottom
-              style={{ fontSize: "24px" }}
-            >
-              {movie.languages} | {movie.run_time} | {movie.format}
-            </Typography>
-            <Typography
-              variant="subtitle1"
-              sx={{ fontWeight: "bold", mb: 1 }}
-              gutterBottom
-              style={{ fontSize: "30px" }}
-            >
-              {movie.genres}
-            </Typography>
-          </div>
-        </div>
+      <div style={backgroundStyle}>
+      <div style={contentStyle}>
+        <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2, fontSize: '80px' }} component="h1" gutterBottom>
+          {movie.title}
+        </Typography>
+        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1, fontSize: '30px' }} gutterBottom>
+          {new Date(movie.release_date).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })}
+        </Typography>
+        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1, fontSize: '24px' }} gutterBottom>
+          <Chip label={`Runtime: ${movie.run_time} min`} sx={transparentChipStyle} />
+          <Chip label={`Languages: ${movie.languages}`} sx={transparentChipStyle} />
+          <Chip label={`Format: ${movie.format}`} sx={transparentChipStyle} />
+        </Typography>
+        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1, fontSize: '30px' }} gutterBottom>
+          
+          {movie.genres.map((genre, index) => (
+            <Chip key={index} label={genre} sx={transparentChipStyle} />
+          ))}
+        </Typography>
+      </div>
+    </div>
         <div
           style={{
             position: "absolute",
@@ -286,7 +278,7 @@ const App: React.FC = () => {
             >
               About the movie
             </Typography>
-            <Typography variant="body1" style={{ fontSize: "20px" }}>
+            <Typography variant="body1" style={{ fontSize: "20px", textAlign: "justify" }}>
               {movie.description}
             </Typography>
             <div>

@@ -35,7 +35,6 @@ const MemberBenefitsSection = () => {
     "Price Per Month",
     "Earn 1 Point for Every $1 Spent",
     "Redeem Points for Tickets and More Rewards",
-    "Member Access to Screenings and Advance Tickets",
     "Exclusive Member Offers",
     "Extra Discount Tuesday Savings",
     "Special Birthday Treat",
@@ -44,6 +43,7 @@ const MemberBenefitsSection = () => {
     "Waived Online Fees",
     "Unused Ticket Credits Roll Over",
     "Member Pricing for Additional Tickets",
+    "Member Access to Screenings and Advance Tickets",
   ];
 
   // This should be determined based on your actual data
@@ -52,7 +52,6 @@ const MemberBenefitsSection = () => {
       "Price Per Month",
       "Earn 1 Point for Every $1 Spent",
       "Redeem Points for Tickets and More Rewards",
-      "Member Access to Screenings and Advance Tickets",
       "Exclusive Member Offers",
       "Extra Discount Tuesday Savings",
       "Special Birthday Treat",
@@ -61,12 +60,12 @@ const MemberBenefitsSection = () => {
       "Waived Online Fees",
       "Unused Ticket Credits Roll Over",
       "Member Pricing for Additional Tickets",
+      "Member Access to Screenings and Advance Tickets",
     ],
     movieFan: [
       "Price Per Month",
       "Earn 1 Point for Every $1 Spent",
       "Redeem Points for Tickets and More Rewards",
-      "Member Access to Screenings and Advance Tickets",
       "Exclusive Member Offers",
       "Extra Discount Tuesday Savings",
       "Special Birthday Treat",
