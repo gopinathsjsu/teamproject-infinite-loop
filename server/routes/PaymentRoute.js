@@ -3,11 +3,13 @@ const router = express.Router();
 const { status, ScreenModel } = require('../models/ScreenModel');
 const { handler } = require('../Helpers/stripeAPI');
 const User = require('../models/UserModel');
+const Movie = require('../models/MovieModel');
 const { RedisHelperAdd, RedisHelperGet, RedisHelperDelete } = require('../Helpers/RedisHelper');
 const { HTTP_STATUS_CODES } = require('../constants');
 const Transaction = require('../models/TransactionModel');
 const {generateAndPingQRCode} = require('../Helpers/qrCodeGenerator');
 const uniqid = require('uniqid');
+const { daysDifference } = require('../controllers/MovieController');
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
@@ -123,6 +125,7 @@ router.get('/success', async (req, res) => {
         const timing = data.timing
         const screen_id = data.screen;
         const theater_id = data.theater;
+       
         const screen_layout = data.screenLayout;
         const seat_selected = data.seatSelected;
         const movie_id = data.movie_id;
@@ -134,7 +137,11 @@ router.get('/success', async (req, res) => {
             $set: {
                 [`seats_day_wise.${filter_date}.${timing}.SeatArray`]: screen_layout
             }
-        });
+         });
+        const movie_details = await Movie.findOneAndUpdate({ id: movie_id });
+        const current_day = daysDifference(movie_details.release_date, date);
+        movie_details.day_wise_tickets_sold[current_day] = movie_details.day_wise_tickets_sold[current_day] + no_of_seats_booked;
+        movie_details.save();
         const transaction = new Transaction({
             id: uniqid(),
             user_id: data.user_id,
