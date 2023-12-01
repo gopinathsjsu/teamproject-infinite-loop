@@ -18,6 +18,8 @@ const saltRounds = 10;
 const { getMovieDetails } = require('../controllers/MovieController');
 const { getTheaterDetails } = require('../controllers/TheaterController');
 const { get } = require('request');
+const { getUrl } = require('../Helpers/S3');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 router.get('/addUser', async (req, res) => {
     // RedisHelperAdd(req, res, "hello", { "token": "hello" })
     // const data = await RedisHelperGet("hello");
@@ -37,9 +39,11 @@ router.get('/addUser', async (req, res) => {
     // };
     // // sendSignUpEmail(data);
     // // console.log(data)
-    generateAndPingQRCode('123456789', "Test");
+    qr_key = await generateAndPingQRCode('pi_3OIKToA475w0fpJu1zAzct1t6');
+    console.log(qr_key);
+    get_qr_url = getUrl(qr_key);
     // sendTicketEmail(data);
-    // res.send('Hello, world!');
+    res.send(get_qr_url);
 });
 
 router.post('/signup', upload.single('file'), async (req, res) => {
@@ -70,7 +74,7 @@ router.post('/signup', upload.single('file'), async (req, res) => {
     }
     if (password_value == confirmPassword) {
         const newUser = new User({
-            user_id: uniqid(),
+            user_id:email,
             fullname: name,
             email: email,
             password: password,
@@ -94,8 +98,8 @@ router.post('/signup', upload.single('file'), async (req, res) => {
             is_admin: isAdmin,
             is_prime: false,
         });
-          const customerID = await createCustomer(newUser.user_id, name, email, phoneNumber);
-          newUser.stripe_customer_id = customerID;
+        const customerID = await createCustomer(newUser.user_id, name, email, phoneNumber);
+        newUser.stripe_customer_id = customerID;
         console.log(newUser);
         // Save the user to the database
 
@@ -114,9 +118,22 @@ router.post('/signup', upload.single('file'), async (req, res) => {
     }
 
 })
-router.get('/isPrimeMember', async (req, res) => {
-    const customer = await getCustomer('cus_P6KWCV7FfjVlfw');
-    console.log(customer);
+router.get('/isPrimeMember/:id', async (req, res) => {
+    const user = await User.findOne({user_id:req.params["id"]}).select({"email":1})
+   const customers = await stripe.customers.list({
+    email: user.email,
+    limit: 1 // Assuming email is unique per customer
+   });
+    const customer = customers.data[0];
+    const subscriptions = await stripe.subscriptions.list({
+    customer: customer.id,
+    });
+    
+    res.json({
+                    message: 'uuser details found',
+                    status: HTTP_STATUS_CODES.OK,
+        data: subscriptions.data[0].status
+                })
 })
 router.post("/login", async (req, res) => {
     try {
@@ -174,31 +191,31 @@ router.post('/updateProfile', upload.single('file'), async (req, res) => {
     }
     const cast = req.body.favoriteCast;
     const crew = req.body.favoriteCrew;
-        await User.updateOne({ user_id: post_data.id }, {
-            fullname: post_data.fullName,
-            email: post_data.email,
-            firstname: '',
-            lastname: '',
-            dob: post_data.dob,
-            gender: post_data.gender,
-            mobile: post_data.phoneNumber,
-            genres: post_data.genres,
-            favourite_artists: cast,
-            favourite_crew: crew,
-            preferred_languages: post_data.preferredLanguages,
-            address1: post_data.address1,
-            address2: post_data.address2,
-            city: post_data.city,
-            state: post_data.state,
-            country: post_data.scountry,
-            zipcode: post_data.zipCode,
-            ...(req.file && { profile_url }),
-        }).then((result) => {
-            console.log(result);
-            res.status(HTTP_STATUS_CODES.OK).send("updated successfully");
-        }).catch((error) => {
-            console.error(error);
-        })
+    await User.updateOne({ user_id: post_data.id }, {
+        fullname: post_data.fullName,
+        email: post_data.email,
+        firstname: '',
+        lastname: '',
+        dob: post_data.dob,
+        gender: post_data.gender,
+        mobile: post_data.phoneNumber,
+        genres: post_data.genres,
+        favourite_artists: cast,
+        favourite_crew: crew,
+        preferred_languages: post_data.preferredLanguages,
+        address1: post_data.address1,
+        address2: post_data.address2,
+        city: post_data.city,
+        state: post_data.state,
+        country: post_data.scountry,
+        zipcode: post_data.zipCode,
+        ...(req.file && { profile_url }),
+    }).then((result) => {
+        console.log(result);
+        res.status(HTTP_STATUS_CODES.OK).send("updated successfully");
+    }).catch((error) => {
+        console.error(error);
+    })
 });
 
 
@@ -236,7 +253,8 @@ router.get('/profileDetails/:id', async (req, res) => {
 
 router.get('/getPurchaseHistory/:id', async (req, res) => {
     id = req.params['id'];
-  //  console.log(id);
+    console.log(id);
+    console.log("at get purchanse Hisory");
     const movies = await getMovieDetails();
     //console.log(movies);
     const theaters = await getTheaterDetails();
@@ -247,11 +265,12 @@ router.get('/getPurchaseHistory/:id', async (req, res) => {
         console.log(movies[item.movie_id]);
         itemm.movie = movies[item.movie_id];
         itemm.theater = theaters[item.theater_id];
-        itemm.details=item;
+        itemm.qr_url = getUrl(item.qr_code);
+        itemm.details = item;
         response.push(itemm);
     });
     console.log(purchase_history);
-   
+
     res.json({
         message: "Purchase history",
         status: HTTP_STATUS_CODES.OK,
@@ -281,7 +300,7 @@ router.get('/getReommendedMovies/:id', async (req, res) => {
     }
 })
 
-router.get('/getRewards/:id', async (req, res) => { 
+router.get('/getRewards/:id', async (req, res) => {
     id = req.params['id'];
     console.log(id);
     await User.findOne({ user_id: id }).select({ "rewards": 1 }).then((result) => {

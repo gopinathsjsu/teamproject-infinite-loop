@@ -347,13 +347,14 @@ export default function addScreen() {
     let discount = dayOfWeek.toString() === "2" ? discountRates.tuesday : null;
     if (time >= 18) discount = discountRates.night_time;
     const totalPrice = discount != null ? cost * selectedSeats.length * (1 - discount * 0.01) : cost * selectedSeats.length;
-    data["user_id"] = store.user? store.user.user_id : null;
-    data["discount"] = discount;
+    data["user_id"] = store.user ? store.user.user_id : null;
+    data["discount"] = dayOfWeek.toString() === "2" ? "tuesday" : ((time >= 18) ? "night_time": null);
     data["screenLayout"] = getReqSeatDeatils();
     data["seatSelected"] = selectedSeats;
     data["movie_id"] = movieName;
     data["key"] = key;
     data["price"] = cost * 100;
+    data["rewards"] = rewards;
     data["is_prime"] = false;
     const reqData = await getDataFromEndPoint(
       data,

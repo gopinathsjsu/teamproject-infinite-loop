@@ -7,9 +7,13 @@ const Movie = require('../models/MovieModel');
 const { RedisHelperAdd, RedisHelperGet, RedisHelperDelete } = require('../Helpers/RedisHelper');
 const { HTTP_STATUS_CODES } = require('../constants');
 const Transaction = require('../models/TransactionModel');
+const Discount = require('../models/DiscountModel');
 const { generateAndPingQRCode } = require('../Helpers/qrCodeGenerator');
 const uniqid = require('uniqid');
 const { daysDifference } = require('../controllers/MovieController');
+const { sendTicketEmail } = require('../Helpers/sendGridHelper');
+const Theater = require('../models/TheaterModel');
+const { getUrl } = require('../Helpers/S3');
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
@@ -52,12 +56,14 @@ router.post('/storeTicketBookingDetails', async (req, res) => {
         })
     }
 });
-router.post('/checkout_sessions/:id', async (req, res) => {
+router.post('/checkout_sessions/:id/:rewards', async (req, res) => {
     console.log("at payment checkout session");
     console.log("-------------------");
     console.log(req.params['id']);
     console.log("-------------------");
+    rewards = req.params['rewards'];
     const redis_data = await RedisHelperGet(req.params['id']);
+    const rewards_flag = req.params['rewards'];
     console.log(redis_data);
     const data = JSON.parse(JSON.parse(redis_data).body);
     // console.log(data);
@@ -65,6 +71,9 @@ router.post('/checkout_sessions/:id', async (req, res) => {
         percent_off: 20,
         duration: 'once',
     });
+    var final_price = data.price;
+    if(rewards_flag==="true")
+    final_price = final_price - (data.rewards / 10);
     if (req.method === 'POST') {
         const lineItems = [{
             price_data: {
@@ -72,7 +81,7 @@ router.post('/checkout_sessions/:id', async (req, res) => {
                 product_data: {
                     name: 'Ticket', // Or any other name relevant to the ticket
                 },
-                unit_amount: data.price, // Assuming 'price' is in the smallest currency unit (like cents for USD)
+                unit_amount: final_price, // Assuming 'price' is in the smallest currency unit (like cents for USD)
             },
             quantity: data.seatSelected.length, // The quantity of tickets
         }, {
@@ -82,14 +91,24 @@ router.post('/checkout_sessions/:id', async (req, res) => {
 
         },
         ];
+        var discount_coupon = undefined;
+        if (data.discount) {
+            const discount = await Discount.findOne({ id: "1" });
+            if (data.discount = "tuesday") {
+                discount_coupon = [
+                    { coupon: discount.tuesday_discount_coupon }
+                ];
+            }
+            else {
+                 discount_coupon = [
+                    { coupon: discount.nighttime_discount_coupon }
+                ];
+            }
+        }
         try {
             const session = await stripe.checkout.sessions.create({
                 line_items: lineItems,
-                discounts: [
-                    {
-                        coupon: 'f80FGkXD',
-                    },
-                ],
+                discounts: discount_coupon,
                 mode: 'payment',
                 success_url: `http://localhost:8080/payment/success?session_id={CHECKOUT_SESSION_ID}&key=${req.params.id}`,
                 cancel_url: `${req.headers.origin}/?canceled=true`,
@@ -107,6 +126,46 @@ router.post('/checkout_sessions/:id', async (req, res) => {
 
 });
 
+router.get('/prime/checkout_sessions/:id', async (req, res) => { 
+ try {
+    // Create a new Checkout Session for the subscription using the existing price ID
+     const user = await User.findOne({user_id:req.params.id});
+    const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        customer:user.stripe_customer_id,
+      line_items: [{
+        price: 'price_1OGqZ5A475w0fpJubtRJsfyw', // Replace with your actual price ID
+        quantity: 1,
+      }],
+      mode: 'subscription',
+      success_url: `http://localhost:8080/payment/prime/success?session_id={CHECKOUT_SESSION_ID}&user_id=${req.params.id}`,
+      cancel_url: `${req.headers.origin}/?canceled=true`,
+    });
+
+    res.redirect(303, session.url);
+  } catch (e) {
+    res.status(400).send(`Error creating checkout session: ${e.message}`);
+  }
+});
+router.get('/prime/success/:session_id/:user_id', async (req, res) => { 
+    try {
+        const session_id = req.query.session_id;
+        if (!session_id) {
+            return res.status(400).send("Session ID is missing");
+        }
+        const session = await stripe.checkout.sessions.retrieve(session_id);
+        const user = await User.findOneAndUpdate({ user_id: req.params.user_id }, {
+            $set: {
+                is_prime: true
+            }
+        });
+        console.log(session);
+        console.log("at payment success success");
+        res.redirect(303, 'http://localhost:3000');
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});
 router.get('/success', async (req, res) => {
     try {
         const session_id = req.query.session_id;
@@ -142,6 +201,7 @@ router.get('/success', async (req, res) => {
         const current_day = daysDifference(movie_details.release_date, date);
         movie_details.day_wise_tickets_sold[current_day] = movie_details.day_wise_tickets_sold[current_day] + no_of_seats_booked;
         movie_details.save();
+        const theaters_details = await Theater.findOne({ id: theater_id });
         const transaction = new Transaction({
             id: uniqid(),
             user_id: data.user_id,
@@ -155,25 +215,48 @@ router.get('/success', async (req, res) => {
             price: data.price,
             payment_method: session.payment_method_types[0],
             status: session.payment_status,
+            email: session.customer_details.email,
+            name: session.customer_details.name,
+            movieName: movie_details.title,
+            theaterName: theaters_details.name,
+
         });
         await transaction.save();
-        await ScreenModel.findOneAndUpdate({ id: screen_id }, {
-            $inc: { [`seats_day_wise.${filter_date}.${timing}.tickets_bought`]: no_of_seats_booked },
-            $set: {
-                [`seats_day_wise.${filter_date}.${timing}.SeatArray`]: screen_layout
-            }
-        }).then((result) => {
-            console.log(result);
-        }).catch((error) => {
-            console.error(error);
-        });
+        // await ScreenModel.findOneAndUpdate({ id: screen_id }, {
+        //     $inc: { [`seats_day_wise.${filter_date}.${timing}.tickets_bought`]: no_of_seats_booked },
+        //     $set: {
+        //         [`seats_day_wise.${filter_date}.${timing}.SeatArray`]: screen_layout
+        //     }
+        // }).then((result) => {
+        //     console.log(result);
+        // }).catch((error) => {
+        //     console.error(error);
+        // });
+        const email_data = {
+            email: session.customer_details.email,
+            name: session.customer_details.name,
+            movieName: movie_details.title,
+            showTime: timing,
+            seatNos: seat_selected.join(' '),
+            screenName: screenDetails.name,
+            theaterName: theaters_details.name,
+            qrlink: getUrl(qr_code),
+        }
+        await sendTicketEmail(email_data)
         await RedisHelperDelete(req.query.key);
-        res.redirect(303, 'http://localhost:3000/book-ticket/ticket');
+        res.redirect(303, 'http://localhost:3000/book-ticket/ticket/' + transaction.id);
     } catch (err) {
         res.status(500).send(err.message);
     }
 });
-
+router.get('/getTicketData/:id', async (req, res) => {
+    const ticketDetails = await Transaction.findOne({ id: req.params['id'] })
+    ticketDetails.qr_code = getUrl(ticketDetails.qr_code)
+    res.json({
+        data: ticketDetails,
+        status: HTTP_STATUS_CODES.OK
+    })
+})
 router.post('/buyTickets', async (req, res) => {
     console.log("at payment buy tickets");
     console.log(req.body);
