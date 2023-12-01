@@ -7,6 +7,7 @@ const Movie = require('../models/MovieModel');
 const { RedisHelperAdd, RedisHelperGet, RedisHelperDelete } = require('../Helpers/RedisHelper');
 const { HTTP_STATUS_CODES } = require('../constants');
 const Transaction = require('../models/TransactionModel');
+const Discount = require('../models/DiscountModel');
 const { generateAndPingQRCode } = require('../Helpers/qrCodeGenerator');
 const uniqid = require('uniqid');
 const { daysDifference } = require('../controllers/MovieController');
@@ -61,6 +62,7 @@ router.post('/checkout_sessions/:id/:rewards', async (req, res) => {
     console.log("-------------------");
     rewards = req.params['rewards'];
     const redis_data = await RedisHelperGet(req.params['id']);
+    const rewards_flag = req.params['rewards'];
     console.log(redis_data);
     const data = JSON.parse(JSON.parse(redis_data).body);
     // console.log(data);
@@ -68,6 +70,9 @@ router.post('/checkout_sessions/:id/:rewards', async (req, res) => {
         percent_off: 20,
         duration: 'once',
     });
+    var final_price = data.price;
+    if(rewards_flag==="true")
+    final_price = final_price - (data.rewards / 10);
     if (req.method === 'POST') {
         const lineItems = [{
             price_data: {
@@ -75,7 +80,7 @@ router.post('/checkout_sessions/:id/:rewards', async (req, res) => {
                 product_data: {
                     name: 'Ticket', // Or any other name relevant to the ticket
                 },
-                unit_amount: data.price, // Assuming 'price' is in the smallest currency unit (like cents for USD)
+                unit_amount: final_price, // Assuming 'price' is in the smallest currency unit (like cents for USD)
             },
             quantity: data.seatSelected.length, // The quantity of tickets
         }, {
@@ -85,14 +90,24 @@ router.post('/checkout_sessions/:id/:rewards', async (req, res) => {
 
         },
         ];
+        var discount_coupon = undefined;
+        if (data.discount) {
+            const discount = await Discount.findOne({ id: "1" });
+            if (data.discount = "tuesday") {
+                discount_coupon = [
+                    { coupon: discount.tuesday_discount_coupon }
+                ];
+            }
+            else {
+                 discount_coupon = [
+                    { coupon: discount.nighttime_discount_coupon }
+                ];
+            }
+        }
         try {
             const session = await stripe.checkout.sessions.create({
                 line_items: lineItems,
-                discounts: [
-                    {
-                        coupon: 'f80FGkXD',
-                    },
-                ],
+                discounts: discount_coupon,
                 mode: 'payment',
                 success_url: `http://localhost:8080/payment/success?session_id={CHECKOUT_SESSION_ID}&key=${req.params.id}`,
                 cancel_url: `${req.headers.origin}/?canceled=true`,
