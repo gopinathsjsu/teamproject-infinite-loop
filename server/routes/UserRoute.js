@@ -19,6 +19,7 @@ const { getMovieDetails } = require('../controllers/MovieController');
 const { getTheaterDetails } = require('../controllers/TheaterController');
 const { get } = require('request');
 const { getUrl } = require('../Helpers/S3');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 router.get('/addUser', async (req, res) => {
     // RedisHelperAdd(req, res, "hello", { "token": "hello" })
     // const data = await RedisHelperGet("hello");
@@ -73,7 +74,7 @@ router.post('/signup', upload.single('file'), async (req, res) => {
     }
     if (password_value == confirmPassword) {
         const newUser = new User({
-            user_id: uniqid(),
+            user_id:email,
             fullname: name,
             email: email,
             password: password,
@@ -117,9 +118,22 @@ router.post('/signup', upload.single('file'), async (req, res) => {
     }
 
 })
-router.get('/isPrimeMember', async (req, res) => {
-    const customer = await getCustomer('cus_P6KWCV7FfjVlfw');
-    console.log(customer);
+router.get('/isPrimeMember/:id', async (req, res) => {
+    const user = await User.findOne({user_id:req.params["id"]}).select({"email":1})
+   const customers = await stripe.customers.list({
+    email: user.email,
+    limit: 1 // Assuming email is unique per customer
+   });
+    const customer = customers.data[0];
+    const subscriptions = await stripe.subscriptions.list({
+    customer: customer.id,
+    });
+    
+    res.json({
+                    message: 'uuser details found',
+                    status: HTTP_STATUS_CODES.OK,
+        data: subscriptions.data[0].status
+                })
 })
 router.post("/login", async (req, res) => {
     try {

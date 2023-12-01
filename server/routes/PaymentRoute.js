@@ -126,6 +126,46 @@ router.post('/checkout_sessions/:id/:rewards', async (req, res) => {
 
 });
 
+router.get('/prime/checkout_sessions/:id', async (req, res) => { 
+ try {
+    // Create a new Checkout Session for the subscription using the existing price ID
+     const user = await User.findOne({user_id:req.params.id});
+    const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        customer:user.stripe_customer_id,
+      line_items: [{
+        price: 'price_1OGqZ5A475w0fpJubtRJsfyw', // Replace with your actual price ID
+        quantity: 1,
+      }],
+      mode: 'subscription',
+      success_url: `http://localhost:8080/payment/prime/success?session_id={CHECKOUT_SESSION_ID}&user_id=${req.params.id}`,
+      cancel_url: `${req.headers.origin}/?canceled=true`,
+    });
+
+    res.redirect(303, session.url);
+  } catch (e) {
+    res.status(400).send(`Error creating checkout session: ${e.message}`);
+  }
+});
+router.get('/prime/success/:session_id/:user_id', async (req, res) => { 
+    try {
+        const session_id = req.query.session_id;
+        if (!session_id) {
+            return res.status(400).send("Session ID is missing");
+        }
+        const session = await stripe.checkout.sessions.retrieve(session_id);
+        const user = await User.findOneAndUpdate({ user_id: req.params.user_id }, {
+            $set: {
+                is_prime: true
+            }
+        });
+        console.log(session);
+        console.log("at payment success success");
+        res.redirect(303, 'http://localhost:3000');
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});
 router.get('/success', async (req, res) => {
     try {
         const session_id = req.query.session_id;
