@@ -40,7 +40,7 @@ router.get('/addUser', async (req, res) => {
     // };
     // // sendSignUpEmail(data);
     // // console.log(data)
-    qr_key = await generateAndPingQRCode('pi_3OIKToA475w0fpJu1zAzct1t6');
+    qr_key = await generateAndPingQRCode('n6j8gwizlpdfnaw0');
     console.log(qr_key);
     get_qr_url = getUrl(qr_key);
     // sendTicketEmail(data);

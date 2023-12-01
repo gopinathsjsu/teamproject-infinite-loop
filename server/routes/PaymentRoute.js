@@ -74,12 +74,12 @@ router.post('/checkout_sessions/:id/:rewards', async (req, res) => {
     var final_price = data.price;
     var final_rewards = (data.rewards / 10);
     if (rewards_flag === "true") {
-        if(final_price > final_rewards)
+        if (final_price > final_rewards)
             final_price = final_price - (data.rewards / 10);
-        else 
+        else
             final_price = 0;
     }
-    final_price = final_price*100;
+    final_price = final_price * 100;
     if (req.method === 'POST') {
         const lineItems = [{
             price_data: {
@@ -106,7 +106,7 @@ router.post('/checkout_sessions/:id/:rewards', async (req, res) => {
                 ];
             }
             else {
-                 discount_coupon = [
+                discount_coupon = [
                     { coupon: discount.nighttime_discount_coupon }
                 ];
             }
@@ -132,28 +132,28 @@ router.post('/checkout_sessions/:id/:rewards', async (req, res) => {
 
 });
 
-router.get('/prime/checkout_sessions/:id', async (req, res) => { 
- try {
-    // Create a new Checkout Session for the subscription using the existing price ID
-     const user = await User.findOne({user_id:req.params.id});
-    const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        customer:user.stripe_customer_id,
-      line_items: [{
-        price: 'price_1OGqZ5A475w0fpJubtRJsfyw', // Replace with your actual price ID
-        quantity: 1,
-      }],
-      mode: 'subscription',
-      success_url: `http://localhost:8080/payment/prime/success?session_id={CHECKOUT_SESSION_ID}&user_id=${req.params.id}`,
-      cancel_url: `${req.headers.origin}/?canceled=true`,
-    });
+router.get('/prime/checkout_sessions/:id', async (req, res) => {
+    try {
+        // Create a new Checkout Session for the subscription using the existing price ID
+        const user = await User.findOne({ user_id: req.params.id });
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            customer: user.stripe_customer_id,
+            line_items: [{
+                price: 'price_1OGqZ5A475w0fpJubtRJsfyw', // Replace with your actual price ID
+                quantity: 1,
+            }],
+            mode: 'subscription',
+            success_url: `http://localhost:8080/payment/prime/success?session_id={CHECKOUT_SESSION_ID}&user_id=${req.params.id}`,
+            cancel_url: `${req.headers.origin}/?canceled=true`,
+        });
 
-    res.redirect(303, session.url);
-  } catch (e) {
-    res.status(400).send(`Error creating checkout session: ${e.message}`);
-  }
+        res.redirect(303, session.url);
+    } catch (e) {
+        res.status(400).send(`Error creating checkout session: ${e.message}`);
+    }
 });
-router.get('/prime/success/:session_id/:user_id', async (req, res) => { 
+router.get('/prime/success/:session_id/:user_id', async (req, res) => {
     try {
         const session_id = req.query.session_id;
         if (!session_id) {
@@ -195,8 +195,8 @@ router.get('/success', async (req, res) => {
         const seat_selected = data.seatSelected;
         const movie_id = data.movie_id;
         const no_of_seats_booked = seat_selected.length;
-        const rewards = data.price * seat_selected.length*10;
-        const qr_code = await generateAndPingQRCode(session.payment_intent, 'http://localhost:8080/verifyTicket/' + session.payment_intent);
+        const rewards = data.price * seat_selected.length * 10;
+        const qr_code = await generateAndPingQRCode(session.payment_intent);
         const screenDetails = await ScreenModel.findOneAndUpdate({ id: screen_id, theater_id: theater_id }, {
             $inc: { [`seats_day_wise.${filter_date}.${timing}.tickets_bought`]: no_of_seats_booked, 'total_tickets_booked': no_of_seats_booked },
             $set: {
@@ -206,11 +206,11 @@ router.get('/success', async (req, res) => {
         if (rewards == "true") {
             const User = await User.findOne({ user_id: data.user_id });
             var final_rewards = data.rewards;
-             if(final_price >(final_rewards/10))
-                User.rewards =final_rewards%10 + (final_price - (final_rewards/10))*10;
-            else 
-                 User.rewards = (final_rewards/10) - final_price + (final_rewards%10);
-          await  User.save();
+            if (final_price > (final_rewards / 10))
+                User.rewards = final_rewards % 10 + (final_price - (final_rewards / 10)) * 10;
+            else
+                User.rewards = (final_rewards / 10) - final_price + (final_rewards % 10);
+            await User.save();
         }
         const movie_details = await Movie.findOneAndUpdate({ id: movie_id });
         const current_day = daysDifference(movie_details.release_date, date);
@@ -267,6 +267,7 @@ router.get('/success', async (req, res) => {
 router.get('/getTicketData/:id', async (req, res) => {
     const ticketDetails = await Transaction.findOne({ id: req.params['id'] })
     ticketDetails.qr_code = getUrl(ticketDetails.qr_code)
+    console.log(ticketDetails);
     res.json({
         data: ticketDetails,
         status: HTTP_STATUS_CODES.OK
