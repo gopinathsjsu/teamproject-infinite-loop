@@ -200,7 +200,9 @@ export default function Screen() {
                     </Grid>
                     <Grid item xs={12} container>
                         <Grid container spacing={2} alignItems="center" justifyContent="left">
-                            {screenData.map((screen, index) => (
+                            {screenData.map((screen, index) => {
+                                if((screen.currentMovie == null || screen.currentMovie == "") && !store.isAdmin) return null;
+                                return(
                                 <Grid item key={index} sx={standardSize}>
                                     <Box sx={{
                                         bgcolor: 'white',
@@ -244,7 +246,7 @@ export default function Screen() {
                                                 <Grid container spacing={2} sx={{ mt: 1 }}>
                                                     <Box sx={{ ml: 1 }}>
                                                         {screen.timings.map((time, index) => (
-                                                            <Chip sx={{ ml: 1 }} label={time} onClick={() => (redirectToBuy(screen,time))} />
+                                                            <Chip key={index} sx={{ ml: 1 }} label={time} onClick={() => (redirectToBuy(screen,time))} />
                                                         ))}
                                                     </Box>
                                                 </Grid>
@@ -255,7 +257,8 @@ export default function Screen() {
                                         </Box>
                                     </Box>
                                 </Grid>
-                            ))}
+                            )}
+                            )}
                         </Grid>
                     </Grid>
                 </Grid>

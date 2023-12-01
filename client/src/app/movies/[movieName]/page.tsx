@@ -138,9 +138,6 @@ const App: React.FC = () => {
     color: "#fff",
     fontFamily: "Arial, sans-serif",
     padding: "2rem", // top, right, bottom, left
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-end",
     minHeight: "75vh",
   };
 
@@ -209,29 +206,31 @@ const App: React.FC = () => {
     <>
       <div>
       <div style={backgroundStyle}>
-      <div style={contentStyle}>
-        <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2, fontSize: '80px' }} component="h1" gutterBottom>
-          {movie.title}
-        </Typography>
-        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1, fontSize: '30px' }} gutterBottom>
-          {new Date(movie.release_date).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
-        </Typography>
-        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1, fontSize: '24px' }} gutterBottom>
-          <Chip label={`Runtime: ${movie.run_time} min`} sx={transparentChipStyle} />
-          <Chip label={`Languages: ${movie.languages}`} sx={transparentChipStyle} />
-          <Chip label={`Format: ${movie.format}`} sx={transparentChipStyle} />
-        </Typography>
-        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1, fontSize: '30px' }} gutterBottom>
-          
-          {movie.genres.map((genre, index) => (
-            <Chip key={index} label={genre} sx={transparentChipStyle} />
-          ))}
-        </Typography>
-      </div>
+        <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", mt:15}}>
+          <div style={contentStyle}>
+            <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2, fontSize: '80px' }} component="h1" gutterBottom>
+              {movie.title}
+            </Typography>
+            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1, fontSize: '30px' }} gutterBottom>
+              {new Date(movie.release_date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </Typography>
+            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1, fontSize: '24px' }} gutterBottom>
+              <Chip label={`Runtime: ${movie.run_time} min`} sx={transparentChipStyle} />
+              <Chip label={`Languages: ${movie.languages}`} sx={transparentChipStyle} />
+              <Chip label={`Format: ${movie.format}`} sx={transparentChipStyle} />
+            </Typography>
+            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1, fontSize: '30px' }} gutterBottom>
+              
+              {movie.genres.map((genre, index) => (
+                <Chip key={index} label={genre} sx={transparentChipStyle} />
+              ))}
+            </Typography>
+          </div>
+      </Box>
     </div>
         <div
           style={{
