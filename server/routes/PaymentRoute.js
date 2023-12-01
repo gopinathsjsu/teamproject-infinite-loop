@@ -274,7 +274,7 @@ router.get('/getTicketData/:id', async (req, res) => {
         status: HTTP_STATUS_CODES.OK
     })
 })
-router.post('/merchandise/checkout_session/:qty/:price', async (req, res) => { 
+router.get('/merchandise/checkout_session/:qty/:price', async (req, res) => { 
     try {
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
