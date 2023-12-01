@@ -4,8 +4,8 @@ api_key = process.env.SENDGRID_API_KEY;
 
 exports.sendSignUpEmail = async (data) => {
     const { email, name } = data;
-    console.log(api_key);
-    sgMail.setApiKey(api_key)
+    //console.log(api_key);
+    sgMail.setApiKey("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")
     const msg = {
         to: email,
         from: 'boxoffice3108@gmail.com', // Replace with your email address
@@ -29,8 +29,8 @@ exports.sendSignUpEmail = async (data) => {
 
 exports.sendTicketEmail = async (data) => {
     const { email, name, movieName, showTime, seatNos, theaterName, qrlink, screenName, date } = data;
-    console.log(api_key);
-    sgMail.setApiKey(api_key)
+  //  console.log(api_key);
+    sgMail.setApiKey("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")
     const msg = {
         to: email,
         from: 'boxoffice3108@gmail.com', // Replace with your email address
