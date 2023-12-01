@@ -11,7 +11,7 @@ const Discount = require('../models/DiscountModel');
 const { generateAndPingQRCode } = require('../Helpers/qrCodeGenerator');
 const uniqid = require('uniqid');
 const { daysDifference } = require('../controllers/MovieController');
-const { sendTicketEmail } = require('../Helpers/sendGridHelper');
+const { sendTicketEmail } = require('../Helpers/SendGridHelper');
 const Theater = require('../models/TheaterModel');
 const { getUrl } = require('../Helpers/S3');
 require('dotenv').config();
