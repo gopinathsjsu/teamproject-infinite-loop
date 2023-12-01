@@ -23,8 +23,9 @@ export default function Discount({ submitSuccess }: { submitSuccess: any }) {
     useEffect(() => {
         async function fetchDiscountPrices() {
             try {
-                const response = await fetch("http://localhost:8080/discount/all");
-                const data = await response.json();
+                // const response = await fetch("http://localhost:8080/discount/all");
+                const data = await getDataFromEndPoint("", `discount/all`, "GET");
+                // const data = await response.json();
                 setValue("tuesday", data.data.tuesday.toString());
                 setValue("night_time", data.data.night_time.toString());
             } catch (error) {

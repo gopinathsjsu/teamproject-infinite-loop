@@ -19,21 +19,6 @@ import theme from "../../styles/theme";
 import Autocomplete from "@mui/material/Autocomplete";
 import { useRouter } from "next/navigation";
 
-export function MultipleSelectChip() {
-  const theme = useTheme();
-  const [personName, setPersonName] = React.useState<string[]>([]);
-
-  const handleChange = (event: SelectChangeEvent<typeof personName>) => {
-    const {
-      target: { value },
-    } = event;
-    setPersonName(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
-    );
-  };
-}
-
 const top100Films = [
   { title: 'The Shawshank Redemption', year: 1994, image: 'https://upload.wikimedia.org/wikipedia/en/8/81/ShawshankRedemptionMoviePoster.jpg' },
   { title: 'The Godfather', year: 1972, image: 'https://upload.wikimedia.org/wikipedia/en/1/1c/Godfather_ver1.jpg' },
@@ -165,11 +150,12 @@ export default function Contact() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8080/artist/all");
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
-        const data = await response.json();
+        // const response = await fetch("http://localhost:8080/artist/all");
+        const data = await getDataFromEndPoint("", `artist/all`, "GET")
+        // if (!response.ok) {
+        //   throw new Error(`Error: ${response.status}`);
+        // }
+        // const data = await response.json();
         setCrew(data.Crew);
         setCast(data.Cast);
         console.log(data);
@@ -510,7 +496,7 @@ export default function Contact() {
                       {...getTagProps({ index })}
                       component="div"
                       sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                      key={option.title}
+                      key={index}
                     >
                       <img
                         src={option.profile_url}
@@ -566,7 +552,7 @@ export default function Contact() {
                       {...getTagProps({ index })}
                       component="div"
                       sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                      key={option.title}
+                      key={index}
                     >
                       <img
                         src={option.profile_url}

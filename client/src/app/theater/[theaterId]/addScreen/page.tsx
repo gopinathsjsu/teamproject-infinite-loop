@@ -34,7 +34,7 @@ const screen =
     }
 }
 
-export default function addScreen() {
+export default function AddScreen() {
 
     const router = useRouter();
     const [seatDetails, setSeatDetails] = useState<Seats>(screen?.seats || {});

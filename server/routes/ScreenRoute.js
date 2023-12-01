@@ -291,7 +291,7 @@ router.post('/addMovie', async (req, res) => {
         console.log(movie);
         seatArray = screen.seating_arrangement;
         const timestampsForDays = {};
-        for (let i = 0; i < daysDifference; i++) {
+        for (let i = 0; i < daysDifference + 1; i++) {
             const currentDate = moment().add(i, 'days');
             const formattedDate = currentDate.format('YYYY-MM-DD');
             timestampsForDays[formattedDate] = {};

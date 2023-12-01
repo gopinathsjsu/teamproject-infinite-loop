@@ -41,6 +41,7 @@ export default function LocationSearchInput({ sendLocation }: { sendLocation: an
                   backgroundColor: suggestion.active ? '#b9d2fa' : '#ffffff',
                   cursor: 'pointer'
                 }}
+                key={suggestion.placeId}
               >
                 {suggestion.description}
               </ListItem>

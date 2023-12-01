@@ -13,6 +13,7 @@ import {
   Select,
   Typography,
 } from '@mui/material';
+import { getDataFromEndPoint } from '@/src/lib/backend-api';
 
 const schema = z.object({
   genres: z.array(z.string()).nonempty('Select atleast one genre'),
@@ -82,11 +83,12 @@ const AdditionalDetailsForm = ({ data, onNext, onBack }: { data: any, onNext: an
 
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8080/artist/all");
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
-        const data = await response.json();
+        // const response = await fetch("http://localhost:8080/artist/all");
+        const data = await getDataFromEndPoint("", `artist/all`, "GET")
+        // if (!response.ok) {
+        //   throw new Error(`Error: ${response.status}`);
+        // }
+        // const data = await response.json();
         setCrewData(data.Crew);
         setCastData(data.Cast);
         console.log(data);
@@ -167,7 +169,7 @@ const AdditionalDetailsForm = ({ data, onNext, onBack }: { data: any, onNext: an
                 error={!!errors.favoriteCast}
                 label="Favorite Casr"
               >
-                {castData.map((cast:any) => (
+                {castData.map((cast: any) => (
                   <MenuItem key={cast.id} value={cast.id}>
                     {cast.name}
                   </MenuItem>
@@ -197,7 +199,7 @@ const AdditionalDetailsForm = ({ data, onNext, onBack }: { data: any, onNext: an
                 error={!!errors.favoriteCrew}
                 label="Favorite Crew"
               >
-               {crewData.map((crew:any) => (
+                {crewData.map((crew: any) => (
                   <MenuItem key={crew.id} value={crew.id}>
                     {crew.name}
                   </MenuItem>

@@ -13,6 +13,7 @@ interface TicketProps {
     theaterName: string;
     qrLink: string;
     screenName: string;
+    date: string;
 }
 const containerStyle = {
     display: 'flex',
@@ -26,7 +27,7 @@ const cardStyle = {
     transform: 'scale(1.25)', // Increase size by 25%
     // Add other styling for the card here if needed
 };
-const TicketCard: React.FC<TicketProps> = ({ name, movieName, showTime, seatNo, theaterName, qrLink, screenName }) => {
+const TicketCard: React.FC<TicketProps> = ({ name, movieName, showTime, seatNo, theaterName, qrLink, screenName, date }) => {
     const ticketRef = useRef<HTMLDivElement>(null);
     const [qrCodeLoaded, setQrCodeLoaded] = useState(false);
 
@@ -53,6 +54,7 @@ const TicketCard: React.FC<TicketProps> = ({ name, movieName, showTime, seatNo, 
                         <Typography variant="body1">Your ticket for the</Typography>
                         <Typography variant="body1">Movie Name : <span style={{ fontWeight: 'bold' }}> {movieName}</span></Typography>
                         <Typography variant="body1">Screen Name : {screenName}</Typography>
+                        <Typography variant="body1">Date : {date}</Typography>
                         <Typography variant="body1">Show Time :<span style={{ fontWeight: 'bold' }}> {showTime}</span></Typography>
                         <Typography variant="body1">SeatNos :<span style={{ fontWeight: 'bold' }}> {seatNo} </span></Typography>
                         <Typography variant="body1">Theater Name : {theaterName}</Typography>

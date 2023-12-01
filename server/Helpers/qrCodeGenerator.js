@@ -7,8 +7,10 @@ const generateAndPingQRCode = async (transactionId) => {
     const url = '/verifyTicket/' + transactionId;
     console.log(url);
     const filepath = './qrcode' + transactionId + '.png';
-    QRCode.toFile(filepath, url, async (err) => {
-        if (err) throw err;
+    await QRCode.toFile(filepath, url, async (err) => {
+        if (err) {
+            console.log(err);
+        };
 
         console.log('QR Code saved as qrcode.png');
     });

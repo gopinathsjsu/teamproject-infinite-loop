@@ -1,6 +1,7 @@
 import { GetEndpointResponse } from "./types";
 
-const SERVER_ENDPOINT = "http://localhost:8080";
+// const SERVER_ENDPOINT = "http://localhost:8080";
+const SERVER_ENDPOINT = "http://ec2-3-101-12-15.us-west-1.compute.amazonaws.com/api";
 
 async function handleResponse<T>(response: Response): Promise<T> {
     const contentType = response.headers.get("Content-Type") || "";

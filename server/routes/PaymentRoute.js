@@ -145,7 +145,7 @@ router.get('/prime/checkout_sessions/:id', async (req, res) => {
             }],
             mode: 'subscription',
             success_url: `http://localhost:8080/payment/prime/success?session_id={CHECKOUT_SESSION_ID}&user_id=${req.params.id}`,
-            cancel_url: `${req.headers.origin}/?canceled=true`,
+            cancel_url: `http://localhost:3000/?canceled=true`,
         });
 
         res.redirect(303, session.url);
@@ -255,6 +255,7 @@ router.get('/success', async (req, res) => {
             seatNos: seat_selected.join(' '),
             screenName: screenDetails.name,
             theaterName: theaters_details.name,
+            date: filter_date,
             qrlink: getUrl(qr_code),
         }
         await sendTicketEmail(email_data)

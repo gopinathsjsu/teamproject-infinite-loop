@@ -17,7 +17,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { useParams, useRouter } from "next/navigation";
 
 export default function EditMovie() {
-    const { movieName } : {movieName: string} = useParams();
+    const { movieName }: { movieName: string } = useParams();
     interface CastMember {
         id: string;
         name: string;
@@ -54,11 +54,12 @@ export default function EditMovie() {
     useEffect(() => {
         const fetchMovie = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/movie/${movieName}`);
-                if (!response.ok) {
-                    throw new Error(`Error: ${response.status}`);
-                }
-                const data = await response.json();
+                // const response = await fetch(`http://localhost:8080/movie/${movieName}`);
+                const data = await getDataFromEndPoint("", `movie/${movieName}`, "GET");
+                // if (!response.ok) {
+                //     throw new Error(`Error: ${response.status}`);
+                // }
+                // const data = await response.json();
                 setFormData(() => ({
                     movieName: data.movie.title,
                     AboutTheMovie: data.movie.description,
@@ -73,22 +74,22 @@ export default function EditMovie() {
                     certificate: data.movie.certificate,
                     languages: data.movie.languages[0],
                 }));
-                setSelectedCast(data.cast.map((castMember:any) => ({
+                setSelectedCast(data.cast.map((castMember: any) => ({
                     id: castMember.id,
                     name: castMember.name,
                     description: castMember.description,
                     profession: castMember.profession,
                     profile_url: castMember.profile_url,
-                  })
+                })
                 ));
 
-                setSelectedCrew(data.crew.map((crewMember:any) => ({
+                setSelectedCrew(data.crew.map((crewMember: any) => ({
                     id: crewMember.id,
                     name: crewMember.name,
                     description: crewMember.description,
                     profession: crewMember.profession,
                     profile_url: crewMember.profile_url,
-                  })
+                })
                 ));
 
             } catch (error) {
@@ -98,11 +99,12 @@ export default function EditMovie() {
 
         const fetchArtsitData = async () => {
             try {
-                const response = await fetch("http://localhost:8080/artist/all");
-                if (!response.ok) {
-                    throw new Error(`Error: ${response.status}`);
-                }
-                const data = await response.json();
+                // const response = await fetch("http://localhost:8080/artist/all");
+                const data = await getDataFromEndPoint("", `artist/all`, "GET");
+                // if (!response.ok) {
+                //     throw new Error(`Error: ${response.status}`);
+                // }
+                // const data = await response.json();
                 setCrew(data.Crew);
                 setCast(data.Cast);
                 fetchMovie();
@@ -231,7 +233,7 @@ export default function EditMovie() {
         );
         console.log(selectedCrew);
         data.append("crewIds", selectedCrew.map((artist) => artist.id).join(","));
-        data.append("id",movieName);
+        data.append("id", movieName);
         const formURL = "movie/updateMovie";
         const response = await getDataFromEndPoint(data, formURL, "POST");
         if (response != null) {
@@ -385,7 +387,7 @@ export default function EditMovie() {
                                         )}
                                         MenuProps={MenuProps}
                                     >
-                                        {genres.map((genre) => (
+                                        {genres.map((genre, index) => (
                                             <MenuItem
                                                 key={genre}
                                                 value={genre}
@@ -486,6 +488,7 @@ export default function EditMovie() {
                                 renderOption={(props, option) => (
                                     <Box component="li" {...props}>
                                         <Avatar
+                                            key={option.name}
                                             src={option.profile_url}
                                             alt={option.name}
                                             sx={{
@@ -499,11 +502,23 @@ export default function EditMovie() {
                                 )}
                                 renderTags={(value, getTagProps) =>
                                     value.map((option, index) => (
-                                        <Chip
-                                            avatar={<Avatar src={option.profile_url} alt={option.name} />}
-                                            label={option.name}
+                                        <Box
                                             {...getTagProps({ index })}
-                                        />
+                                            component="div"
+                                            sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                                            key={index}
+                                        >
+                                            <img
+                                                src={option.profile_url}
+                                                alt={option.name}
+                                                style={{
+                                                    width: "30px",
+                                                    height: "30px",
+                                                    borderRadius: "50%",
+                                                }}
+                                            />
+                                            {option.name}
+                                        </Box>
                                     ))
                                 }
                                 renderInput={(params) => (
@@ -528,6 +543,7 @@ export default function EditMovie() {
                                 renderOption={(props, option) => (
                                     <Box component="li" {...props}>
                                         <Avatar
+                                            key={option.name}
                                             src={option.profile_url}
                                             alt={option.name}
                                             sx={{
@@ -541,11 +557,23 @@ export default function EditMovie() {
                                 )}
                                 renderTags={(value, getTagProps) =>
                                     value.map((option, index) => (
-                                        <Chip
-                                            avatar={<Avatar src={option.profile_url} alt={option.name} />}
-                                            label={option.name}
+                                        <Box
                                             {...getTagProps({ index })}
-                                        />
+                                            component="div"
+                                            sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                                            key={index}
+                                        >
+                                            <img
+                                                src={option.profile_url}
+                                                alt={option.name}
+                                                style={{
+                                                    width: "30px",
+                                                    height: "30px",
+                                                    borderRadius: "50%",
+                                                }}
+                                            />
+                                            {option.name}
+                                        </Box>
                                     ))
                                 }
                                 renderInput={(params) => (
@@ -574,9 +602,9 @@ export default function EditMovie() {
                                         onChange={handleInput}
                                         name="certificate"
                                     >
-                                        <MenuItem value="U">U</MenuItem>
-                                        <MenuItem value="U/A">U/A</MenuItem>
-                                        <MenuItem value="A">A</MenuItem>
+                                        <MenuItem key="U" value="U">U</MenuItem>
+                                        <MenuItem key="U/A" value="U/A">U/A</MenuItem>
+                                        <MenuItem key="A" value="A">A</MenuItem>
                                     </Select>
                                 </FormControl>
                             </div>

@@ -109,7 +109,7 @@ export default function Contact() {
   const [formSuccess, setFormSuccess] = useState(false);
   const [formSuccessMessage, setFormSuccessMessage] = useState("");
   const [open, setOpen] = useState(false);
-  const store:any = useStore();
+  const store: any = useStore();
   const isAdmin = store.isAdmin; // Replace with the actual way to get this info
   const [selectedFile, setSelectedFile] = useState(null);
   const [imageUrl, setImageUrl] = useState('/broken-image.jpg');
@@ -141,14 +141,14 @@ export default function Contact() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8080/artist/all");
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
-        const data = await response.json();
-        setCast(data.Cast);
-        setCrew(data.Crew);
-        console.log(data);
+        // const response = await fetch("http://localhost:8080/artist/all");
+        const response = await getDataFromEndPoint("", `artist/all`, "GET");
+        // if (!response.ok) {
+        //   throw new Error(`Error: ${response.status}`);
+        // }
+        // const data = await response.json();
+        setCast(response.Cast);
+        setCrew(response.Crew);
       } catch (error) {
         console.error("Failed to fetch data:", error);
       }
@@ -200,13 +200,14 @@ export default function Contact() {
       data.append('id', editData.id);
       const response = await getDataFromEndPoint(data, formURL, "POST");
       if (response != null) {
-        const response = await fetch("http://localhost:8080/artist/all");
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
-        const data = await response.json();
-        setCast(data.Cast);
-        setCrew(data.Crew);
+        // const response = await fetch("http://localhost:8080/artist/all");
+        const response = await getDataFromEndPoint("", `artist/all`, "GET");
+        // if (!response.ok) {
+        //   throw new Error(`Error: ${response.status}`);
+        // }
+        // const data = await response.json();
+        setCast(response.Cast);
+        setCrew(response.Crew);
       }
     }
     handleClose();
@@ -220,29 +221,31 @@ export default function Contact() {
     }));
   };
 
-  const deleteArtist = async (artist:any) => {
+  const deleteArtist = async (artist: any) => {
     const formURL = "artist/deleteArtist";
     const data = { "id": artist.id };
     const response = await getDataFromEndPoint(data, formURL, "POST");
     if (response != null) {
-      const response = await fetch("http://localhost:8080/artist/all");
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
-      }
-      const data = await response.json();
-      setCast(data.Cast);
-      setCrew(data.Crew);
+      // const response = await fetch("http://localhost:8080/artist/all");
+      const response = await getDataFromEndPoint("", 'artist/all', "GET");
+      // if (!response.ok) {
+      //   throw new Error(`Error: ${response.status}`);
+      // }
+      // const data = await response.json();
+      setCast(response.Cast);
+      setCrew(response.Crew);
     }
   }
 
   const editCast = async (cast: any) => {
     setEnableEdit(true);
     try {
-      const response = await fetch(`http://localhost:8080/artist/${cast.id}`);
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
-      }
-      const data = await response.json();
+      // const response = await fetch(`http://localhost:8080/artist/${cast.id}`);
+      const data = await getDataFromEndPoint("", `artist/${cast.id}`, "GET")
+      // if (!response.ok) {
+      //   throw new Error(`Error: ${response.status}`);
+      // }
+      // const data = await response.json();
       setEditData(data.artist);
       setFormData(() => ({
         fullname: data.artist.name,
@@ -262,11 +265,12 @@ export default function Contact() {
   const editCrew = async (crew: any) => {
     setEnableEdit(true);
     try {
-      const response = await fetch(`http://localhost:8080/artist/${crew.id}`);
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
-      }
-      const data = await response.json();
+      // const response = await fetch(`http://localhost:8080/artist/${crew.id}`);
+      const data = await getDataFromEndPoint("", `artist/${crew.id}`, "GET");
+      // if (!response.ok) {
+      //   throw new Error(`Error: ${response.status}`);
+      // }
+      // const data = await response.json();
       setEditData(data.artist);
       setFormData(() => ({
         fullname: data.artist.name,
@@ -286,12 +290,12 @@ export default function Contact() {
   return (
     <div>
       {isAdmin &&
-      <Button
-        sx={{ paddingTop: 2, paddingRight: 0, fontWeight: "bold" }}
-        onClick={handleOpen}
-      >
-        Add Artist
-      </Button>
+        <Button
+          sx={{ paddingTop: 2, paddingRight: 0, fontWeight: "bold" }}
+          onClick={handleOpen}
+        >
+          Add Artist
+        </Button>
       }
       <Modal
         open={open}
@@ -469,12 +473,12 @@ export default function Contact() {
           {cast.map((artist: any, index: number) => (
             <Grid item key={`member-${index}`} xs={6} sm={4} md={3} lg={2}>
               <Box sx={{ position: 'relative', justifyContent: "space-between", display: "flex", top: 30 }}>
-              {isAdmin &&
-                <Button startIcon={<EditIcon />} onClick={() => { editCast(artist) }} />
-              }
-              {isAdmin &&
-                <Button startIcon={<DeleteIcon />} onClick={()=> {deleteArtist(artist)}}/>
-              }
+                {isAdmin &&
+                  <Button startIcon={<EditIcon />} onClick={() => { editCast(artist) }} />
+                }
+                {isAdmin &&
+                  <Button startIcon={<DeleteIcon />} onClick={() => { deleteArtist(artist) }} />
+                }
               </Box>
               <Box sx={{ textAlign: "center", p: 1 }}>
                 <Avatar
@@ -500,12 +504,12 @@ export default function Contact() {
           {crew.map((artist: any, index: number) => (
             <Grid item key={`member-${index}`} xs={6} sm={4} md={3} lg={2}>
               <Box sx={{ position: 'relative', justifyContent: "space-between", display: "flex", top: 30 }}>
-              {isAdmin &&
-                <Button startIcon={<EditIcon />} onClick={() => { editCrew(artist) }} />
-              }
-              {isAdmin &&
-                <Button startIcon={<DeleteIcon />} onClick={() => { deleteArtist(artist) }} />
-              }
+                {isAdmin &&
+                  <Button startIcon={<EditIcon />} onClick={() => { editCrew(artist) }} />
+                }
+                {isAdmin &&
+                  <Button startIcon={<DeleteIcon />} onClick={() => { deleteArtist(artist) }} />
+                }
               </Box>
               <Box sx={{ textAlign: "center", p: 1 }}>
                 <Avatar

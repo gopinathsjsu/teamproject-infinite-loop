@@ -63,7 +63,7 @@ const style = {
   p: 4,
 };
 
-export default function addScreen() {
+export default function BuyTicket() {
   const { movieName } = useParams();
   const searchParams = useSearchParams()
   const [editable, setEditable] = useState<boolean>(true);
@@ -82,7 +82,8 @@ export default function addScreen() {
   const [key, setKey] = useState<string>("");
   const [isPatched, setIsPatched] = useState<boolean>(false);
   const [rewardsEnabled, setRewardsEnabled] = useState<string>("false")
-  const checkoutURL = `http://localhost:8080/payment/checkout_sessions/${key}/${rewardsEnabled}`;
+  // const checkoutURL = `http://localhost:8080/payment/checkout_sessions/${key}/${rewardsEnabled}`;
+  const checkoutURL = `http://ec2-3-101-12-15.us-west-1.compute.amazonaws.com/api/payment/checkout_sessions/${key}/${rewardsEnabled}`;
   const [rewards, setRewards] = useState<number>(0);
   const store: any = useStore();
   const [bookingError, setBookingError] = useState<string | null>(null);
@@ -119,10 +120,11 @@ export default function addScreen() {
     clearSelectedSeats();
     const fetchData = async () => {
       try {
-        const response: any = await fetch(
-          `http://localhost:8080/theater/getAllTheatersScreens/${movieName}`
-        );
-        const res = await response.json();
+        // const response: any = await fetch(
+        //   `http://localhost:8080/theater/getAllTheatersScreens/${movieName}`
+        // );
+        const res: any = await getDataFromEndPoint("", `theater/getAllTheatersScreens/${movieName}`, "GET")
+        // const res = await response.json();
         setTitle(res.data.movieName);
         setTheaters(res.data.theaters);
         setEndDate(res.data.endDate);
@@ -139,8 +141,9 @@ export default function addScreen() {
 
     const fetchDiscountRates = async () => {
       try {
-        const response: any = await fetch(`http://localhost:8080/discount/all`);
-        const res = await response.json();
+        // const response: any = await fetch(`http://localhost:8080/discount/all`);
+        const res: any = await getDataFromEndPoint("", `discount/all`, "GET")
+        // const res = await response.json();
         setDiscountRates(res.data)
       } catch (error) {
         console.log(error);
@@ -149,8 +152,9 @@ export default function addScreen() {
 
     const fetchRewardPoint = async () => {
       try {
-        const response: any = await fetch(`http://localhost:8080/user/getRewards/${store.user.user_id}`);
-        const res = await response.json();
+        // const response: any = await fetch(`http://localhost:8080/user/getRewards/${store.user.user_id}`);
+        const res: any = await getDataFromEndPoint("", `user/getRewards/${store.user.user_id}`, "GET");
+        // const res = await response.json();
         setRewards(res.data)
       } catch (error) {
         console.log(error);
@@ -336,7 +340,7 @@ export default function addScreen() {
   async function onSubmit() {
     let data = getValues();
     let dayOfWeek = data.date.day();
-    console.log(dayOfWeek);
+    // console.log(dayOfWeek);
     const timeStamp = data.timing.split(" ")[1];
     let time = null;
     if (timeStamp === "pm") {
@@ -350,7 +354,7 @@ export default function addScreen() {
     if (time >= 18) discount = discountRates.night_time;
     const totalPrice = discount != null ? cost * selectedSeats.length * (1 - discount * 0.01) : cost * selectedSeats.length;
     data["user_id"] = store.user ? store.user.user_id : null;
-    data["discount"] = dayOfWeek.toString() === "2" ? "tuesday" : ((time >= 18) ? "night_time": null);
+    data["discount"] = dayOfWeek.toString() === "2" ? "tuesday" : ((time >= 18) ? "night_time" : null);
     data["screenLayout"] = getReqSeatDeatils();
     data["seatSelected"] = selectedSeats;
     data["movie_id"] = movieName;
@@ -358,14 +362,14 @@ export default function addScreen() {
     data["price"] = cost;
     data["rewards"] = rewards;
     data["is_prime"] = false;
-    
+
     // Attempt to store ticket booking details
     const reqData = await getDataFromEndPoint(
       data,
       "payment/storeTicketBookingDetails",
       "POST"
     );
-    
+
     // Check the response status
     if (reqData.status === 200) {
       // Construct order details for a successful booking
@@ -386,13 +390,13 @@ export default function addScreen() {
     }
     // You may want to handle other status codes as well
   }
-  
+
 
   function theaterChange(event: any) {
     theaters.forEach((theater) => {
       if (theater.id == event.target.value) {
-        setValue('screen',null);
-        setValue('timing',null);
+        setValue('screen', null);
+        setValue('timing', null);
         setScreens(theater.screen_details);
         setTimings([]);
       }
@@ -628,77 +632,77 @@ export default function addScreen() {
           maxWidth: "1000px",
           height: "400px",
         }}>
-              {bookingError && (
-      <>
-      <img 
-        src="https://img.freepik.com/vektoren-premium/popcorn-cartoon-maskottchen-weinen-mit-einem-taschentuch_193274-2025.jpg?w=2000" 
-        alt="Sad popcorn"
-        style={{ width: '150px', height: 'auto', marginBottom: '16px' }}
-      />
-      <Typography color="error" variant="h6" component="h2" sx={{ mt: 2, mb: 2, fontFamily: '"Comic Sans MS", cursive, sans-serif' }}>
-        Oops 😔 {bookingError}
-      </Typography>
-    </>
-                )}
+          {bookingError && (
+            <>
+              <img
+                src="https://img.freepik.com/vektoren-premium/popcorn-cartoon-maskottchen-weinen-mit-einem-taschentuch_193274-2025.jpg?w=2000"
+                alt="Sad popcorn"
+                style={{ width: '150px', height: 'auto', marginBottom: '16px' }}
+              />
+              <Typography color="error" variant="h6" component="h2" sx={{ mt: 2, mb: 2, fontFamily: '"Comic Sans MS", cursive, sans-serif' }}>
+                Oops 😔 {bookingError}
+              </Typography>
+            </>
+          )}
           {!bookingError && (
-          <form action={checkoutURL} method="POST">
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Typography variant="h6">{title}</Typography>
-              <FormGroup>
-                <FormControlLabel control={<Checkbox onChange={handleRewards} />} label={"Apply Your Rewards: " + rewards} />
-              </FormGroup>
-            </Box>
-            <TableContainer component={Paper} style={{ boxShadow: "none" }}>
-              <Table sx={{ minWidth: 550 }} aria-label="simple table">
-                <TableBody>
-                  <TableRow>
-                    <TableCell component="th" scope="row">
-                      Tickets Booked
-                    </TableCell>
-                    <TableCell align="right">{orderDetails?.ticketsBooked}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell component="th" scope="row">
-                      Cost Per Ticket
-                    </TableCell>
-                    <TableCell align="right">${orderDetails?.pricePerTicket}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell component="th" scope="row">
-                      Discount
-                    </TableCell>
-                    <TableCell align="right">{orderDetails?.discount}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell component="th" scope="row">
-                      Total Price
-                    </TableCell>
-                    <TableCell align="right">
-                      ${orderDetails?.totalPrice}
-                    </TableCell>
-                  </TableRow>
-                  {rewardsEnabled === "true" &&
+            <form action={checkoutURL} method="POST">
+              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                <Typography variant="h6">{title}</Typography>
+                <FormGroup>
+                  <FormControlLabel control={<Checkbox onChange={handleRewards} />} label={"Apply Your Rewards: " + rewards} />
+                </FormGroup>
+              </Box>
+              <TableContainer component={Paper} style={{ boxShadow: "none" }}>
+                <Table sx={{ minWidth: 550 }} aria-label="simple table">
+                  <TableBody>
                     <TableRow>
                       <TableCell component="th" scope="row">
-                        Final Price After Rewards
+                        Tickets Booked
+                      </TableCell>
+                      <TableCell align="right">{orderDetails?.ticketsBooked}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell component="th" scope="row">
+                        Cost Per Ticket
+                      </TableCell>
+                      <TableCell align="right">${orderDetails?.pricePerTicket}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell component="th" scope="row">
+                        Discount
+                      </TableCell>
+                      <TableCell align="right">{orderDetails?.discount}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell component="th" scope="row">
+                        Tickets Price
                       </TableCell>
                       <TableCell align="right">
-                        ${orderDetails?.totalPrice - (0.1 * rewards)}
+                        ${orderDetails?.totalPrice}
                       </TableCell>
                     </TableRow>
-                  }
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <Button
-              type="submit"
-              sx={{ mt: 5 }}
-              variant="contained"
-            >
-              checkout
-            </Button>
+                    {rewardsEnabled === "true" &&
+                      <TableRow>
+                        <TableCell component="th" scope="row">
+                          Final Price After Rewards
+                        </TableCell>
+                        <TableCell align="right">
+                          ${((orderDetails?.totalPrice - (0.1 * rewards)) > 0) ? (orderDetails?.totalPrice - (0.1 * rewards)) : '0'}
+                        </TableCell>
+                      </TableRow>
+                    }
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <Button
+                type="submit"
+                sx={{ mt: 5 }}
+                variant="contained"
+              >
+                checkout
+              </Button>
 
-          </form>
+            </form>
           )}
         </Box>
       </Modal>

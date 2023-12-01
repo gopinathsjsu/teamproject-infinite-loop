@@ -34,6 +34,7 @@ import LocationSearchInput from "./LocationSearchInput"; // adjust the path as n
 import Script from "next/script";
 import useStore from "@/src/store";
 import Discount from "./discount";
+import { getDataFromEndPoint } from "@/src/lib/backend-api";
 
 const MapIconWrapper = styled("div")(({ theme }) => ({
     padding: theme.spacing(0, 2),
@@ -49,8 +50,8 @@ const MapIconWrapper = styled("div")(({ theme }) => ({
 
 const pages = [
     { name: "Movies", route: "/movies/all", onlyAdmin: false },
-    { name: "Theaters", route: "/theater",  onlyAdmin: false },
-    { name: "Arists", route: "/artist/all",  onlyAdmin: false },
+    { name: "Theaters", route: "/theater", onlyAdmin: false },
+    { name: "Arists", route: "/artist/all", onlyAdmin: false },
     { name: 'Analysis', route: '/analysis', onlyAdmin: true },
     { name: 'Manage Discounts', route: 'openModal', onlyAdmin: true },
 ];
@@ -80,7 +81,7 @@ const style = {
 
 function ResponsiveAppBar() {
     const router = useRouter();
-    const [imageUrl, setImageUrl] = React.useState("/static/images/avatar/2.jpg");
+    const [imageUrl, setImageUrl] = React.useState("");
     const filter = createFilterOptions<MovieOptionType>();
     const [location, setLocation] = React.useState("");
     const [value, setValue] = React.useState<MovieOptionType | null>({
@@ -116,8 +117,9 @@ function ResponsiveAppBar() {
 
     const fetchMovieData = async () => {
         try {
-            const response = await fetch("http://localhost:8080/movie/all");
-            const data = await response.json();
+            // const response = await fetch("http://localhost:8080/movie/all");
+            const data = await getDataFromEndPoint("", `movie/all`, "GET");
+            // const data = await response.json();
             const mappedData = data.movies.map((movie: any) => ({
                 id: movie.id,
                 name: movie.title,
@@ -197,12 +199,10 @@ function ResponsiveAppBar() {
         };
         const city = getAddressComponent('locality');
         const county = getAddressComponent('administrative_area_level_2');
-        console.log(addressComponents);
         const formattedAddress1 = `${county}, ${city}`;
         setOpen(false);
         setLocation(formattedAddress1);
         store.setPinCode(getAddressComponent('postal_code'));
-        console.log(store.pincode + "hehhehhehehheheh");
         router.push('/');
 
     }
@@ -240,7 +240,6 @@ function ResponsiveAppBar() {
                 />
                 <Container maxWidth="xl">
                     <Toolbar disableGutters>
-                        <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
                         <Typography
                             variant="h6"
                             noWrap
@@ -325,7 +324,7 @@ function ResponsiveAppBar() {
                         </Typography>
                         <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
                             {pages.map((page) => {
-                                if ( !page.onlyAdmin || (page.onlyAdmin && store.isAdmin)) {
+                                if (!page.onlyAdmin || (page.onlyAdmin && store.isAdmin)) {
                                     return (<Button
                                         key={page.name}
                                         onClick={() => {

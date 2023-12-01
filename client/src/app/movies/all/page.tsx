@@ -139,7 +139,7 @@ const MovieSlider = () => {
     "Adventure",
     "Mystery",
   ];
-  const languages = [    
+  const languages = [
     "English",
     "Spanish",
     "French",
@@ -175,12 +175,9 @@ const MovieSlider = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8080/movie/all");
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
-        const data = await response.json();
-        const tempMovies = data.movies.map((movie: any) => {
+        // const response = await fetch("http://localhost:8080/movie/all");
+        const response = await getDataFromEndPoint("", `movie/all`, "GET")
+        const tempMovies = response.movies.map((movie: any) => {
           movie["genres"] = movie["genres"][0].split(",  ");
           return movie;
         });
@@ -204,9 +201,9 @@ const MovieSlider = () => {
           (selectedLanguage === "All"
             ? true
             : movie.languages.includes(selectedLanguage))) &&
-        ( (selectedFormat === "All"
-            ? true
-            : movie.format.includes(selectedFormat)))
+        ((selectedFormat === "All"
+          ? true
+          : movie.format.includes(selectedFormat)))
     );
     setFilteredMovies(filtered);
   }, [selectedLanguage, selectedFormat, movies]);

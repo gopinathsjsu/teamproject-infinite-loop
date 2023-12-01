@@ -18,13 +18,13 @@ import { Card, CardContent, Paper, Avatar, Box, Container, Grid, Typography } fr
 
 export interface Artist {
   dob: string;
-  name: string ;
+  name: string;
   id: string;
   dateOfBirth: string;
   description: string;
   profile_url: string;
   profession: string;
-   // Assuming this property exists
+  // Assuming this property exists
   // Include other properties as needed
 }
 
@@ -40,12 +40,13 @@ export default function ArtistDetails() {
       if (typeof artist_id === 'string') { // Ensure artist_id is a string
         try {
           setIsLoading(true);
-          const response = await fetch(`http://localhost:8080/artist/${artist_id}`);
-          if (!response.ok) {
-            throw new Error(`Error: ${response.status}`);
-          }
-          const data = await response.json();
-          setArtistData(data.artist); // Assuming the API returns an object with an 'artist' property
+          // const response = await fetch(`http://localhost:8080/artist/${artist_id}`);
+          const response = await getDataFromEndPoint("", `artist/${artist_id}`, "GET");
+          // if (!response.ok) {
+          //   throw new Error(`Error: ${response.status}`);
+          // }
+          // const data = await response.json();
+          setArtistData(response.artist); // Assuming the API returns an object with an 'artist' property
         } catch (error) {
           console.error("Failed to fetch data:", error);
         } finally {
@@ -97,11 +98,12 @@ export default function ArtistDetails() {
               Profile_url: {artistData.profile_url}
             </Typography> */}
             <Typography variant="body1" sx={{ mb: 2 }}>
-             {artistData.description}
+              {artistData.description}
             </Typography>
             {/* Add additional sections as needed */}
           </Paper>
         </Grid>
       </Grid>
     </Container>
-  );}
+  );
+}

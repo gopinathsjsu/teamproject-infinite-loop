@@ -22,7 +22,8 @@ function App() {
                     seatNo: data.seat_ids.join(' '),
                     theaterName: data.theaterName,
                     qrLink: data.qr_code,
-                    screenName: data.screen_id
+                    screenName: data.screen_id,
+                    date: data.show_date.split('T')[0]
                 };
                 setTicketData(mappedData);
             }
@@ -36,7 +37,7 @@ function App() {
     }
     return (
         <>
-            <TicketCard name={ticketData.name} movieName={ticketData.movieName} showTime={ticketData.show_time} seatNo={ticketData.seatNo} theaterName={ticketData.theaterName} qrLink={ticketData.qrLink} screenName={ticketData.screenName} />
+            <TicketCard name={ticketData.name} movieName={ticketData.movieName} showTime={ticketData.show_time} seatNo={ticketData.seatNo} theaterName={ticketData.theaterName} qrLink={ticketData.qrLink} screenName={ticketData.screenName} date={ticketData.date} />
         </>
     )
 }

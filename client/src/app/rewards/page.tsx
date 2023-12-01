@@ -1,5 +1,5 @@
 'use client'
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Button, Paper, Grid, Card, CardContent, LinearProgress } from '@mui/material';
 import { styled } from '@mui/system';
 import CheckIcon from '@mui/icons-material/Check';
@@ -162,17 +162,25 @@ const RewardsPage = () => {
   const router = useRouter();
   const totalPoints = 200;
   const goalPoints = 280;
-
+  const [points, setPoints] = useState("");
+  const primeUrl = `http://ec2-3-101-12-15.us-west-1.compute.amazonaws.com/api/payment/prime/checkout_sessions/${store.user.user_id}`;
+  async function getRewards() {
+    const result = await getDataFromEndPoint("", `user/getRewards/${store.user.user_id}`, "GET")
+    console.log(result);
+    setPoints(result.data);
+    console.log(points)
+  }
   async function joinNow() {
     const response = await getDataFromEndPoint('', `payment/prime/checkout_sessions/${store.user.user_id}`, 'GET');
     console.log(response);
   }
-
-
+  useEffect(() => {
+    getRewards();
+  }, []);
 
   return (
     <Box sx={{ flexGrow: 1, padding: 3 }}>
-      <Parallax height="500px" />
+      <Parallax />
 
       <Grid container spacing={2}>
         <Grid item xs={4}>
@@ -187,9 +195,10 @@ const RewardsPage = () => {
         <Grid item xs={4}>
           <StyledCard>
             <StyledCardContent>
-              <PriceTag>20% OFF</PriceTag>
-              <BenefitDescription>Concessions</BenefitDescription>
-              <BenefitDescription>Share benefits with a friend</BenefitDescription>
+              <Typography variant='h5'>Rewards</Typography>
+              {points ? <PriceTag>{points}</PriceTag> : <PriceTag>Points</PriceTag>}
+              <BenefitDescription>Points</BenefitDescription>
+              <BenefitDescription></BenefitDescription>
             </StyledCardContent>
           </StyledCard>
         </Grid>
@@ -203,10 +212,12 @@ const RewardsPage = () => {
           </StyledCard>
         </Grid>
       </Grid>
-      <RewardsProgress points={totalPoints} goal={goalPoints} />
+      {/* <RewardsProgress points={totalPoints} goal={goalPoints} /> */}
       <MemberBenefitsSection />
       {!store.user.is_prime &&
-        <JoinButton onClick={() => (joinNow())} variant="contained">Join Now</JoinButton>
+        <form action={primeUrl} method='GET'>
+          <JoinButton type="submit" variant="contained">Join Now</JoinButton>
+        </form>
       }
     </Box>
   );

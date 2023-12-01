@@ -28,7 +28,7 @@ exports.sendSignUpEmail = async (data) => {
 }
 
 exports.sendTicketEmail = async (data) => {
-    const { email, name, movieName, showTime, seatNos, theaterName, qrlink, screenName } = data;
+    const { email, name, movieName, showTime, seatNos, theaterName, qrlink, screenName, date } = data;
     console.log(api_key);
     sgMail.setApiKey(api_key)
     const msg = {
@@ -44,7 +44,8 @@ exports.sendTicketEmail = async (data) => {
             seatNos: seatNos,
             theaterName: theaterName,
             qrlink: qrlink,
-            screenName: screenName
+            screenName: screenName,
+            date: date,
             // Add any other dynamic data you want to include in the email
         },
     };

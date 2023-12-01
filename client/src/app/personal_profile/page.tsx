@@ -121,9 +121,7 @@ export default function Profile() {
     const userId = store.user.user_id;
     const fetchProfileDetails = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:8080/user/profileDetails/${userId}`
-        );
+        const response = await fetch(`http://localhost:8080/user/profileDetails/${userId}`);
         const completeJSON = await response.json();
         const data = completeJSON.data;
         setUserData(data);
@@ -155,11 +153,12 @@ export default function Profile() {
 
     const fetchArtistData = async () => {
       try {
-        const response = await fetch("http://localhost:8080/artist/all");
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
-        const data = await response.json();
+        // const response = await fetch("http://localhost:8080/artist/all");
+        const data = await getDataFromEndPoint("", `artist/all`, "GET");
+        // if (!response.ok) {
+        //   throw new Error(`Error: ${response.status}`);
+        // }
+        // const data = await response.json();
         setCrewData(data.Crew);
         setCastData(data.Cast);
         fetchProfileDetails();
@@ -254,8 +253,8 @@ export default function Profile() {
           }
         }
       });
-      reqData.append("id", userData.user_id);
-      await getDataFromEndPoint(reqData, `user/updateProfile`, "POST");
+      reqData.append('id', userData.user_id);
+      await getDataFromEndPoint(reqData, `user/updateProfile`, 'POST');
       setEditEnabled(false);
     }
   }
@@ -390,25 +389,25 @@ export default function Profile() {
                   render={({ field }) => (
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       {!editEnabled ? (
-                      <TextField
-                        {...field}
-                        label="SelectDate"
-                        value={field.value ? dayjs(field.value).format('MM/DD/YYYY') : ''}
-                        disabled={!editEnabled}
-                        fullWidth
-                        variant="outlined"
-                        InputLabelProps={{
-                          shrink: Boolean(field.value),
-                        }}
-                      />
-                    ) : (
-                      <DatePicker
-                        sx={{ width: "100%" }}
-                        label="Date of Birth"
-                        {...field}
-                      />
-                    )
-                    }
+                        <TextField
+                          {...field}
+                          label="SelectDate"
+                          value={field.value ? dayjs(field.value).format('MM/DD/YYYY') : ''}
+                          disabled={!editEnabled}
+                          fullWidth
+                          variant="outlined"
+                          InputLabelProps={{
+                            shrink: Boolean(field.value),
+                          }}
+                        />
+                      ) : (
+                        <DatePicker
+                          sx={{ width: "100%" }}
+                          label="Date of Birth"
+                          {...field}
+                        />
+                      )
+                      }
                     </LocalizationProvider>
                   )}
                 />

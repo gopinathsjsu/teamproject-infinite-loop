@@ -34,7 +34,7 @@ const screen =
     }
 }
 
-export default function editScreen() {
+export default function EditScreen() {
 
     const router = useRouter();
     const [screenDetails, setScreenDetails] = useState<any>({});

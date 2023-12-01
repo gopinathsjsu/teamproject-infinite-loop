@@ -16,6 +16,7 @@ import {
   makeStyles,
   Link,
 } from "@mui/material";
+import { getDataFromEndPoint } from "@/src/lib/backend-api";
 
 interface CastAndCrewMember {
   name: string;
@@ -58,13 +59,14 @@ const App: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:8080/movie/${movieName}`
-        );
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
-        const data = await response.json();
+        // const response = await fetch(
+        //   `http://localhost:8080/movie/${movieName}`
+        // );
+        const data = await getDataFromEndPoint("", `movie/${movieName}`, "GET")
+        // if (!response.ok) {
+        //   throw new Error(`Error: ${response.status}`);
+        // }
+        // const data = await response.json();
         setMovie(data.movie);
         setCastData(data.cast);
         setCrewData(data.crew);
@@ -147,33 +149,33 @@ const App: React.FC = () => {
   return (
     <>
       <div>
-      <div style={backgroundStyle}>
-        <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", mt:15}}>
-          <div style={contentStyle}>
-            <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2, fontSize: '80px' }} component="h1" gutterBottom>
-              {movie.title}
-            </Typography>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1, fontSize: '30px' }} gutterBottom>
-              {new Date(movie.release_date).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
-            </Typography>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1, fontSize: '24px' }} gutterBottom>
-              <Chip label={`Runtime: ${movie.run_time} min`} sx={transparentChipStyle} />
-              <Chip label={`Languages: ${movie.languages}`} sx={transparentChipStyle} />
-              <Chip label={`Format: ${movie.format}`} sx={transparentChipStyle} />
-            </Typography>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1, fontSize: '30px' }} gutterBottom>
-              
-              {movie.genres.map((genre, index) => (
-                <Chip key={index} label={genre} sx={transparentChipStyle} />
-              ))}
-            </Typography>
-          </div>
-      </Box>
-    </div>
+        <div style={backgroundStyle}>
+          <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", mt: 15 }}>
+            <div style={contentStyle}>
+              <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2, fontSize: '80px' }} component="h1" gutterBottom>
+                {movie.title}
+              </Typography>
+              <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1, fontSize: '30px' }} gutterBottom>
+                {new Date(movie.release_date).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </Typography>
+              <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1, fontSize: '24px' }} gutterBottom>
+                <Chip label={`Runtime: ${movie.run_time} min`} sx={transparentChipStyle} />
+                <Chip label={`Languages: ${movie.languages}`} sx={transparentChipStyle} />
+                <Chip label={`Format: ${movie.format}`} sx={transparentChipStyle} />
+              </Typography>
+              <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1, fontSize: '30px' }} gutterBottom>
+
+                {movie.genres.map((genre, index) => (
+                  <Chip key={index} label={genre} sx={transparentChipStyle} />
+                ))}
+              </Typography>
+            </div>
+          </Box>
+        </div>
         <div
           style={{
             position: "absolute",
@@ -181,23 +183,23 @@ const App: React.FC = () => {
             right: "40px",
           }}
         >
-        <Button
-          onClick={redirectToBooking}
-          variant="contained"
-          style={{
-            position: 'fixed', // Stick the button to the viewport
-            bottom: '20px', // Distance from the bottom of the viewport
-            right: '20px', // Distance from the right of the viewport
-            backgroundColor: "red",
-            color: "white",
-            fontWeight: "bold",
-            width: "150px",
-            height: "50px",
-            zIndex: 1000, // Ensure it's above other elements
-          }}
-        >
-          Buy Tickets
-        </Button>
+          <Button
+            onClick={redirectToBooking}
+            variant="contained"
+            style={{
+              position: 'fixed', // Stick the button to the viewport
+              bottom: '20px', // Distance from the bottom of the viewport
+              right: '20px', // Distance from the right of the viewport
+              backgroundColor: "red",
+              color: "white",
+              fontWeight: "bold",
+              width: "150px",
+              height: "50px",
+              zIndex: 1000, // Ensure it's above other elements
+            }}
+          >
+            Buy Tickets
+          </Button>
 
         </div>
 
@@ -235,15 +237,15 @@ const App: React.FC = () => {
               </Typography>
 
               <div style={videoContainerStyle}>
-              <iframe
-                title="Movie Trailer"
-                src={movie.trailer_url}
-                style={videoOpts}
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
-            </div>
+                <iframe
+                  title="Movie Trailer"
+                  src={movie.trailer_url}
+                  style={videoOpts}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </div>
             </div>
           </Container>
         </Grid>

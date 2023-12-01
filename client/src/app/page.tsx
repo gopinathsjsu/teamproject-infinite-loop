@@ -15,7 +15,6 @@ export default function Home() {
     // Check if the location is available in the store
     const currentLocation = store.pincode;
     if (currentLocation) {
-      console.log(currentLocation + "iiiiiiiiiiii");
       setLocation(currentLocation);
     }
   }, [store]);

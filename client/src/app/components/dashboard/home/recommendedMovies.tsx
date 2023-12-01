@@ -70,7 +70,6 @@ const MovieSlider = () => {
         const fetchData = async () => {
             const response = await getDataFromEndPoint('', 'movie/getRecommendedMovies', 'GET');
             const data = response.data;
-            console.log(data);
             setMovieData(data);
         };
         fetchData();
@@ -80,7 +79,7 @@ const MovieSlider = () => {
         dots: false,
         infinite: true,
         speed: 500,
-        slidesToShow: movieData.length <6 ? movieData.length : 6,
+        slidesToShow: movieData.length < 6 ? movieData.length : 6,
         slidesToScroll: 1,
         nextArrow: <SampleNextArrow className={undefined} style={undefined} onClick={undefined} />,
         prevArrow: <SamplePrevArrow className={undefined} style={undefined} onClick={undefined} />,
@@ -112,10 +111,10 @@ const MovieSlider = () => {
                 </style>
                 <a href="./rewards">
                     <img
-                    className="responsive-banner"
-                    src="https://drive.google.com/uc?id=1RyP7TcOdok3IYMVMwE364m9ghuLFGRvL" // Modified URL
-                    alt="Banner"
-                    style={{ width: '100%', objectFit: 'cover', objectPosition: 'center' }}
+                        className="responsive-banner"
+                        src="https://drive.google.com/uc?id=1RyP7TcOdok3IYMVMwE364m9ghuLFGRvL" // Modified URL
+                        alt="Banner"
+                        style={{ width: '100%', objectFit: 'cover', objectPosition: 'center' }}
                     />
                 </a>
             </Box>

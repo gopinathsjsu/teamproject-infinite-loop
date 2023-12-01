@@ -48,38 +48,41 @@ const TicketsPage: React.FC = () => {
   const [open, setOpen] = useState(false);
   const store: any = useStore(); // Cast to 'any' if Store type is not defined
 
-  useEffect(() => {
-    const fetchTickets = async () => {
-      try {
-        const response = await fetch(`http://localhost:8080/user/getPurchaseHistory/${store.user?.user_id}`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const jsonResponse = await response.json();
-        if (!jsonResponse || !Array.isArray(jsonResponse.data)) {
-          throw new Error('Data is not in the expected format');
-        }
-        setTickets(jsonResponse.data);
-        setIsLoading(false);
-      } catch (e) {
-        const error = e as Error;
-        console.error('Fetching tickets failed: ', error);
-        setError(error.message);
-        setIsLoading(false);
+  const fetchTickets = async () => {
+    try {
+      // const response = await fetch(`http://localhost:8080/user/getPurchaseHistory/${store.user?.user_id}`);
+      const jsonResponse = await getDataFromEndPoint("", `user/getPurchaseHistory/${store.user?.user_id}`, "GET")
+      // if (!response.ok) {
+      //   throw new Error(`HTTP error! status: ${response.status}`);
+      // }
+      // const jsonResponse = await response.json();
+      if (!jsonResponse || !Array.isArray(jsonResponse.data)) {
+        throw new Error('Data is not in the expected format');
       }
-    };
-
-
-
+      setTickets(jsonResponse.data);
+      setIsLoading(false);
+    } catch (e) {
+      const error = e as Error;
+      console.error('Fetching tickets failed: ', error);
+      setError(error.message);
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
     if (store.user?.user_id) {
       fetchTickets();
     } else {
       setError('User ID is not available.');
       setIsLoading(false);
     }
-  }, [store.user?.user_id]);
+  }, []);
+
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
+
+  function refresh() {
+    fetchTickets();
+  }
 
   return (
     <Grid item xs={4} sx={{ paddingLeft: '90px' }}>
@@ -88,7 +91,7 @@ const TicketsPage: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900 mb-6">Your Tickets</h1>
           <div className="ticket-grid">
             {tickets.map((ticket, index) => (
-              <TicketCard key={index} ticket={ticket} />
+              <TicketCard key={index} ticket={ticket} refresh={refresh} />
             ))}
           </div>
         </div>
@@ -97,10 +100,7 @@ const TicketsPage: React.FC = () => {
   );
 };
 
-
-
-
-const TicketCard: React.FC<{ ticket: Ticket }> = ({ ticket }) => {
+const TicketCard: React.FC<{ ticket: Ticket, refresh: any }> = ({ ticket, refresh }) => {
   const qrCodeSrc = ticket.qr_url;
   const router = useRouter();
   const [isModalOpen, setModalOpen] = useState(false);
@@ -109,13 +109,13 @@ const TicketCard: React.FC<{ ticket: Ticket }> = ({ ticket }) => {
   };
 
   const handleCloseModal = () => {
+    refresh();
     setModalOpen(false);
   };
   const handleYes = async () => {
-    console.log(ticket)
     const cancel_data = await getDataFromEndPoint(ticket, 'user/cancelTicket', "POST");
     setModalOpen(false);
-    router.push('/purchases')
+    refresh();
   };
   return (
     <Card sx={{ m: 2, boxShadow: 3, width: '500px', height: '400px', padding: '0px 0px' }}>

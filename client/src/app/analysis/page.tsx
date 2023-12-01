@@ -7,6 +7,7 @@ import { Autocomplete, Grid, TextField, Typography } from '@mui/material';
 import { DefaultizedPieValueType } from '@mui/x-charts';
 import { PieChart, pieArcLabelClasses } from '@mui/x-charts/PieChart';
 import MovieSelection from './movieDay';
+import { getDataFromEndPoint } from '@/src/lib/backend-api';
 
 const chartSetting = {
     width: 500,
@@ -39,13 +40,14 @@ export default function BarsDataset() {
     React.useEffect(() => {
         const fetchMovies = async () => {
             try {
-                const response = await fetch("http://localhost:8080/movie/all");
-                if (!response.ok) {
-                    throw new Error(`Error: ${response.status}`);
-                }
-                const data = await response.json();
-                setMovies(data.movies);
-                setMovieId(data.movies[0].id)
+                // const response = await fetch("http://localhost:8080/movie/all");
+                const response = await getDataFromEndPoint("", `movie/all`, "GET");
+                // if (!response.ok) {
+                //     throw new Error(`Error: ${response.status}`);
+                // }
+                // const data = await response.json();
+                setMovies(response.movies);
+                setMovieId(response.movies[0].id)
                 setxAxis([]);
                 setyAxis([]);
             } catch (error) {
@@ -55,16 +57,17 @@ export default function BarsDataset() {
 
         const fetchPieData = async () => {
             try {
-                const response = await fetch("http://localhost:8080/screen/getTicketsBookedInTheaters");
-                if (!response.ok) {
-                    throw new Error(`Error: ${response.status}`);
-                }
-                const data = await response.json();
-                const filteredData = data.data.filter((item: any) => {
+                // const response = await fetch("http://localhost:8080/screen/getTicketsBookedInTheaters");
+                const response = await getDataFromEndPoint("", `screen/getTicketsBookedInTheaters`, "GET")
+                // if (!response.ok) {
+                //     throw new Error(`Error: ${response.status}`);
+                // }
+                // const data = await response.json();
+                const filteredData = response.data.filter((item: any) => {
                     if (item.value != 0) return true;
                     return false;
                 });
-                const TOTAL = data.data.map((item: any) => item.value).reduce((a: number, b: number) => a + b, 0);
+                const TOTAL = response.data.map((item: any) => item.value).reduce((a: number, b: number) => a + b, 0);
                 setTotal(TOTAL);
                 setPieChartData(filteredData);
             } catch (error) {
@@ -84,12 +87,13 @@ export default function BarsDataset() {
     React.useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/screen/getTicketsBoughtByTheatersLocation/${movieId}`);
-                if (!response.ok) {
-                    throw new Error(`Error: ${response.status}`);
-                }
-                const data = await response.json();
-                const cityData = data.data;
+                // const response = await fetch(`http://localhost:8080/screen/getTicketsBoughtByTheatersLocation/${movieId}`);
+                const response = await getDataFromEndPoint("", `screen/getTicketsBoughtByTheatersLocation/${movieId}`, "GET");
+                // if (!response.ok) {
+                //     throw new Error(`Error: ${response.status}`);
+                // }
+                // const data = await response.json();
+                const cityData = response.data;
                 setCityTheaterData(cityData);
                 setCities(Object.keys(cityData));
             } catch (error) {
@@ -122,8 +126,8 @@ export default function BarsDataset() {
                     <Typography variant='h4'>Movie vs Location vs Theater</Typography>
                     <Grid item xs={12} sx={{ display: "flex" }}>
                         <Grid item xs={6}>
-                            <Autocomplete         
-                                disableClearable                       
+                            <Autocomplete
+                                disableClearable
                                 options={movies}
                                 getOptionLabel={(option: any) => option.title}
                                 onChange={handleMovieChange}
@@ -132,8 +136,8 @@ export default function BarsDataset() {
                             />
                         </Grid>
                         <Grid item xs={6}>
-                            <Autocomplete      
-                                disableClearable                          
+                            <Autocomplete
+                                disableClearable
                                 options={cities}
                                 getOptionLabel={(option: any) => option}
                                 sx={{ width: "90%" }}
@@ -168,7 +172,7 @@ export default function BarsDataset() {
                                 slotProps={{
                                     legend: {
                                         direction: 'column',
-                                        position: {vertical:'middle', horizontal: 'right' },
+                                        position: { vertical: 'middle', horizontal: 'right' },
                                         padding: 0,
                                     },
                                 }}

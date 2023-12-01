@@ -46,15 +46,15 @@ app.use(
     secret: process.env.JWT_SECRET_KEY,
     // You can use the default in-memory store or choose another session store here
   }));
-app.use('/discount', DiscountRouter);
-app.use('/payment', paymentRoute)
-app.use('/artist', ArtistRoute)
-app.use('/theater', TheatreRoute)
-app.use('/poster', PosterRoute)
-app.use('/screen', ScreenRoute)
-app.use('/movie', MovieRoute)
-app.use('/user', UserRoute)
-app.get('/home', (req, res) => {
+app.use('/api/discount', DiscountRouter);
+app.use('/api/payment', paymentRoute)
+app.use('/api/artist', ArtistRoute)
+app.use('/api/theater', TheatreRoute)
+app.use('/api/poster', PosterRoute)
+app.use('/api/screen', ScreenRoute)
+app.use('/api/movie', MovieRoute)
+app.use('/api/user', UserRoute)
+app.get('/api/home', (req, res) => {
   res.json({ message: 'Hello World!' })
 })
 
