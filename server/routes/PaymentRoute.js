@@ -16,7 +16,7 @@ const Theater = require('../models/TheaterModel');
 const { getUrl } = require('../Helpers/S3');
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-
+const BASE_URL = 'http://ec2-3-101-12-15.us-west-1.compute.amazonaws.com';
 
 router.post('/storeTicketBookingDetails', async (req, res) => {
     console.log("at payment checkout session");
@@ -116,8 +116,8 @@ router.post('/checkout_sessions/:id/:rewards', async (req, res) => {
                 line_items: lineItems,
                 discounts: discount_coupon,
                 mode: 'payment',
-                success_url: `http://localhost:8080/payment/success?session_id={CHECKOUT_SESSION_ID}&key=${req.params.id}&rewards=${rewards_flag}`,
-                cancel_url: `${req.headers.origin}/?canceled=true`,
+                success_url: `${BASE_URL}/api/payment/success?session_id={CHECKOUT_SESSION_ID}&key=${req.params.id}&rewards=${rewards_flag}`,
+                cancel_url: `${BASE_URL}/?canceled=true`,
                 automatic_tax: { enabled: true },
             });
             //  console.log(session);
@@ -144,8 +144,8 @@ router.get('/prime/checkout_sessions/:id', async (req, res) => {
                 quantity: 1,
             }],
             mode: 'subscription',
-            success_url: `http://localhost:8080/payment/prime/success?session_id={CHECKOUT_SESSION_ID}&user_id=${req.params.id}`,
-            cancel_url: `http://localhost:3000/?canceled=true`,
+            success_url: `${BASE_URL}/api/payment/prime/success?session_id={CHECKOUT_SESSION_ID}&user_id=${req.params.id}`,
+            cancel_url: `${BASE_URL}`,
         });
 
         res.redirect(303, session.url);
@@ -167,7 +167,7 @@ router.get('/prime/success/:session_id/:user_id', async (req, res) => {
         });
         console.log(session);
         console.log("at payment success success");
-        res.redirect(303, 'http://localhost:3000');
+        res.redirect(303, `${BASE_URL}`);
     } catch (err) {
         res.status(500).send(err.message);
     }
@@ -260,7 +260,8 @@ router.get('/success', async (req, res) => {
         }
         await sendTicketEmail(email_data)
         await RedisHelperDelete(req.query.key);
-        res.redirect(303, 'http://localhost:3000/book-ticket/ticket/' + transaction.id);
+        // res.redirect(303, 'http://localhost:3000/book-ticket/ticket/' + transaction.id);
+        res.redirect(303, `${BASE_URL}/book-ticket/ticket/` + transaction.id);
     } catch (err) {
         res.status(500).send(err.message);
     }
