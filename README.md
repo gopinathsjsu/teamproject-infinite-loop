@@ -4,10 +4,10 @@ Box Office is your all-access pass to the pulsating heart of cinema, where booki
 
 ---
 ## Team Members :
- -Yeshvanth Kurapati
- -Sai Deekshith katukojwala
- -Mahendra Chitipollu
- -Sravan Kumar Gorati
+ - **Yeshvanth Kurapati**
+ - **Sai Deekshith katukojwala**
+ - **Mahendra Chitipollu**
+ - **Sravan Kumar Gorati**
 
 ## 🌟 Highlights
 
