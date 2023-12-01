@@ -274,6 +274,31 @@ router.get('/getTicketData/:id', async (req, res) => {
         status: HTTP_STATUS_CODES.OK
     })
 })
+router.post('/merchandise/checkout_session/:qty/:price', async (req, res) => { 
+    try {
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [{
+              price_data: {
+                currency: 'usd',
+                product_data: {
+                  name: 'T-shirt',
+                },
+                unit_amount: req.params.price*100,
+              },
+              quantity: req.params.qty,
+            }],
+            mode: 'payment',
+            success_url: `http://ec2-3-101-12-15.us-west-1.compute.amazonaws.com/`,
+            cancel_url: `http://ec2-3-101-12-15.us-west-1.compute.amazonaws.com/`,
+          });
+      
+          res.redirect(303, session.url);
+    } catch (error) {
+        console.log(error);
+    }
+
+});
 router.post('/buyTickets', async (req, res) => {
     console.log("at payment buy tickets");
     console.log(req.body);
