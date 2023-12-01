@@ -10,7 +10,6 @@ const { sendMessage } = require('../Helpers/WhatsappAPI');
 const uniqid = require('uniqid');
 const { RedisHelperAdd, RedisHelperGet, RedisHelperDelete } = require('../Helpers/RedisHelper');
 const { createCustomer, getCustomer } = require('../Helpers/stripeAPI');
-const { sendSignUpEmail, sendTicketEmail } = require('../Helpers/sendGridHelper');
 const { generateAndPingQRCode } = require('../Helpers/qrCodeGenerator');
 const Movie = require('../models/MovieModel');
 const Transaction = require('../models/TransactionModel');
