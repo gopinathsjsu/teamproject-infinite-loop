@@ -72,8 +72,14 @@ router.post('/checkout_sessions/:id/:rewards', async (req, res) => {
         duration: 'once',
     });
     var final_price = data.price;
-    if(rewards_flag==="true")
-    final_price = final_price - (data.rewards / 10);
+    var final_rewards = (data.rewards / 10);
+    if (rewards_flag === "true") {
+        if(final_price > final_rewards)
+            final_price = final_price - (data.rewards / 10);
+        else 
+            final_price = 0;
+    }
+    final_price = final_price*100;
     if (req.method === 'POST') {
         const lineItems = [{
             price_data: {
@@ -110,7 +116,7 @@ router.post('/checkout_sessions/:id/:rewards', async (req, res) => {
                 line_items: lineItems,
                 discounts: discount_coupon,
                 mode: 'payment',
-                success_url: `http://localhost:8080/payment/success?session_id={CHECKOUT_SESSION_ID}&key=${req.params.id}`,
+                success_url: `http://localhost:8080/payment/success?session_id={CHECKOUT_SESSION_ID}&key=${req.params.id}&rewards=${rewards_flag}`,
                 cancel_url: `${req.headers.origin}/?canceled=true`,
                 automatic_tax: { enabled: true },
             });
@@ -189,7 +195,7 @@ router.get('/success', async (req, res) => {
         const seat_selected = data.seatSelected;
         const movie_id = data.movie_id;
         const no_of_seats_booked = seat_selected.length;
-        const rewards = data.price * seat_selected.length;
+        const rewards = data.price * seat_selected.length*10;
         const qr_code = await generateAndPingQRCode(session.payment_intent, 'http://localhost:8080/verifyTicket/' + session.payment_intent);
         const screenDetails = await ScreenModel.findOneAndUpdate({ id: screen_id, theater_id: theater_id }, {
             $inc: { [`seats_day_wise.${filter_date}.${timing}.tickets_bought`]: no_of_seats_booked, 'total_tickets_booked': no_of_seats_booked },
@@ -197,6 +203,15 @@ router.get('/success', async (req, res) => {
                 [`seats_day_wise.${filter_date}.${timing}.SeatArray`]: screen_layout
             }
         });
+        if (rewards == "true") {
+            const User = await User.findOne({ user_id: data.user_id });
+            var final_rewards = data.rewards;
+             if(final_price >(final_rewards/10))
+                User.rewards =final_rewards%10 + (final_price - (final_rewards/10))*10;
+            else 
+                 User.rewards = (final_rewards/10) - final_price + (final_rewards%10);
+          await  User.save();
+        }
         const movie_details = await Movie.findOneAndUpdate({ id: movie_id });
         const current_day = daysDifference(movie_details.release_date, date);
         movie_details.day_wise_tickets_sold[current_day] = movie_details.day_wise_tickets_sold[current_day] + no_of_seats_booked;

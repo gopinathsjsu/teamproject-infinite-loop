@@ -355,7 +355,7 @@ export default function addScreen() {
     data["seatSelected"] = selectedSeats;
     data["movie_id"] = movieName;
     data["key"] = key;
-    data["price"] = cost * 100;
+    data["price"] = cost;
     data["rewards"] = rewards;
     data["is_prime"] = false;
     
