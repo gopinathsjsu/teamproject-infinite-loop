@@ -3,7 +3,7 @@ const { uploadToS3, getUrl } = require('./S3');
 const fs = require('fs');
 
 
-const generateAndPingQRCode = async (transactionId, urlToPing) => {
+const generateAndPingQRCode = async (transactionId) => {
     const url = '/verifyTicket/' + transactionId;
     console.log(url);
     const filepath = './qrcode' + transactionId + '.png';

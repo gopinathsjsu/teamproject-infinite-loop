@@ -85,6 +85,8 @@ export default function addScreen() {
   const checkoutURL = `http://localhost:8080/payment/checkout_sessions/${key}/${rewardsEnabled}`;
   const [rewards, setRewards] = useState<number>(0);
   const store: any = useStore();
+  const [bookingError, setBookingError] = useState<string | null>(null);
+
 
   useEffect(() => {
     if (!isPatched) {
@@ -337,7 +339,7 @@ export default function addScreen() {
     console.log(dayOfWeek);
     const timeStamp = data.timing.split(" ")[1];
     let time = null;
-    if (timeStamp == "pm") {
+    if (timeStamp === "pm") {
       time = data.timing.split(":")[0];
       time = (Number(time) + 12).toString();
     } else {
@@ -353,26 +355,38 @@ export default function addScreen() {
     data["seatSelected"] = selectedSeats;
     data["movie_id"] = movieName;
     data["key"] = key;
-    data["price"] = cost * 100;
+    data["price"] = cost;
     data["rewards"] = rewards;
     data["is_prime"] = false;
+    
+    // Attempt to store ticket booking details
     const reqData = await getDataFromEndPoint(
       data,
       "payment/storeTicketBookingDetails",
       "POST"
     );
-    if (reqData.status == 200) {
+    
+    // Check the response status
+    if (reqData.status === 200) {
+      // Construct order details for a successful booking
       const tempOrderDetails = {
         ticketsBooked: selectedSeats.join(","),
         pricePerTicket: cost,
         discount: dayOfWeek.toString() === "2" ? `Tuesday's Discount ${discount}%` : (time >= 18 ? `Night Show Discount ${discount}%` : '0'),
         totalPrice: totalPrice,
-      }
+      };
       setOrderDetails(tempOrderDetails);
       setKey(key);
-      setOpen(true);
+      setBookingError(null); // Clear any previous errors
+      setOpen(true); // Open the modal for a successful booking
+    } else if (reqData.status === 400) {
+      // Handle the error scenario
+      setBookingError(reqData.message); // Set the error message
+      setOpen(true); // Open the modal to show the error
     }
+    // You may want to handle other status codes as well
   }
+  
 
   function theaterChange(event: any) {
     theaters.forEach((theater) => {
@@ -614,6 +628,19 @@ export default function addScreen() {
           maxWidth: "1000px",
           height: "400px",
         }}>
+              {bookingError && (
+      <>
+      <img 
+        src="https://img.freepik.com/vektoren-premium/popcorn-cartoon-maskottchen-weinen-mit-einem-taschentuch_193274-2025.jpg?w=2000" 
+        alt="Sad popcorn"
+        style={{ width: '150px', height: 'auto', marginBottom: '16px' }}
+      />
+      <Typography color="error" variant="h6" component="h2" sx={{ mt: 2, mb: 2, fontFamily: '"Comic Sans MS", cursive, sans-serif' }}>
+        Oops 😔 {bookingError}
+      </Typography>
+    </>
+                )}
+          {!bookingError && (
           <form action={checkoutURL} method="POST">
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <Typography variant="h6">{title}</Typography>
@@ -670,7 +697,9 @@ export default function addScreen() {
             >
               checkout
             </Button>
+
           </form>
+          )}
         </Box>
       </Modal>
     </React.Fragment>
