@@ -10,11 +10,12 @@ const { HTTP_STATUS_CODES } = require('../constants');
 const { get } = require('mongoose');
 const { daysDifference } = require('../controllers/MovieController');
 
+
 router.post('/add', upload.array('movieposter', 2), async (req, res) => {
     try {
         console.log(req.body);
         console.log(req.files);
-        const daysDifference = daysDifference(req.body.endDate, req.body.releaseDate);
+        const daysDifference1 = daysDifference(req.body.endDate, req.body.releaseDate);
         const newMovie = new Movie({
             id: uniqid(),
             title: req.body.movieName,
@@ -25,8 +26,8 @@ router.post('/add', upload.array('movieposter', 2), async (req, res) => {
             languages: req.body.languages,
             trailer_url: req.body.movieTrailerLink,
             run_time: req.body.Runtime,
-            no_of_days: daysDifference,
-            day_wise_tickets_sold: Array(daysDifference).fill(0),
+            no_of_days: daysDifference1,
+            day_wise_tickets_sold: Array(daysDifference1).fill(0),
             rating: 0,
             release_date: req.body.releaseDate,
             end_date: req.body.endDate,
