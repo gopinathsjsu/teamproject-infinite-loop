@@ -343,13 +343,11 @@ export default function addScreen() {
     } else {
       time = data.timing.split(":")[0];
     }
-    console.log(time);
     const key = data.theater + "-" + data.screen + "-" + time + "-" + data.date;
     let discount = dayOfWeek.toString() === "2" ? discountRates.tuesday : null;
-    console.log(discountRates);
     if (time >= 18) discount = discountRates.night_time;
     const totalPrice = discount != null ? cost * selectedSeats.length * (1 - discount * 0.01) : cost * selectedSeats.length;
-    data["user_id"] = store.user ? store.user.user_id : null;
+    data["user_id"] = store.user? store.user.user_id : null;
     data["discount"] = discount;
     data["screenLayout"] = getReqSeatDeatils();
     data["seatSelected"] = selectedSeats;
@@ -378,8 +376,8 @@ export default function addScreen() {
   function theaterChange(event: any) {
     theaters.forEach((theater) => {
       if (theater.id == event.target.value) {
-        setValue('screen', null);
-        setValue('timing', null);
+        setValue('screen',null);
+        setValue('timing',null);
         setScreens(theater.screen_details);
         setTimings([]);
       }
@@ -617,7 +615,7 @@ export default function addScreen() {
         }}>
           <form action={checkoutURL} method="POST">
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography variant="h6">{title}</Typography>
+            <Typography variant="h6">{title}</Typography>
               <FormGroup>
                 <FormControlLabel control={<Checkbox onChange={handleRewards} />} label={"Apply Your Rewards: " + rewards} />
               </FormGroup>

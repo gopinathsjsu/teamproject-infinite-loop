@@ -48,10 +48,11 @@ const MapIconWrapper = styled("div")(({ theme }) => ({
 }));
 
 const pages = [
-    { name: "Movies", route: "/movies/all" },
-    { name: "Theaters", route: "/theater" },
-    { name: "Arists", route: "/artist/all" },
-    { name: 'Manage Discounts', route: 'openModal' },
+    { name: "Movies", route: "/movies/all", onlyAdmin: false },
+    { name: "Theaters", route: "/theater",  onlyAdmin: false },
+    { name: "Arists", route: "/artist/all",  onlyAdmin: false },
+    { name: 'Analysis', route: '/analysis', onlyAdmin: true },
+    { name: 'Manage Discounts', route: 'openModal', onlyAdmin: true },
 ];
 const profileSettings = [
     { name: 'Profile', route: '/personal_profile' },
@@ -194,9 +195,10 @@ function ResponsiveAppBar() {
         const getAddressComponent = (type: string) => {
             return addressComponents.find((component: any) => component.types.includes(type))?.long_name || '';
         };
-        const street = getAddressComponent('route');
-        const streetNumber = getAddressComponent('street_number');
-        const formattedAddress1 = `${streetNumber} ${street}`;
+        const city = getAddressComponent('locality');
+        const county = getAddressComponent('administrative_area_level_2');
+        console.log(addressComponents);
+        const formattedAddress1 = `${county}, ${city}`;
         setOpen(false);
         setLocation(formattedAddress1);
         store.setPinCode(getAddressComponent('postal_code'));
@@ -323,7 +325,7 @@ function ResponsiveAppBar() {
                         </Typography>
                         <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
                             {pages.map((page) => {
-                                if (page.route !== "openModal" || (page.route === "openModal" && store.isAdmin)) {
+                                if ( !page.onlyAdmin || (page.onlyAdmin && store.isAdmin)) {
                                     return (<Button
                                         key={page.name}
                                         onClick={() => {

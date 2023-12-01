@@ -5,6 +5,8 @@ import { styled } from '@mui/system';
 import CheckIcon from '@mui/icons-material/Check';
 import { useRouter } from 'next/navigation';
 import Parallax from './parallax/page';
+import useStore from '@/src/store';
+import { getDataFromEndPoint } from '@/src/lib/backend-api';
 
 
 
@@ -13,7 +15,6 @@ const BenefitsContainer = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
   borderRadius: theme.shape.borderRadius,
   padding: theme.spacing(4),
-  boxShadow: theme.shadows[2],
   marginTop: theme.spacing(4),
 }));
 
@@ -48,7 +49,7 @@ const MemberBenefitsSection = () => {
   ];
 
   // This should be determined based on your actual data
-  const tierBenefits = {
+  const tierBenefits: any = {
     movieClub: [
       "Price Per Month",
       "Earn 1 Point for Every $1 Spent",
@@ -71,7 +72,6 @@ const MemberBenefitsSection = () => {
       "Extra Discount Tuesday Savings",
       "Special Birthday Treat",
     ],
-    // Add more tiers if needed
   };
 
   const tierIncludesBenefit = (tier: string, benefit: string) => {
@@ -145,7 +145,7 @@ const LinearProgressWithLabel = (props: any) => (
   </Box>
 );
 
-const RewardsProgress = ({ points, goal }) => {
+const RewardsProgress = ({ points, goal }: { points: any, goal: any }) => {
   const progress = (points / goal) * 100;
 
   return (
@@ -158,19 +158,21 @@ const RewardsProgress = ({ points, goal }) => {
 };
 
 const RewardsPage = () => {
+  const store: any = useStore();
   const router = useRouter();
-  const totalPoints = 200; 
+  const totalPoints = 200;
   const goalPoints = 280;
 
-  function joinNow(){
-    router.push('https://buy.stripe.com/test_dR68zzgiP9QJ3bqcMM');
+  async function joinNow() {
+    const response = await getDataFromEndPoint('', `payment/prime/checkout_sessions/${store.user.user_id}`, 'GET');
+    console.log(response);
   }
 
-  
+
 
   return (
     <Box sx={{ flexGrow: 1, padding: 3 }}>
-      <Parallax image="your_parallax_image_url.jpg" height="500px" />
+      <Parallax height="500px" />
 
       <Grid container spacing={2}>
         <Grid item xs={4}>
@@ -203,7 +205,9 @@ const RewardsPage = () => {
       </Grid>
       <RewardsProgress points={totalPoints} goal={goalPoints} />
       <MemberBenefitsSection />
-      <JoinButton onClick={()=>(joinNow())} variant="contained">Join Now</JoinButton>
+      {!store.user.is_prime &&
+        <JoinButton onClick={() => (joinNow())} variant="contained">Join Now</JoinButton>
+      }
     </Box>
   );
 };

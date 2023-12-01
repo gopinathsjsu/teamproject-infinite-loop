@@ -99,7 +99,7 @@ router.get('/getAllTheatersScreens/:id', async (req, res) => {
         console.log(movie_data);
         var response = [];
         for (const theater of Theaters) {
-            const screenDetails = await ScreenModel.find({ theater_id: theater.id, movie_id: req.params.id }).select({ name: 1, id: 1, show_timings: 1, _id: 0, price: 1 });
+            const screenDetails = await ScreenModel.find({ theater_id: theater.id, movie_id: req.params['id'] }).select({ name: 1, id: 1, show_timings: 1, _id: 0, price: 1 });
             console.log(screenDetails);
             response.push({
                 id: theater.id,

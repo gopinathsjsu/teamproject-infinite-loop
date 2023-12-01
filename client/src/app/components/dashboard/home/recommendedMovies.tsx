@@ -80,7 +80,7 @@ const MovieSlider = () => {
         dots: false,
         infinite: true,
         speed: 500,
-        slidesToShow: 6,
+        slidesToShow: movieData.length <6 ? movieData.length : 6,
         slidesToScroll: 1,
         nextArrow: <SampleNextArrow className={undefined} style={undefined} onClick={undefined} />,
         prevArrow: <SamplePrevArrow className={undefined} style={undefined} onClick={undefined} />,

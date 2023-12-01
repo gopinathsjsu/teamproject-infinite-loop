@@ -26,7 +26,7 @@ const MovieCard = ({
   }
 
   async function deleteMovie(movieId:any){
-    const formURL = "movies/deleteMovie";
+    const formURL = "movie/deleteMovie";
     const data = { "id": movieId };
     const response = await getDataFromEndPoint(data, formURL, "POST");
     if (response != null) {

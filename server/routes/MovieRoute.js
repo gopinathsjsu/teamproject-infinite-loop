@@ -3,6 +3,7 @@ const express = require('express')
 const router = express.Router();
 const Movie = require('../models/MovieModel');
 const Artist = require('../models/ArtistModel');
+const { status, ScreenModel } = require('../models/ScreenModel');
 const uniqid = require('uniqid');
 const { upload } = require('../Helpers/S3');
 const { HTTP_STATUS_CODES } = require('../constants');
@@ -51,6 +52,7 @@ router.post('/updateMovie', upload.array('movieposter', 2), async (req, res) => 
     if (req.file) {
         poster_url = req.files[0].location;
         banner_url = req.files[1].location;
+        movie_image = req.files[1].location;
     }
     const update = {
         title: req.body.movieName,
@@ -77,22 +79,50 @@ router.post('/updateMovie', upload.array('movieposter', 2), async (req, res) => 
     // Save the user to the database
     await Movie.updateOne({ id: req.body.id }, update).then((result) => {
         console.log(result);
-        res.status(HTTP_STATUS_CODES.OK).send("updated movie details successfully");
+        // res.status(HTTP_STATUS_CODES.OK).send("updated movie details successfully");
     }).catch((err) => {
         console.log(err);
-        res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).send("Internal server error");
+        // res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).send("Internal server error");
     })
+    await ScreenModel.updateMany({ movie_id: id }, {
+        movie_name: req.body.movieName,
+        ...(req.file && { poster_url }),
+        movie_id: req.body.id,
+        run_time: req.body.Runtime,
+        movie_id: req.body.id,
+    }).then((result) => {
+        console.log(result);
+         res.status(HTTP_STATUS_CODES.OK).send("updated Successfully");
+    }).catch((error) => {
+        console.error(error);
+        res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).send("Internal server Error");
+    });
 
 })
 router.post('/deleteMovie', async (req, res) => {
     id = req.body.id;
     await Movie.deleteOne({ id: id }).then((result) => {
         console.log(result);
-        res.status(HTTP_STATUS_CODES.OK).send("deleted Successfully");
+        // res.status(HTTP_STATUS_CODES.OK).send("deleted Successfully");
     }).catch((err) => {
         console.log(err);
-        res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).send("Internal server Error");
     })
+    await ScreenModel.updateMany({ movie_id: id }, {
+        movie_name: "",
+        movie_image: "",
+        movie_id: "",
+        run_time: "",
+        movie_id: "",
+        cost: 0,
+        seats_day_wise: "",
+        city: ""
+    }).then((result) => {
+        console.log(result);
+         res.status(HTTP_STATUS_CODES.OK).send("deleted Successfully");
+    }).catch((error) => {
+        console.error(error);
+        res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).send("Internal server Error");
+    });
 });
 router.get('/all', async (req, res) => {
     try {
