@@ -13,6 +13,7 @@ const uniqid = require('uniqid');
 const { daysDifference } = require('../controllers/MovieController');
 const { sendTicketEmail } = require('../Helpers/sendGridHelper');
 const Theater = require('../models/TheaterModel');
+const { getUrl } = require('../Helpers/S3');
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
@@ -199,7 +200,7 @@ router.get('/success', async (req, res) => {
             seatNos: seat_selected.join(' '),
             screenName: screenDetails.name,
             theaterName: theaters_details.name,
-            qrlink: qr_code,
+            qrlink: getUrl(qr_code),
         }
         await sendTicketEmail(email_data)
         await RedisHelperDelete(req.query.key);
@@ -210,6 +211,7 @@ router.get('/success', async (req, res) => {
 });
 router.get('/getTicketData/:id', async (req, res) => {
     const ticketDetails = await Transaction.findOne({ id: req.params['id'] })
+    ticketDetails.qr_code = getUrl(ticketDetails.qr_code)
     res.json({
         data: ticketDetails,
         status: HTTP_STATUS_CODES.OK

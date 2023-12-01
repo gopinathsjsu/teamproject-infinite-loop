@@ -18,6 +18,7 @@ const saltRounds = 10;
 const { getMovieDetails } = require('../controllers/MovieController');
 const { getTheaterDetails } = require('../controllers/TheaterController');
 const { get } = require('request');
+const { getUrl } = require('../Helpers/S3');
 router.get('/addUser', async (req, res) => {
     // RedisHelperAdd(req, res, "hello", { "token": "hello" })
     // const data = await RedisHelperGet("hello");
@@ -37,9 +38,11 @@ router.get('/addUser', async (req, res) => {
     // };
     // // sendSignUpEmail(data);
     // // console.log(data)
-    console.log(await generateAndPingQRCode('123456789', "Test"));
+    qr_key = await generateAndPingQRCode('pi_3OIKToA475w0fpJu1zAzct1t6');
+    console.log(qr_key);
+    get_qr_url = getUrl(qr_key);
     // sendTicketEmail(data);
-    res.send('Hello, world!');
+    res.send(get_qr_url);
 });
 
 router.post('/signup', upload.single('file'), async (req, res) => {
@@ -94,8 +97,8 @@ router.post('/signup', upload.single('file'), async (req, res) => {
             is_admin: isAdmin,
             is_prime: false,
         });
-          const customerID = await createCustomer(newUser.user_id, name, email, phoneNumber);
-          newUser.stripe_customer_id = customerID;
+        const customerID = await createCustomer(newUser.user_id, name, email, phoneNumber);
+        newUser.stripe_customer_id = customerID;
         console.log(newUser);
         // Save the user to the database
 
@@ -236,7 +239,8 @@ router.get('/profileDetails/:id', async (req, res) => {
 
 router.get('/getPurchaseHistory/:id', async (req, res) => {
     id = req.params['id'];
-    //  console.log(id);
+    console.log(id);
+    console.log("at get purchanse Hisory");
     const movies = await getMovieDetails();
     //console.log(movies);
     const theaters = await getTheaterDetails();
@@ -247,6 +251,7 @@ router.get('/getPurchaseHistory/:id', async (req, res) => {
         console.log(movies[item.movie_id]);
         itemm.movie = movies[item.movie_id];
         itemm.theater = theaters[item.theater_id];
+        itemm.qr_url = getUrl(item.qr_code);
         itemm.details = item;
         response.push(itemm);
     });
