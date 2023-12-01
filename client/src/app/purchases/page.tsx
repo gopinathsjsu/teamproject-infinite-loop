@@ -64,6 +64,8 @@ const TicketsPage: React.FC = () => {
       }
     };
 
+
+
     if (store.user?.user_id) {
       fetchTickets();
     } else {
@@ -89,8 +91,11 @@ const TicketsPage: React.FC = () => {
   );
 };
 
-// TicketCard component
+
+
+
 const TicketCard: React.FC<{ ticket: Ticket }> = ({ ticket }) => {
+  const qrCodeSrc = ticket.details.qr_code;
   return (
     <Card sx={{ maxWidth: 345, m: 2, boxShadow: 3 }}>
       <CardMedia component="img" height="140" image={ticket.movie.poster_url} alt={`${ticket.movie.name} Poster`} />
@@ -115,9 +120,9 @@ const TicketCard: React.FC<{ ticket: Ticket }> = ({ ticket }) => {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button size="small" startIcon={<QrCodeIcon />}>
-          Show QR Code
-        </Button>
+      <CardActions>
+        <img src={qrCodeSrc} alt="QR Code" style={{ maxWidth: '100%', height: 'auto' }} />
+      </CardActions>
       </CardActions>
     </Card>
   );
