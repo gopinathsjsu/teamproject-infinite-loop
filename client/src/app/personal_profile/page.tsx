@@ -1,30 +1,32 @@
-'use client'
+"use client";
 import React, { useEffect, useState } from "react";
 import InnerPageContainer from "../components/dashboard/common/InnerPageContainer";
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as zod from 'zod';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import TextField from '@mui/material/TextField';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import Box from '@mui/material/Box';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as zod from "zod";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import Box from "@mui/material/Box";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { FormHelperText, Paper } from "@mui/material";
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from "@mui/icons-material/Edit";
 import SendIcon from "@mui/icons-material/Send";
-import PlacesAutocomplete, { geocodeByAddress } from 'react-places-autocomplete';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import dayjs from 'dayjs'; // Ensure you have dayjs imported
+import PlacesAutocomplete, {
+  geocodeByAddress,
+} from "react-places-autocomplete";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import dayjs from "dayjs"; // Ensure you have dayjs imported
 import Script from "next/script";
 import useStore from "@/src/store";
 import { getDataFromEndPoint } from "@/src/lib/backend-api";
@@ -33,7 +35,7 @@ const profileSchema = zod.object({
   email: zod.string().email({ message: "Invalid email address" }),
   fullName: zod.string().min(1, { message: "Full name is required" }),
   phoneNumber: zod.string().min(10, { message: "Invalid phone number" }),
-  dateOfBirth: zod.date(),
+  dateOfBirth: zod.any(),
   gender: zod.string().min(1, { message: "Gender is required" }),
   address1: zod.string().min(1, { message: "Address1 is required" }),
   address2: zod.string().optional(),
@@ -41,10 +43,12 @@ const profileSchema = zod.object({
   state: zod.string().min(1, { message: "State is required" }),
   country: zod.string().min(1, { message: "Country is required" }),
   zipCode: zod.string().min(1, { message: "Zip Code is required" }),
-  genres: zod.array(zod.string()).nonempty('Select atleast one genre'),
-  favoriteCast: zod.array(zod.string()).nonempty('Select atleast one artist'),
-  favoriteCrew: zod.array(zod.string()).nonempty('Select atleast one crew'),
-  preferredLanguages: zod.array(zod.string()).nonempty('Select atleast one language'),
+  genres: zod.array(zod.string()).nonempty("Select atleast one genre"),
+  favoriteCast: zod.array(zod.string()).nonempty("Select atleast one artist"),
+  favoriteCrew: zod.array(zod.string()).nonempty("Select atleast one crew"),
+  preferredLanguages: zod
+    .array(zod.string())
+    .nonempty("Select atleast one language"),
 });
 
 const genres = [
@@ -93,7 +97,7 @@ const languages = [
 
 export default function Profile() {
   const [selectedFile, setSelectedFile] = React.useState<any>(null);
-  const [address, setAddress] = React.useState('');
+  const [address, setAddress] = React.useState("");
   const [castData, setCastData] = useState<any>([]);
   const [crewData, setCrewData] = useState<any>([]);
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
@@ -102,43 +106,52 @@ export default function Profile() {
   const [editEnabled, setEditEnabled] = useState<boolean>(false);
   const [userData, setUserData] = useState<any>({});
 
-  const { register, control, formState: { errors }, getValues, trigger, setValue } = useForm({
-    resolver: zodResolver(profileSchema)
+  const {
+    register,
+    control,
+    formState: { errors },
+    getValues,
+    trigger,
+    setValue,
+  } = useForm({
+    resolver: zodResolver(profileSchema),
   });
 
   React.useEffect(() => {
     const userId = store.user.user_id;
     const fetchProfileDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/user/profileDetails/${userId}`);
+        const response = await fetch(
+          `http://localhost:8080/user/profileDetails/${userId}`
+        );
         const completeJSON = await response.json();
         const data = completeJSON.data;
         setUserData(data);
-        setValue('email', data.email);
-        setValue('fullName', data.fullname);  // Assuming 'fullName' is the correct field name
-        setValue('phoneNumber', data.mobile);
-        setValue('dateOfBirth', dayjs(data.dob)); // Convert to Dayjs object
-        setValue('gender', data.gender);
-        setValue('address1', data.address1);
+        setValue("email", data.email);
+        setValue("fullName", data.fullname); // Assuming 'fullName' is the correct field name
+        setValue("phoneNumber", data.mobile);
+        setValue("dateOfBirth", dayjs(data.dob)); // Convert to Dayjs object
+        setValue("gender", data.gender);
+        setValue("address1", data.address1);
         setAddress(data.address1);
-        setValue('address2', data.address2);
-        setValue('city', data.city);
-        setValue('state', data.state);
-        setValue('country', data.country);
-        setValue('zipCode', data.zipcode); // Assuming 'zipCode' is the correct field name
-        setValue('preferredLanguages', data.preferred_languages[0].split(', ')); // Assuming the data is a comma-separated string
-        setValue('genres', data.genres[0].split(', ')); // Assuming the data is a comma-separated string
+        setValue("address2", data.address2);
+        setValue("city", data.city);
+        setValue("state", data.state);
+        setValue("country", data.country);
+        setValue("zipCode", data.zipcode); // Assuming 'zipCode' is the correct field name
+        setValue("preferredLanguages", data.preferred_languages[0].split(", ")); // Assuming the data is a comma-separated string
+        setValue("genres", data.genres[0].split(", ")); // Assuming the data is a comma-separated string
         if (data.favourite_artists.length > 0) {
-          setValue('favoriteCast', data.favourite_artists[0].split(',')); // Assuming the data is already in the correct format
+          setValue("favoriteCast", data.favourite_artists[0].split(",")); // Assuming the data is already in the correct format
         }
         if (data.favourite_crew.length > 0) {
-          setValue('favoriteCrew', data.favourite_crew[0].split(',')); // Assuming the data is already in the correct format
+          setValue("favoriteCrew", data.favourite_crew[0].split(",")); // Assuming the data is already in the correct format
         }
         setImageUrl(data.profile_url);
       } catch (error) {
         console.error("Failed to fetch data:", error);
       }
-    }
+    };
 
     const fetchArtistData = async () => {
       try {
@@ -156,7 +169,6 @@ export default function Profile() {
     };
 
     fetchArtistData();
-
   }, []);
 
   const handleScriptLoad = () => {
@@ -169,22 +181,25 @@ export default function Profile() {
     const addressComponents = results[0].address_components;
 
     const getAddressComponent = (type: string) => {
-      return addressComponents.find(component => component.types.includes(type))?.long_name || '';
+      return (
+        addressComponents.find((component) => component.types.includes(type))
+          ?.long_name || ""
+      );
     };
-    const street = getAddressComponent('route');
-    const streetNumber = getAddressComponent('street_number');
+    const street = getAddressComponent("route");
+    const streetNumber = getAddressComponent("street_number");
     const formattedAddress1 = `${streetNumber} ${street}`;
 
     setAddress(formattedAddress1);
-    setValue('address1', formattedAddress1);
-    setValue('city', getAddressComponent('locality'));
-    setValue('state', getAddressComponent('administrative_area_level_1'));
-    setValue('country', getAddressComponent('country'));
-    setValue('zipCode', getAddressComponent('postal_code'));
+    setValue("address1", formattedAddress1);
+    setValue("city", getAddressComponent("locality"));
+    setValue("state", getAddressComponent("administrative_area_level_1"));
+    setValue("country", getAddressComponent("country"));
+    setValue("zipCode", getAddressComponent("postal_code"));
   };
 
   const getErrorMessage = (error: any) => {
-    return error && typeof error.message === 'string' ? error.message : '';
+    return error && typeof error.message === "string" ? error.message : "";
   };
 
   const handleFileChange = (e: any) => {
@@ -192,31 +207,31 @@ export default function Profile() {
     if (files && files.length > 0) {
       const file = files[0];
       setSelectedFile(file);
-      setImageUrl(URL.createObjectURL(selectedFile))
+      setImageUrl(URL.createObjectURL(selectedFile));
     }
   };
 
   function cancelEdit() {
     const data = userData;
-    setValue('email', data.email);
-    setValue('fullName', data.fullname);  // Assuming 'fullName' is the correct field name
-    setValue('phoneNumber', data.mobile);
-    setValue('dateOfBirth', dayjs(data.dob)); // Convert to Dayjs object
-    setValue('gender', data.gender);
-    setValue('address1', data.address1);
+    setValue("email", data.email);
+    setValue("fullName", data.fullname); // Assuming 'fullName' is the correct field name
+    setValue("phoneNumber", data.mobile);
+    setValue("dateOfBirth", dayjs(data.dob)); // Convert to Dayjs object
+    setValue("gender", data.gender);
+    setValue("address1", data.address1);
     setAddress(data.address1);
-    setValue('address2', data.address2);
-    setValue('city', data.city);
-    setValue('state', data.state);
-    setValue('country', data.country);
-    setValue('zipCode', data.zipcode); // Assuming 'zipCode' is the correct field name
-    setValue('preferredLanguages', data.preferred_languages[0].split(', ')); // Assuming the data is a comma-separated string
-    setValue('genres', data.genres[0].split(', ')); // Assuming the data is a comma-separated string
+    setValue("address2", data.address2);
+    setValue("city", data.city);
+    setValue("state", data.state);
+    setValue("country", data.country);
+    setValue("zipCode", data.zipcode); // Assuming 'zipCode' is the correct field name
+    setValue("preferredLanguages", data.preferred_languages[0].split(", ")); // Assuming the data is a comma-separated string
+    setValue("genres", data.genres[0].split(", ")); // Assuming the data is a comma-separated string
     if (data.favourite_artists.length > 0) {
-      setValue('favoriteCast', data.favourite_artists[0].split(',')); // Assuming the data is already in the correct format
+      setValue("favoriteCast", data.favourite_artists[0].split(",")); // Assuming the data is already in the correct format
     }
     if (data.favourite_crew.length > 0) {
-      setValue('favoriteCrew', data.favourite_crew[0].split(',')); // Assuming the data is already in the correct format
+      setValue("favoriteCrew", data.favourite_crew[0].split(",")); // Assuming the data is already in the correct format
     }
     setSelectedFile(null);
     setImageUrl(data.profile_url);
@@ -229,8 +244,8 @@ export default function Profile() {
       const reqData = new FormData();
       let data = getValues();
       Object.entries(data).forEach(([key, value]) => {
-        if (key == 'selectedFile') {
-          reqData.append('file', value as string | Blob);
+        if (key == "selectedFile") {
+          reqData.append("file", value as string | Blob);
         } else {
           if (Array.isArray(value)) {
             reqData.append(key, (value as string[]).join(", "));
@@ -239,40 +254,56 @@ export default function Profile() {
           }
         }
       });
-      reqData.append('id',userData.user_id);
-      await getDataFromEndPoint(reqData, `user/updateProfile` ,'POST');
+      reqData.append("id", userData.user_id);
+      await getDataFromEndPoint(reqData, `user/updateProfile`, "POST");
       setEditEnabled(false);
     }
   }
 
   return (
-    <div style={{ display: 'block', width: '50%', margin: 'auto', paddingTop: '60px' }}>
+    <div
+      style={{
+        display: "block",
+        width: "50%",
+        margin: "auto",
+        paddingTop: "60px",
+      }}
+    >
       <Script
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAH_4KikoUaqV41Fq09gBEsXzADYU1xM8w&libraries=places"
         strategy="afterInteractive"
         onLoad={handleScriptLoad}
       />
       <form>
-        <InnerPageContainer title='Hi..'>
+        <InnerPageContainer title="Hi..">
           <Paper elevation={3} sx={{ padding: 3, marginBottom: 3 }}>
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
               <Typography variant="h6" gutterBottom>
                 Personal Details
               </Typography>
-              {!editEnabled &&
-                <Button startIcon={<EditIcon />} onClick={() => (setEditEnabled(true))} />
-              }
+              {!editEnabled && (
+                <Button
+                  startIcon={<EditIcon />}
+                  onClick={() => setEditEnabled(true)}
+                />
+              )}
             </Box>
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <Box sx={{ display: "flex", justifyContent: "center" }}>
                   <Avatar
                     sx={{ width: 100, height: 100 }}
-                    src={selectedFile ? URL.createObjectURL(selectedFile) : imageURl}
+                    src={
+                      selectedFile
+                        ? URL.createObjectURL(selectedFile)
+                        : imageURl
+                    }
                   />
                 </Box>
-                {editEnabled &&
-                  <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
+                {editEnabled && (
+                  <Box
+                    sx={{ display: "flex", justifyContent: "center", mt: 1 }}
+                  >
                     <Button
                       sx={{ width: 200 }}
                       component="label"
@@ -280,14 +311,10 @@ export default function Profile() {
                       startIcon={<CloudUploadIcon />}
                     >
                       Upload file
-                      <input
-                        type="file"
-                        hidden
-                        onChange={handleFileChange}
-                      />
+                      <input type="file" hidden onChange={handleFileChange} />
                     </Button>
                   </Box>
-                }
+                )}
               </Grid>
               <Grid item xs={6}>
                 <Controller
@@ -356,18 +383,35 @@ export default function Profile() {
                 />
               </Grid>
               <Grid item xs={3}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <Controller
-                    name="dateOfBirth"
-                    control={control}
-                    render={({ field }) => (
+                <Controller
+                  name="dateOfBirth"
+                  control={control}
+                  defaultValue={null}
+                  render={({ field }) => (
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      {!editEnabled ? (
+                      <TextField
+                        {...field}
+                        label="SelectDate"
+                        value={field.value ? dayjs(field.value).format('MM/DD/YYYY') : ''}
+                        disabled={!editEnabled}
+                        fullWidth
+                        variant="outlined"
+                        InputLabelProps={{
+                          shrink: Boolean(field.value),
+                        }}
+                      />
+                    ) : (
                       <DatePicker
+                        sx={{ width: "100%" }}
                         label="Date of Birth"
                         {...field}
                       />
-                    )}
-                  />
-                </LocalizationProvider>
+                    )
+                    }
+                    </LocalizationProvider>
+                  )}
+                />
               </Grid>
               <Grid item xs={3}>
                 <FormControl fullWidth>
@@ -404,13 +448,22 @@ export default function Profile() {
             </Typography>
             <Grid container spacing={3}>
               <Grid item xs={6}>
-                {isScriptLoaded &&
-                  <PlacesAutocomplete value={address} onChange={setAddress} onSelect={handleSelect}>
-                    {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
+                {isScriptLoaded && (
+                  <PlacesAutocomplete
+                    value={address}
+                    onChange={setAddress}
+                    onSelect={handleSelect}
+                  >
+                    {({
+                      getInputProps,
+                      suggestions,
+                      getSuggestionItemProps,
+                      loading,
+                    }) => (
                       <Box>
                         <TextField
                           {...getInputProps({
-                            label: 'Address1',
+                            label: "Address1",
                           })}
                           variant="standard"
                           fullWidth
@@ -419,9 +472,24 @@ export default function Profile() {
                           helperText={getErrorMessage(errors.address1)}
                         />
                         {loading && <div>Loading...</div>}
-                        <List sx={{ position: 'absolute', zIndex: 1, width: '100%' }}>
-                          {suggestions.map(suggestion => (
-                            <ListItem {...getSuggestionItemProps(suggestion)} sx={{ backgroundColor: suggestion.active ? '#b9d2fa' : '#ffffff', cursor: 'pointer' }} key={suggestion.placeId}>
+                        <List
+                          sx={{
+                            position: "absolute",
+                            zIndex: 1,
+                            width: "100%",
+                          }}
+                        >
+                          {suggestions.map((suggestion) => (
+                            <ListItem
+                              {...getSuggestionItemProps(suggestion)}
+                              sx={{
+                                backgroundColor: suggestion.active
+                                  ? "#b9d2fa"
+                                  : "#ffffff",
+                                cursor: "pointer",
+                              }}
+                              key={suggestion.placeId}
+                            >
                               {suggestion.description}
                             </ListItem>
                           ))}
@@ -429,11 +497,11 @@ export default function Profile() {
                       </Box>
                     )}
                   </PlacesAutocomplete>
-                }
+                )}
               </Grid>
               <Grid item xs={6}>
                 <Controller
-                  name="city"
+                  name="address2"
                   control={control}
                   render={({ field }) => (
                     <TextField
@@ -569,7 +637,9 @@ export default function Profile() {
                         </MenuItem>
                       ))}
                     </Select>
-                    <FormHelperText error={!!errors.genres}>{getErrorMessage(errors.genres)}</FormHelperText>
+                    <FormHelperText error={!!errors.genres}>
+                      {getErrorMessage(errors.genres)}
+                    </FormHelperText>
                   </div>
                 )}
               />
@@ -638,7 +708,9 @@ export default function Profile() {
             </FormControl>
 
             <FormControl fullWidth margin="normal">
-              <InputLabel htmlFor="preferredLanguages">Preferred Languages</InputLabel>
+              <InputLabel htmlFor="preferredLanguages">
+                Preferred Languages
+              </InputLabel>
               <Controller
                 name="preferredLanguages"
                 control={control}
@@ -667,16 +739,25 @@ export default function Profile() {
                 )}
               />
             </FormControl>
-            {editEnabled &&
-              <Box sx={{ display: 'flex', justifyContent: "center" }}>
-                <Button onClick={() => (submitData())} variant="contained" endIcon={<SendIcon />} type="submit" sx={{ mt: 2, mr: 5 }} >
+            {editEnabled && (
+              <Box sx={{ display: "flex", justifyContent: "center" }}>
+                <Button
+                  onClick={() => submitData()}
+                  variant="contained"
+                  endIcon={<SendIcon />}
+                  sx={{ mt: 2, mr: 5 }}
+                >
                   Submit
                 </Button>
-                <Button onClick={() => (cancelEdit())} variant="outlined" sx={{ mt: 2 }} >
+                <Button
+                  onClick={() => cancelEdit()}
+                  variant="outlined"
+                  sx={{ mt: 2 }}
+                >
                   Cancel
                 </Button>
               </Box>
-            }
+            )}
           </Paper>
         </InnerPageContainer>
       </form>

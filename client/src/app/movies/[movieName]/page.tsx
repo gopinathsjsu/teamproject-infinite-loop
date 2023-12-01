@@ -4,6 +4,8 @@ import Button from "@mui/material/Button";
 import { useParams, useRouter } from "next/navigation";
 import Box from "@mui/material/Box";
 import React, { useState, useEffect, useContext } from "react";
+import { CSSProperties } from 'react';
+
 import {
   Container,
   Grid,
@@ -74,62 +76,9 @@ const App: React.FC = () => {
 
     fetchData();
   }, []);
-  // const movie = {
-  //   title: "Jigarthanda Double X",
-  //   languages: ["Tamil", "Telugu", "Hindi", "Kannada"],
-  //   duration: "2h 52m",
-  //   genres: ["Action", "Comedy", "Period"],
-  //   releaseDate: "10 Nov, 2023",
-  //   description:
-  //     "Karthik, an aspiring filmmaker finds a producer who is willing to make his film on one condition - that it should be a fierce gangster flick. Due to this, Karthik decides to take inspiration from a real-life gangster, Karthik comes to the temple town of Madurai along with his friend Ooruni for research on thugs.They come to know of the ruthless gangster and a terror in that area Assault Sethu. Karthik takes the help of Kayal and her mother who cook food for Sethu and his henchmen. He also pretends to be in love with the young girl. As he embarks on his task what follows is a commercial cocktail of action, humor and thrills. How Karthik comes out of this tricky web is the rest of the story",
-  //   backgroundPoster:
-  //     "https://assets-in.bmscdn.com/iedb/movies/images/mobile/listing/xxlarge/jigarthanda-double-x-et00359702-1699446701.jpg", // Add your background poster path here
-  //   trailerLink: "https://www.youtube.com/watch?v=uaqz9v6HdKs", // Add your YouTube video id here
-  // };
-  // const dates = ["Tue 14", "Wed 15", "Thu 16", "Fri 17", "Sat 18"];
 
-  // Sample data for theater times
-  // const cinemas = [
-  //   {
-  //     name: "Sandhya Theatre RGB Laser Atmos -Madivala",
-  //     times: [
-  //       { showtime: "04:00 PM", format: "2D", availability: "available" },
-  //       { showtime: "10:00 PM", format: "2D", availability: "fast-filling" },
-  //     ],
-  //   },
-  //   {
-  //     name: "Sri Srinivasa Chitramandira, SG Palya",
-  //     times: [
-  //       { showtime: "07:00 PM", format: "2D", availability: "almost-full" },
-  //       { showtime: "10:00 PM", format: "2D", availability: "available" },
-  //     ],
-  //   },
-  //   // ... add more cinema data as needed
-  // ];
 
-  // const cast = [
-  //   {
-  //     name: "Aishwariya",
-  //     role: "",
-  //     imageurl:
-  //       "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D",
-  //   },
-  //   {
-  //     name: "Mahesh Babu",
-  //     role: "",
-  //     imageurl:
-  //       "https://upload.wikimedia.org/wikipedia/commons/9/9a/Mahesh_Babu_in_Spyder_%28cropped%29.jpg",
-  //   },
-  //   // ... other cast members
-  // ];
-
-  // const crew = [
-  //   { name: "Raghu", role: "Director", imageurl: "" },
-  //   { name: "Vamshi", role: "Producer", imageurl: "" },
-  //   // ... other crew members
-  // ];
-
-  const backgroundStyle = {
+  const backgroundStyle: CSSProperties = {
     backgroundImage: `linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0)), url(${movie.poster_url})`,
     // backgroundImage: `linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0)), url(${poster.backgroundPoster})`,
     backgroundSize: "cover",
@@ -178,14 +127,7 @@ const App: React.FC = () => {
     },
   });
 
-  // const CinemaButton = styled(Button)({
-  //   textTransform: "none",
-  //   margin: "0.25rem",
-  //   "&:hover": {
-  //     backgroundColor: "#f50057", // Example hover color, adjust as needed
-  //     color: "#fff",
-  //   },
-  // });
+
 
   function redirectToArtist(artist: any) {
     router.push(`/artist/${artist.id}`)

@@ -148,6 +148,7 @@ export default function Screen() {
     async function onSubmit(data: any) {
         data['theater_id'] = theaterId;
         data['screen_id'] = selectedScreenId;
+        
         const formUrl = 'screen/addMovie';
         try {
             await getDataFromEndPoint(data, formUrl, 'POST');
@@ -177,6 +178,8 @@ export default function Screen() {
         setOpen(!open);
     };
 
+    const isAdmin = store.isAdmin; // Replace with the actual way to get this info
+
     const redirectToBuy = (screen: any,time:string) => {
         router.push(`/movies/${screen.movieId}/buyTicket?theater=${theaterId}&screen=${screen.id}&time=${time}`)
     }
@@ -192,7 +195,7 @@ export default function Screen() {
                 <Grid container spacing={2}>
                     <Grid container sx={{ mb: 2, marginTop: 10, justifyContent: 'space-between' }}>
                         <Typography variant="h4">Screens</Typography>
-                        {store.isLoggedIn &&
+                        {isAdmin &&
                             <Button variant="contained" startIcon={<AddCircleOutlineIcon />} onClick={addNewScreen}>
                                 Add Screen
                             </Button>
@@ -219,15 +222,15 @@ export default function Screen() {
                                             <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
                                                 <Typography variant="h6" component="h3" sx={{ mb: 1, fontWeight: 'medium', fontSize: '2rem' }} style={{}} color="#01579B">{screen.name}</Typography>
                                                 <Box>
-                                                    {store.isLoggedIn &&
+                                                    {isAdmin &&
                                                         <Button startIcon={<EditIcon />} sx={{ mb: 1, fontSize: '1rem' }} onClick={() => (editScreen(screen))} />
                                                     }
-                                                    {store.isLoggedIn &&
+                                                    {isAdmin &&
                                                         <Button startIcon={<DeleteIcon />} sx={{ mb: 1, fontSize: '1rem' }} onClick={() => (deleteScreen(screen))} />
                                                     }
                                                 </Box>
                                             </Grid>
-                                            {store.isLoggedIn &&
+                                            {isAdmin &&
                                                 <Button sx={{ mb: 1, fontSize: '1rem' }} onClick={() => handleOpenModal(screen.id)}>
                                                     Add/Change Movie
                                                 </Button>

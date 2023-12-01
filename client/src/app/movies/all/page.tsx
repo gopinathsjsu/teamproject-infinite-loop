@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import useStore from '@/src/store';
 import {
   Box,
   Card,
@@ -21,7 +22,6 @@ import Container from "@mui/material/Container";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { getDataFromEndPoint } from "@/src/lib/backend-api";
-import useStore from "@/src/store";
 
 // StyledSelect component for styling the Select component
 const StyledSelect = styled(Select)({
@@ -39,6 +39,8 @@ const MovieCard = ({
 }) => {
   const router = useRouter();
   const store: any = useStore();
+  const isAdmin = store.isAdmin; // Replace with the actual way to get this info
+  
 
   // Function to handle editing a movie
   const editMovie = (movieId: string) => {
@@ -49,6 +51,7 @@ const MovieCard = ({
   async function deleteMovie(movieId: any) {
     const formURL = "movies/deleteMovie";
     const data = { id: movieId };
+    
     const response = await getDataFromEndPoint(data, formURL, "POST");
     if (response != null) {
       router.refresh();
@@ -76,7 +79,7 @@ const MovieCard = ({
         <Typography variant="body2" color="text.secondary">
           {movie.format}
         </Typography>
-        {store.isLoggedIn && (
+        {isAdmin && (
           <Button
             startIcon={<EditIcon />}
             onClick={() => {
@@ -84,7 +87,7 @@ const MovieCard = ({
             }}
           />
         )}
-        {store.isLoggedIn && (
+        {isAdmin && (
           <Button
             startIcon={<DeleteIcon />}
             onClick={() => {
@@ -211,6 +214,8 @@ const MovieSlider = () => {
   // Router and store variables
   const router = useRouter();
   const store: any = useStore();
+  const isAdmin = store.isAdmin; // Replace with the actual way to get this info
+
 
   // Function to handle clicking on a movie card
   const handleCardClick = (movieid: string) => {
@@ -254,7 +259,7 @@ const MovieSlider = () => {
         <Typography variant="h6" sx={{ mb: 2 }}>
           Recommended Movies
         </Typography>
-        {store.isLoggedIn && (
+        {isAdmin && (
           <Button
             variant="contained"
             sx={{ paddingLeft: 2, mb: 2 }}
