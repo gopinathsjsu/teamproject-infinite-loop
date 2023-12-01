@@ -20,6 +20,7 @@ const { getTheaterDetails } = require('../controllers/TheaterController');
 const { get } = require('request');
 const { getUrl } = require('../Helpers/S3');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { ScreenModel } = require('../models/ScreenModel');
 router.get('/addUser', async (req, res) => {
     // RedisHelperAdd(req, res, "hello", { "token": "hello" })
     // const data = await RedisHelperGet("hello");
@@ -74,7 +75,7 @@ router.post('/signup', upload.single('file'), async (req, res) => {
     }
     if (password_value == confirmPassword) {
         const newUser = new User({
-            user_id:email,
+            user_id: email,
             fullname: name,
             email: email,
             password: password,
@@ -119,21 +120,21 @@ router.post('/signup', upload.single('file'), async (req, res) => {
 
 })
 router.get('/isPrimeMember/:id', async (req, res) => {
-    const user = await User.findOne({user_id:req.params["id"]}).select({"email":1})
-   const customers = await stripe.customers.list({
-    email: user.email,
-    limit: 1 // Assuming email is unique per customer
-   });
+    const user = await User.findOne({ user_id: req.params["id"] }).select({ "email": 1 })
+    const customers = await stripe.customers.list({
+        email: user.email,
+        limit: 1 // Assuming email is unique per customer
+    });
     const customer = customers.data[0];
     const subscriptions = await stripe.subscriptions.list({
-    customer: customer.id,
+        customer: customer.id,
     });
-    
+
     res.json({
-                    message: 'uuser details found',
-                    status: HTTP_STATUS_CODES.OK,
+        message: 'uuser details found',
+        status: HTTP_STATUS_CODES.OK,
         data: subscriptions.data[0].status
-                })
+    })
 })
 router.post("/login", async (req, res) => {
     try {
@@ -314,5 +315,70 @@ router.get('/getRewards/:id', async (req, res) => {
         console.error(err);
         res.status(HTTP_STATUS_CODES.BAD_REQUEST).send("Internal server Error");
     })
+});
+
+router.post('/cancelTicket', async (req, res) => {
+    const transaction_data = await Transaction.findOne({ id: req.body.details.id });
+    console.log(transaction_data);
+    data = req.body.details
+    seat_ids = data.seat_ids;
+    const no_of_seats_booked = seat_ids.length;
+    date = data.show_date.split('T')[0];
+    console.log(date);
+    console.log(data.show_time)
+    // const screen = await ScreenModel.findOne({ name: data.screen_id, movie_id: data.movie_id });
+    // const screen = await ScreenModel.findOne({ name: data.screen_id, movie_id: data.movie_id }).select(`seats_day_wise.2023-11-30.9:00 am`);
+    try {
+        const screen = await ScreenModel.findOne({
+            [`seats_day_wise.${date}`]: { $exists: true }, movie_id: data.movie_id, name: data.screen_id
+        }).select(`seats_day_wise.${date} cost`);
+        screenLayout = transaction_data.screenLayout;
+        console.log(screen.seats_day_wise[date][data.show_time].SeatArray);
+        screenLayout = screen.seats_day_wise[date][data.show_time].SeatArray;
+        seat_ids.forEach(seat => {
+            const row = seat.charAt(0);
+            const number = parseInt(seat.slice(1), 10) - 1; // Convert to zero-based index
+            if (screenLayout[row]) {
+                let offset = 0;
+                for (let i = 0; i < screenLayout[row].length; i++) {
+                    if (screenLayout[row][i] === 3) {
+                        offset++; // Skip over unavailable seats
+                    } else if (i - offset === number) {
+                        if (screenLayout[row][i] === 1) {
+                            screenLayout[row][i] = 0; // Cancel the booking by setting it to 0
+                        }
+                        break;
+                    }
+                }
+            }
+        });
+        console.log(screenLayout);
+        await ScreenModel.findOneAndUpdate({ movie_id: data.movie_id, name: data.screen_id }, {
+            $inc: { [`seats_day_wise.${date}.${data.show_time}.tickets_bought`]: -no_of_seats_booked, 'total_tickets_booked': -no_of_seats_booked },
+            $set: {
+                [`seats_day_wise.${date}.${data.show_time}.SeatArray`]: screenLayout
+            }
+        }).then((result) => {
+            console.log(result);
+        }).catch((err) => {
+            console.log(err);
+        });
+        await Transaction.updateOne({ id: data.id }, { refund_requested: true });
+        console.log(data.user_id);
+        console.log(data.price);
+        await User.updateOne({ user_id: data.user_id }, {
+            $inc: { 'rewards': -data.price }
+        })
+        // console.log(await ScreenModel.findOne({ name: data.screen_id, movie_id: data.movie_id }));
+        res.json({
+            status: HTTP_STATUS_CODES.OK,
+            message: 'refund successfull',
+        })
+    }
+    catch (error) {
+        console.error(error);
+        res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).send("internal server error");
+    }
+
 });
 module.exports = router;
