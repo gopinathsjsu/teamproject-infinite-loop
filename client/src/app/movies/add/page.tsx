@@ -20,8 +20,17 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { useRouter } from "next/navigation";
 
 const top100Films = [
-  { title: 'The Shawshank Redemption', year: 1994, image: 'https://upload.wikimedia.org/wikipedia/en/8/81/ShawshankRedemptionMoviePoster.jpg' },
-  { title: 'The Godfather', year: 1972, image: 'https://upload.wikimedia.org/wikipedia/en/1/1c/Godfather_ver1.jpg' },
+  {
+    title: "The Shawshank Redemption",
+    year: 1994,
+    image:
+      "https://upload.wikimedia.org/wikipedia/en/8/81/ShawshankRedemptionMoviePoster.jpg",
+  },
+  {
+    title: "The Godfather",
+    year: 1972,
+    image: "https://upload.wikimedia.org/wikipedia/en/1/1c/Godfather_ver1.jpg",
+  },
 ];
 
 export default function Contact() {
@@ -151,7 +160,7 @@ export default function Contact() {
     const fetchData = async () => {
       try {
         // const response = await fetch("http://localhost:8080/artist/all");
-        const data = await getDataFromEndPoint("", `artist/all`, "GET")
+        const data = await getDataFromEndPoint("", `artist/all`, "GET");
         // if (!response.ok) {
         //   throw new Error(`Error: ${response.status}`);
         // }
@@ -183,7 +192,7 @@ export default function Contact() {
 
   const submitForm = async (e: any) => {
     e.preventDefault();
-    console.log(formData)
+    console.log(formData);
     const data = new FormData();
 
     Object.entries(formData).forEach(([key, value]) => {
@@ -202,18 +211,14 @@ export default function Contact() {
         data.append(`movieposter`, file);
       });
     }
-    data.append(
-      "castIds",
-      selectedCast.map((artist) => artist.id).join(",")
-    );
+    data.append("castIds", selectedCast.map((artist) => artist.id).join(","));
     console.log(selectedCrew);
     data.append("crewIds", selectedCrew.map((artist) => artist.id).join(","));
     const formURL = "movie/add"; // Replace with your form's URL
     const response = await getDataFromEndPoint(data, formURL, "POST");
     if (response.status === 200) {
-      router.push("/movies/all")
+      router.push("/movie/all");
     }
-
   };
 
   const handleFormatChange = (event: SelectChangeEvent<string[]>) => {
@@ -226,8 +231,6 @@ export default function Contact() {
       format: value as string[], // Ensure the value is treated as string[]
     }));
   };
-
-
 
   return (
     <div
@@ -431,7 +434,6 @@ export default function Contact() {
             {/* End Date and Release Date side by side */}
             <div style={{ display: "flex", gap: "16px" }}>
               {/* Date Pickers */}
-
 
               <div>
                 <FormControl fullWidth variant="outlined">

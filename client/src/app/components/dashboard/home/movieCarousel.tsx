@@ -1,21 +1,29 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import Slider from 'react-slick';
-import { Box, Button, Modal, FormControl, InputLabel, Select, MenuItem, Stack, Grid } from '@mui/material';
+import React, { useState, useEffect } from "react";
+import Slider from "react-slick";
+import {
+  Box,
+  Button,
+  Modal,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Stack,
+  Grid,
+} from "@mui/material";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { useRouter } from 'next/navigation';
-import { getDataFromEndPoint } from '@/src/lib/backend-api';
-import useStore from '@/src/store';
+import { useRouter } from "next/navigation";
+import { getDataFromEndPoint } from "@/src/lib/backend-api";
+import useStore from "@/src/store";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { styled } from "@mui/material/styles";
 import SendIcon from "@mui/icons-material/Send";
 import { TextField } from "@mui/material";
-import { SelectChangeEvent } from '@mui/material/Select';
-
-
+import { SelectChangeEvent } from "@mui/material/Select";
 
 interface Movie {
   poster_id: string;
@@ -29,7 +37,13 @@ function SampleNextArrow(props: any) {
   return (
     <div
       className={className}
-      style={{ ...style, fontSize: "50px", color: "#00378f", display: 'block', right: '-5px' }}
+      style={{
+        ...style,
+        fontSize: "50px",
+        color: "#00378f",
+        display: "block",
+        right: "-5px",
+      }}
       onClick={onClick}
     />
   );
@@ -40,20 +54,27 @@ function SamplePrevArrow(props: any) {
   return (
     <div
       className={className}
-      style={{ ...style, fontSize: "50px", color: "#00378f", display: 'block', left: '-2px', zIndex: '1' }}
+      style={{
+        ...style,
+        fontSize: "50px",
+        color: "#00378f",
+        display: "block",
+        left: "-2px",
+        zIndex: "1",
+      }}
       onClick={onClick}
     />
   );
 }
 
 const modalStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
   width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
+  bgcolor: "background.paper",
+  border: "2px solid #000",
   boxShadow: 24,
   p: 4,
 };
@@ -79,36 +100,35 @@ const ImageSlider = () => {
   const store: any = useStore();
   const isAdmin = store.isAdmin; // Replace with the actual way to get this info
   const [formData, setFormData] = useState({
-    posterName: ""
+    posterName: "",
   });
   const router = useRouter();
 
   const fetchMovieData = async () => {
-    const response = await getDataFromEndPoint("", 'poster/all', 'GET');
+    const response = await getDataFromEndPoint("", "poster/all", "GET");
     const data = response.data;
     const mappedData = data.map((movie: any) => ({
       id: movie.id,
       title: movie.title,
       poster_url: movie.poster_url,
-      poster_id: movie.poster_id
+      poster_id: movie.poster_id,
     }));
     setMovieData(mappedData);
   };
   const fetchMovies = async () => {
-    const response = await getDataFromEndPoint("", 'movie/all', 'GET');
+    const response = await getDataFromEndPoint("", "movie/all", "GET");
     const data = response.movies;
     const mappedData = data.map((movie: any) => ({
       id: movie.id,
       title: movie.title,
-      poster_url: movie.poster_url
+      poster_url: movie.poster_url,
     }));
     setMovieListData(mappedData);
-  }
+  };
   useEffect(() => {
     fetchMovieData();
     fetchMovies();
   }, []);
-
 
   const settings = {
     dots: true,
@@ -127,7 +147,7 @@ const ImageSlider = () => {
     console.log(movieName);
     console.log(movieData[Number(movieName)].poster_id);
     const movieId = movieData[Number(movieName)].poster_id;
-    router.push(`/movies/${movieId}`);
+    router.push(`/movie/${movieId}`);
   };
 
   const handleOpenModal = () => {
@@ -147,7 +167,6 @@ const ImageSlider = () => {
     }));
   };
 
-
   const handleFileChange = (e: any) => {
     e.preventDefault();
     const file = e.target.files[0];
@@ -161,9 +180,9 @@ const ImageSlider = () => {
       data.append(`poster`, selectedFile);
     }
     data.append("posterName", formData.posterName);
-    data.append('posterId', selectedMovies);
+    data.append("posterId", selectedMovies);
     console.log(data);
-    await getDataFromEndPoint(data, 'poster/addPoster', 'POST');
+    await getDataFromEndPoint(data, "poster/addPoster", "POST");
     setSelectedFile(null);
     // const mappedData = post_data.data.map((movie: any) => ({
     //   id: movie.id,
@@ -171,7 +190,7 @@ const ImageSlider = () => {
     //   poster_url: movie.poster_url
     // }));
     fetchMovieData();
-  }
+  };
   const handleChangeSingle = (event: SelectChangeEvent<string>) => {
     const { value } = event.target;
     console.log(value);
@@ -191,24 +210,29 @@ const ImageSlider = () => {
     <Box>
       <Slider {...settings}>
         {displayImages.map((image: any, index: any) => (
-          <div key={index} onClick={() => handleImageClick(index)} style={{ cursor: 'pointer' }}>
-            <img src={image} alt={`Slide ${index}`} style={{ width: '100%', height: 'auto' }} />
+          <div
+            key={index}
+            onClick={() => handleImageClick(index)}
+            style={{ cursor: "pointer" }}
+          >
+            <img
+              src={image}
+              alt={`Slide ${index}`}
+              style={{ width: "100%", height: "auto" }}
+            />
           </div>
         ))}
       </Slider>
-      {isAdmin && // Conditional rendering based on isAdmin status
+      {isAdmin && ( // Conditional rendering based on isAdmin status
         <Button variant="contained" onClick={handleOpenModal}>
           Add Poster
         </Button>
-      }
+      )}
 
       <Modal open={open} onClose={handleCloseModal}>
         <Box sx={modalStyle}>
           <Stack direction="column" spacing={2}>
-            <form
-              encType="multipart/form-data"
-              onSubmit={submitForm}
-            >
+            <form encType="multipart/form-data" onSubmit={submitForm}>
               <FormControl fullWidth>
                 <InputLabel id="single-select-label">Movie</InputLabel>
                 <Select
@@ -235,7 +259,13 @@ const ImageSlider = () => {
                     />
                   </Grid>
                 </Grid>
-                <Box sx={{ display: "flex", justifyContent: "center", marginTop: 1 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    marginTop: 1,
+                  }}
+                >
                   <Button
                     sx={{ width: 200 }}
                     component="label"
@@ -244,30 +274,38 @@ const ImageSlider = () => {
                   >
                     {selectedFile ? (
                       <>
-                        File Uploaded{" "}
-                        <CheckCircleOutlineIcon sx={{ ml: 1 }} />
+                        File Uploaded <CheckCircleOutlineIcon sx={{ ml: 1 }} />
                       </>
                     ) : (
                       "Upload Image"
                     )}
-                    <VisuallyHiddenInput type="file" onChange={handleFileChange}
+                    <VisuallyHiddenInput
+                      type="file"
+                      onChange={handleFileChange}
                     />
                   </Button>
                 </Box>
-                <Box sx={{ display: "flex", justifyContent: "center", marginTop: 1 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    marginTop: 1,
+                  }}
+                >
                   <Button
                     variant="contained"
                     endIcon={<SendIcon />}
                     type="submit"
-                  >Submit
+                  >
+                    Submit
                   </Button>
                 </Box>
               </FormControl>
             </form>
           </Stack>
         </Box>
-      </Modal >
-    </Box >
+      </Modal>
+    </Box>
   );
 };
 

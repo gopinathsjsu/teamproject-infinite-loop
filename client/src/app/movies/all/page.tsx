@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import useStore from '@/src/store';
+import useStore from "@/src/store";
 import {
   Box,
   Card,
@@ -40,18 +40,17 @@ const MovieCard = ({
   const router = useRouter();
   const store: any = useStore();
   const isAdmin = store.isAdmin; // Replace with the actual way to get this info
-  
 
   // Function to handle editing a movie
   const editMovie = (movieId: string) => {
-    router.push(`/movies/${movieId}/edit`);
+    router.push(`/movie/${movieId}/edit`);
   };
 
   // Function to handle deleting a movie
   async function deleteMovie(movieId: any) {
-    const formURL = "movies/deleteMovie";
+    const formURL = "movie/deleteMovie";
     const data = { id: movieId };
-    
+
     const response = await getDataFromEndPoint(data, formURL, "POST");
     if (response != null) {
       router.refresh();
@@ -176,7 +175,7 @@ const MovieSlider = () => {
     const fetchData = async () => {
       try {
         // const response = await fetch("http://localhost:8080/movie/all");
-        const response = await getDataFromEndPoint("", `movie/all`, "GET")
+        const response = await getDataFromEndPoint("", `movie/all`, "GET");
         const tempMovies = response.movies.map((movie: any) => {
           movie["genres"] = movie["genres"][0].split(",  ");
           return movie;
@@ -197,13 +196,12 @@ const MovieSlider = () => {
       (movie) =>
         (selectedGenre === "" ||
           (movie.genres && movie.genres.includes(selectedGenre))) &&
-        (
-          (selectedLanguage === "All"
-            ? true
-            : movie.languages.includes(selectedLanguage))) &&
-        ((selectedFormat === "All"
+        (selectedLanguage === "All"
           ? true
-          : movie.format.includes(selectedFormat)))
+          : movie.languages.includes(selectedLanguage)) &&
+        (selectedFormat === "All"
+          ? true
+          : movie.format.includes(selectedFormat))
     );
     setFilteredMovies(filtered);
   }, [selectedLanguage, selectedFormat, movies]);
@@ -213,16 +211,15 @@ const MovieSlider = () => {
   const store: any = useStore();
   const isAdmin = store.isAdmin; // Replace with the actual way to get this info
 
-
   // Function to handle clicking on a movie card
   const handleCardClick = (movieid: string) => {
     console.log(`Clicked on ${movieid}`);
-    router.push(`/movies/${movieid}`);
+    router.push(`/movie/${movieid}`);
   };
 
   // Function to handle clicking on the "Add Movie" button
   const handleAddMovieClick = () => {
-    router.push("/movies/add");
+    router.push("/movie/add");
   };
 
   // Function to handle genre filter change

@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import { useParams, useRouter } from "next/navigation";
 import Box from "@mui/material/Box";
 import React, { useState, useEffect, useContext } from "react";
-import { CSSProperties } from 'react';
+import { CSSProperties } from "react";
 
 import {
   Container,
@@ -62,7 +62,7 @@ const App: React.FC = () => {
         // const response = await fetch(
         //   `http://localhost:8080/movie/${movieName}`
         // );
-        const data = await getDataFromEndPoint("", `movie/${movieName}`, "GET")
+        const data = await getDataFromEndPoint("", `movie/${movieName}`, "GET");
         // if (!response.ok) {
         //   throw new Error(`Error: ${response.status}`);
         // }
@@ -78,7 +78,6 @@ const App: React.FC = () => {
 
     fetchData();
   }, []);
-
 
   const backgroundStyle: CSSProperties = {
     backgroundImage: `linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0)), url(${movie.poster_url})`,
@@ -129,46 +128,76 @@ const App: React.FC = () => {
     },
   });
 
-
-
   function redirectToArtist(artist: any) {
-    router.push(`/artist/${artist.id}`)
+    router.push(`/artist/${artist.id}`);
   }
 
   function redirectToBooking() {
-    router.push(`/movies/${movieName}/buyTicket`);
+    router.push(`/movie/${movieName}/buyTicket`);
   }
 
   const transparentChipStyle = {
-    background: 'transparent',
-    border: '1px solid #ffffff', // Add a border for better visibility
-    marginRight: '4px', // Adjust spacing as needed
-    color: '#ffffff', // Text color
+    background: "transparent",
+    border: "1px solid #ffffff", // Add a border for better visibility
+    marginRight: "4px", // Adjust spacing as needed
+    color: "#ffffff", // Text color
   };
 
   return (
     <>
       <div>
         <div style={backgroundStyle}>
-          <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", mt: 15 }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-end",
+              mt: 15,
+            }}
+          >
             <div style={contentStyle}>
-              <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2, fontSize: '80px' }} component="h1" gutterBottom>
+              <Typography
+                variant="h4"
+                sx={{ fontWeight: "bold", mb: 2, fontSize: "80px" }}
+                component="h1"
+                gutterBottom
+              >
                 {movie.title}
               </Typography>
-              <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1, fontSize: '30px' }} gutterBottom>
-                {new Date(movie.release_date).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
+              <Typography
+                variant="subtitle1"
+                sx={{ fontWeight: "bold", mb: 1, fontSize: "30px" }}
+                gutterBottom
+              >
+                {new Date(movie.release_date).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
                 })}
               </Typography>
-              <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1, fontSize: '24px' }} gutterBottom>
-                <Chip label={`Runtime: ${movie.run_time} min`} sx={transparentChipStyle} />
-                <Chip label={`Languages: ${movie.languages}`} sx={transparentChipStyle} />
-                <Chip label={`Format: ${movie.format}`} sx={transparentChipStyle} />
+              <Typography
+                variant="subtitle1"
+                sx={{ fontWeight: "bold", mb: 1, fontSize: "24px" }}
+                gutterBottom
+              >
+                <Chip
+                  label={`Runtime: ${movie.run_time} min`}
+                  sx={transparentChipStyle}
+                />
+                <Chip
+                  label={`Languages: ${movie.languages}`}
+                  sx={transparentChipStyle}
+                />
+                <Chip
+                  label={`Format: ${movie.format}`}
+                  sx={transparentChipStyle}
+                />
               </Typography>
-              <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1, fontSize: '30px' }} gutterBottom>
-
+              <Typography
+                variant="subtitle1"
+                sx={{ fontWeight: "bold", mb: 1, fontSize: "30px" }}
+                gutterBottom
+              >
                 {movie.genres.map((genre, index) => (
                   <Chip key={index} label={genre} sx={transparentChipStyle} />
                 ))}
@@ -187,9 +216,9 @@ const App: React.FC = () => {
             onClick={redirectToBooking}
             variant="contained"
             style={{
-              position: 'fixed', // Stick the button to the viewport
-              bottom: '20px', // Distance from the bottom of the viewport
-              right: '20px', // Distance from the right of the viewport
+              position: "fixed", // Stick the button to the viewport
+              bottom: "20px", // Distance from the bottom of the viewport
+              right: "20px", // Distance from the right of the viewport
               backgroundColor: "red",
               color: "white",
               fontWeight: "bold",
@@ -200,7 +229,6 @@ const App: React.FC = () => {
           >
             Buy Tickets
           </Button>
-
         </div>
 
         <Grid item xs={12} sm={6}>
@@ -221,7 +249,10 @@ const App: React.FC = () => {
             >
               About the movie
             </Typography>
-            <Typography variant="body1" style={{ fontSize: "20px", textAlign: "justify" }}>
+            <Typography
+              variant="body1"
+              style={{ fontSize: "20px", textAlign: "justify" }}
+            >
               {movie.description}
             </Typography>
             <div>
@@ -306,7 +337,10 @@ const App: React.FC = () => {
                 {" "}
                 {/* Adjusted grid sizes for less space */}
                 <Box sx={{ textAlign: "center" }}>
-                  <Link onClick={() => redirectToArtist(crewMember)} variant="body2">
+                  <Link
+                    onClick={() => redirectToArtist(crewMember)}
+                    variant="body2"
+                  >
                     <Avatar
                       alt={crewMember.name}
                       src={crewMember.profile_url}
