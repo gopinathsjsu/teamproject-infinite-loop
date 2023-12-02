@@ -15,7 +15,7 @@ router.post('/add', upload.array('movieposter', 2), async (req, res) => {
     try {
         console.log(req.body);
         console.log(req.files);
-        const daysDifference1 = daysDifference(req.body.endDate, req.body.releaseDate);
+       // const daysDifference1 = daysDifference(req.body.endDate, req.body.releaseDate);
         const newMovie = new Movie({
             id: uniqid(),
             title: req.body.movieName,
@@ -26,8 +26,8 @@ router.post('/add', upload.array('movieposter', 2), async (req, res) => {
             languages: req.body.languages,
             trailer_url: req.body.movieTrailerLink,
             run_time: req.body.Runtime,
-            no_of_days: daysDifference1,
-            day_wise_tickets_sold: Array(daysDifference1).fill(0),
+            no_of_days: 100,
+            day_wise_tickets_sold: Array(100).fill(0),
             rating: 0,
             release_date: req.body.releaseDate,
             end_date: req.body.endDate,
@@ -85,7 +85,7 @@ router.post('/updateMovie', upload.array('movieposter', 2), async (req, res) => 
         console.log(err);
         // res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).send("Internal server error");
     })
-    await ScreenModel.updateMany({ movie_id: id }, {
+    await ScreenModel.updateMany({ movie_id: req.body.id }, {
         movie_name: req.body.movieName,
         ...(req.file && { poster_url }),
         movie_id: req.body.id,
