@@ -261,7 +261,7 @@ router.get('/success', async (req, res) => {
         await sendTicketEmail(email_data)
         await RedisHelperDelete(req.query.key);
         // res.redirect(303, 'http://localhost:3000/book-ticket/ticket/' + transaction.id);
-        res.redirect(303, `${BASE_URL}/book-ticket/ticket/` + transaction.id);
+        res.redirect(303, `${BASE_URL}/purchases`);
     } catch (err) {
         res.status(500).send(err.message);
     }
