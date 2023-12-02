@@ -350,8 +350,11 @@ export default function BuyTicket() {
       time = data.timing.split(":")[0];
     }
     const key = data.theater + "-" + data.screen + "-" + time + "-" + data.date;
-    let discount = dayOfWeek.toString() === "2" ? discountRates.tuesday : null;
-    if (time >= 18) discount = discountRates.night_time;
+    let discount =
+      dayOfWeek.toString() === "2"
+        ? discountRates.tuesday_discount_percentage
+        : null;
+    if (time >= 18) discount = discountRates.nighttime_discount_percentage;
     const totalPrice = discount != null ? cost * selectedSeats.length * (1 - discount * 0.01) : cost * selectedSeats.length;
     data["user_id"] = store.user ? store.user.user_id : null;
     data["discount"] = dayOfWeek.toString() === "2" ? "tuesday" : ((time >= 18) ? "night_time" : null);

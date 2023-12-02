@@ -151,7 +151,7 @@ const MovieSlider = () => {
         <a href="./rewards">
           <img
             className="responsive-banner"
-            src="https://drive.google.com/uc?id=1RyP7TcOdok3IYMVMwE364m9ghuLFGRvL" // Modified URL
+            src="https://box-office-team-infinite-loop.s3.us-west-1.amazonaws.com/1111.png" // Modified URL
             alt="Banner"
             style={{
               width: "100%",

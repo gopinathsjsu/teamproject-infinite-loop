@@ -26,8 +26,14 @@ export default function Discount({ submitSuccess }: { submitSuccess: any }) {
                 // const response = await fetch("http://localhost:8080/discount/all");
                 const data = await getDataFromEndPoint("", `discount/all`, "GET");
                 // const data = await response.json();
-                setValue("tuesday", data.data.tuesday.toString());
-                setValue("night_time", data.data.night_time.toString());
+                setValue(
+                  "tuesday",
+                  data.data.tuesday_discount_percentage.toString()
+                );
+                setValue(
+                  "night_time",
+                  data.data.nighttime_discount_percentage.toString()
+                );
             } catch (error) {
                 console.error("Failed to fetch", error);
             }
