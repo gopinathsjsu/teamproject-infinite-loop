@@ -1,4 +1,4 @@
-// File: /Users/sravankumargorati/teamproject-infinite-loop/client/src/app/signup-original/page.tsx
+// File: /Users/saideekshithkatukojwala/Documents/Code/Projects/box-office/client/src/app/signup-original/page.tsx
 import * as entry from '../../../../src/app/signup-original/page.js'
 import type { ResolvingMetadata } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

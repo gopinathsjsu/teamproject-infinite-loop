@@ -121,8 +121,9 @@ export default function Profile() {
     const userId = store.user.user_id;
     const fetchProfileDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/user/profileDetails/${userId}`);
-        const completeJSON = await response.json();
+        const completeJSON = await getDataFromEndPoint("", `user/profileDetails/${userId}`, "GET");
+        // const response = await fetch(`http://localhost:8080/user/profileDetails/${userId}`);
+        // const completeJSON = await response.json();
         const data = completeJSON.data;
         setUserData(data);
         setValue("email", data.email);
