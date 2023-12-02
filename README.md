@@ -26,6 +26,88 @@ Box Office is your all-access pass to the pulsating heart of cinema, where booki
 - **NGINX**: High-performance web server setup
 - **Node.js & ExpressJS**: Efficient server-side scripting and API management
 
+
+# team-infinite-loop
+
+CMPE 202- Fall 2023
+
+### [](https://github.com/gopinathsjsu/teamproject-infinite-loop#Team)Team:
+
+1.  Mahendra Chittupolu(016990558)
+2.  Sravan Kumar Gorati  (017441749)
+3.  Sai Deekshith Katukojwala (017405765)
+4.  Yeshvanth Raju Kurapati (017463602)
+
+#### [](https://github.com/gopinathsjsu/teamproject-infinite-loop#TeamContributions)Team Contributions:
+
+
+#### [](https://github.com/gopinathsjsu/teamproject-infinite-loop#git-repo)Git repo:
+
+[https://github.com/gopinathsjsu/teamproject-infinite-loop](https://github.com/gopinathsjsu/teamproject-infinite-loop)
+
+#### [](https://github.com/gopinathsjsu/teamproject-infinite-loop#project-board)Project board:
+
+[https://github.com/gopinathsjsu/teamproject-infinite-loop/projects/1](https://github.com/gopinathsjsu/teamproject-infinite-loop/projects/1)
+
+#### [](https://github.com/gopinathsjsu/teamproject-infinite-loop#sprint-task-sheet)Sprint Task Sheet:
+
+[excelLink]
+#### [](https://github.com/gopinathsjsu/teamproject-infinite-loop#project-journal)Project journal:
+
+[project Journals]
+
+#### [](https://github.com/gopinathsjsu/teamproject-infinite-loop#xp-values)XP Values:
+
+Feedback and Communication (Weekly status update calls) We communicated regularly online and offline. We had status updates twice every week through calls, zoom and whatsapp.  
+[Xp Link]
+
+#### [](https://github.com/gopinathsjsu/teamproject-infinite-loop#how-to-run-the-web-app)How to run the web-app:
+
+-   Step 1: Clone the app by command " git clone "
+-  Step 2: Go to the client directory and install node modules by command "npm i OR npm install"
+-   Step 3: Run the client by command "npm run dev"
+-   Step 4: Go to the server directory and install node modules "npm i OR npm install"
+-   Step 5: Run the server by command "npm run start"
+
+
+#### [](https://github.com/gopinathsjsu/teamproject-infinite-loop#feature-set)Feature Set:
+
+ 🌟 Highlights
+
+- **Next.js**: For a seamless, server-rendered React experience
+- **Tailwind CSS & Material UI**: For stylish, responsive designs
+- **Daisy UI**: Extending Tailwind with beautiful component classes
+- **Zustand & ZOD**: For state management and validation schema
+- **JWT**: Secure authentication tokens for our API interactions
+- **MongoDB & Redis**: Persistent and in-memory databases for optimal performance
+- **SendGRID**: Reliable email service for user engagement
+- **Stripe**: Seamless and secure payment processing
+- **AWS Suite (S3, EC2)**: Robust and scalable cloud infrastructure
+- **NGINX**: High-performance web server setup
+- **Node.js & ExpressJS**: Efficient server-side scripting and API management
+
+
+#### [](https://github.com/gopinathsjsu/teamproject-infinite-loop#design-decisions)Design Decisions:
+
+--------Filll----
+
+#### [](https://github.com/gopinathsjsu/teamproject-infinite-loop#ui-wireframes)UI Wireframes:
+
+[https://github.com/gopinathsjsu/teamproject-infinite-loop/tree/main/UI_Wireframes](https://github.com/gopinathsjsu/teamproject-infinite-loop/tree/main/UI_Wireframes)
+
+#### [](https://github.com/gopinathsjsu/teamproject-infinite-loop#diagrams)Diagrams:
+
+##### [](https://github.com/gopinathsjsu/teamproject-infinite-loop#Component-Diagram)Component Diagram
+
+[![archd](https://raw.githubusercontent.com/Mahendra-Chittupolu/Mahendra/master/Untitled%20Diagram%20(1).jpg)](https://raw.githubusercontent.com/Mahendra-Chittupolu/Mahendra/master/Untitled%20Diagram%20(1).jpg)
+
+
+##### [](https://github.com/gopinathsjsu/team-project-code_team15#deployment-diagram)Deployment Diagram:
+
+[![Deployment diagram](https://raw.githubusercontent.com/Mahendra-Chittupolu/Mahendra/master/Untitled%20Diagram%20(2).jpg)](https://raw.githubusercontent.com/Mahendra-Chittupolu/Mahendra/master/Untitled%20Diagram%20(2).jpg)
+
+
+
 ## 🚀 Deployment
 
 Our API and database are deployed on AWS, leveraging auto-scaling EC2 clusters with a load balancer to ensure high availability and performance.
@@ -79,5 +161,9 @@ Interested in contributing? Great! We welcome pull requests, and for major chang
 [MIT](https://choosealicense.com/licenses/mit/)
 
 ---
+
+
+
+
 
 
