@@ -241,7 +241,7 @@ export default function EditMovie() {
     const formURL = "movie/updateMovie";
     const response = await getDataFromEndPoint(data, formURL, "POST");
     if (response != null) {
-      router.push("/movie/all");
+      router.push("/movies/all");
     }
   };
 

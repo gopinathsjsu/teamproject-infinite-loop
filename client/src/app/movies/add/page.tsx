@@ -217,7 +217,7 @@ export default function Contact() {
     const formURL = "movie/add"; // Replace with your form's URL
     const response = await getDataFromEndPoint(data, formURL, "POST");
     if (response.status === 200) {
-      router.push("/movie/all");
+      router.push("/movies/all");
     }
   };
 

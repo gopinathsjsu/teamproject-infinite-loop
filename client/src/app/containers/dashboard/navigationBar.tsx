@@ -49,7 +49,7 @@ const MapIconWrapper = styled("div")(({ theme }) => ({
 }));
 
 const pages = [
-  { name: "Movies", route: "/movie/all", onlyAdmin: false },
+  { name: "Movies", route: "/movies/all", onlyAdmin: false },
   { name: "Theaters", route: "/theater", onlyAdmin: false },
   { name: "Arists", route: "/artist/all", onlyAdmin: false },
   { name: "Analysis", route: "/analysis", onlyAdmin: true },
