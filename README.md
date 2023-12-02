@@ -1,31 +1,3 @@
-# BOX OFFICE
-
-**Unveiling the Red Carpet to Your Personal Cinematic World – Book, Experience, Enthrall!**
-
-Box Office is your all-access pass to the pulsating heart of cinema, where booking your next movie adventure is just a click away. Revel in the luxury of choice with our extensive, multi-location movie listings and exclusive members-only perks. Dive into the world of film with our unique Box Office Store, showcasing a treasure trove of movie merchandise. Make every screening a gala affair—whether you're a cinephile, a casual viewer, or a movie mogul in the making.
-
-
----
-## Team Members :
- - **Yeshvanth Kurapati**
- - **Sai Deekshith katukojwala**
- - **Mahendra Chitipollu**
- - **Sravan Kumar Gorati**
-
-## 🌟 Highlights
-
-- **Next.js**: For a seamless, server-rendered React experience
-- **Tailwind CSS & Material UI**: For stylish, responsive designs
-- **Daisy UI**: Extending Tailwind with beautiful component classes
-- **Zustand & ZOD**: For state management and validation schema
-- **JWT**: Secure authentication tokens for our API interactions
-- **MongoDB & Redis**: Persistent and in-memory databases for optimal performance
-- **SendGRID**: Reliable email service for user engagement
-- **Stripe**: Seamless and secure payment processing
-- **AWS Suite (S3, EC2)**: Robust and scalable cloud infrastructure
-- **NGINX**: High-performance web server setup
-- **Node.js & ExpressJS**: Efficient server-side scripting and API management
-
 
 # team-infinite-loop
 
@@ -161,8 +133,6 @@ Interested in contributing? Great! We welcome pull requests, and for major chang
 [MIT](https://choosealicense.com/licenses/mit/)
 
 ---
-
-
 
 
 
