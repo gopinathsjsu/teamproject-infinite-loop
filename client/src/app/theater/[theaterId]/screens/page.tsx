@@ -131,7 +131,7 @@ export default function Screen() {
 
   function bookTicket(screen: any) {
     console.log(screen);
-    router.push(`/movie/${screen.movieId}/buyTicket`);
+    router.push(`/movies/${screen.movieId}/buyTicket`);
   }
 
   function editScreen(screen: any) {
@@ -213,7 +213,7 @@ export default function Screen() {
 
   const redirectToBuy = (screen: any, time: string) => {
     router.push(
-      `/movie/${screen.movieId}/buyTicket?theater=${theaterId}&screen=${screen.id}&time=${time}`
+      `/movies/${screen.movieId}/buyTicket?theater=${theaterId}&screen=${screen.id}&time=${time}`
     );
   };
 

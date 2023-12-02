@@ -86,7 +86,7 @@ const MovieSlider = () => {
   const router = useRouter();
   const [movieData, setMovieData] = useState([]);
   const handleCardClick = (movieId: any) => {
-    router.push(`/movie/${movieId}`);
+    router.push(`/movies/${movieId}`);
   };
 
   useEffect(() => {

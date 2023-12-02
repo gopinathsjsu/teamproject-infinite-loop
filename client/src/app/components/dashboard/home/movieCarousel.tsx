@@ -147,7 +147,7 @@ const ImageSlider = () => {
     console.log(movieName);
     console.log(movieData[Number(movieName)].poster_id);
     const movieId = movieData[Number(movieName)].poster_id;
-    router.push(`/movie/${movieId}`);
+    router.push(`/movies/${movieId}`);
   };
 
   const handleOpenModal = () => {

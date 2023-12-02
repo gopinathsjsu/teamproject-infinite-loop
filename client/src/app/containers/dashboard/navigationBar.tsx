@@ -163,7 +163,7 @@ function ResponsiveAppBar() {
   }
 
   const handleCardClick = (movieId: string) => {
-    router.push(`/movie/${movieId}`);
+    router.push(`/movies/${movieId}`);
   };
 
   const Search = styled("div")(({ theme }) => ({

@@ -133,7 +133,7 @@ const App: React.FC = () => {
   }
 
   function redirectToBooking() {
-    router.push(`/movie/${movieName}/buyTicket`);
+    router.push(`/movies/${movieName}/buyTicket`);
   }
 
   const transparentChipStyle = {

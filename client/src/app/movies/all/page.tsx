@@ -43,7 +43,7 @@ const MovieCard = ({
 
   // Function to handle editing a movie
   const editMovie = (movieId: string) => {
-    router.push(`/movie/${movieId}/edit`);
+    router.push(`/movies/${movieId}/edit`);
   };
 
   // Function to handle deleting a movie
@@ -214,12 +214,12 @@ const MovieSlider = () => {
   // Function to handle clicking on a movie card
   const handleCardClick = (movieid: string) => {
     console.log(`Clicked on ${movieid}`);
-    router.push(`/movie/${movieid}`);
+    router.push(`/movies/${movieid}`);
   };
 
   // Function to handle clicking on the "Add Movie" button
   const handleAddMovieClick = () => {
-    router.push("/movie/add");
+    router.push("/movies/add");
   };
 
   // Function to handle genre filter change
