@@ -24,7 +24,7 @@ CMPE 202- Fall 2023
 #### [](https://github.com/gopinathsjsu/teamproject-infinite-loop#sprint-task-sheet)Sprint Task Sheet:
 
 [excelLink]
-#### [](https://github.com/gopinathsjsu/teamproject-infinite-loop#project-journal)Project journal:
+#### []([https://github.com/gopinathsjsu/teamproject-infinite-loop#project-journal](https://docs.google.com/spreadsheets/d/13ifYS0cvCskVYWZeW7qtzdIvE56V-BZ0SJAOnOvEcyw/edit?usp=sharing))Project journal:
 
 [project Journals]
 
